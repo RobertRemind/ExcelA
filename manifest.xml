@@ -90,7 +90,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Functions.Script.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions.js"/>        
-        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions.j"/>
+        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions.json"/>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>
         <bt:Url id="Commands.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/commands.html"/>
         <bt:Url id="Taskpane.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpane.html"/>
