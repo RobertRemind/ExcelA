@@ -4,5 +4,8 @@
   "scripts": { 
     "start": "sirv ./src public --cors --single --no-clear --port 8000",
     "build:azure": ""
+  },
+  "build": {
+    "appArtifactLocation": "dist"
   }
 }
