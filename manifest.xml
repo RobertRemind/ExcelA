@@ -50,7 +50,7 @@
             <Description resid="GetStarted.Description"/>
             <LearnMoreUrl resid="GetStarted.LearnMoreUrl"/>
           </GetStarted>
-          <FunctionFile resid="Commands.Url"/>
+          <FunctionFile resid="Taskpane.Url"/>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabHome">
               <Group id="CommandsGroup">
@@ -102,7 +102,7 @@
         <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="V3"/>
+        <bt:String id="GetStarted.Description" DefaultValue="V4"/>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Changed this"/>
       </bt:LongStrings>
     </Resources>
