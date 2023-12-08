@@ -8,6 +8,7 @@
  * @returns {number} The sum of the two numbers.
  */
 export function add(first, second) {
+  console.log("started", first,second);
   return first + second;
 }
 
