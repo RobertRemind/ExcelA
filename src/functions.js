@@ -40,3 +40,4 @@ function add(a, b) {
 
 CustomFunctions.associate("GETVALUEFORKEYCF", getValueForKeyCF);
 CustomFunctions.associate("SETVALUEFORKEYCF",setValueForKeyCF);
+CustomFunctions.associate("ADD",add);
