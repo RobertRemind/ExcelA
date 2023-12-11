@@ -11,7 +11,7 @@
  */
 function getValueForKeyCF(key) {
   debugger;
-  return getValueForKey(key);
+  return key;
 }
 
 /**
