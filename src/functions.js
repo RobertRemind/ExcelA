@@ -25,5 +25,18 @@ function setValueForKeyCF(key, value) {
   return "Stored key/value pair";
 }
 
+
+
+/**
+ * Add two numbers
+ * @customfunction
+ * @param key The key
+ * @returns The value for the key.
+ */
+function add(a, b) {
+  debugger;
+  return a + b;
+}
+
 CustomFunctions.associate("GETVALUEFORKEYCF", getValueForKeyCF);
 CustomFunctions.associate("SETVALUEFORKEYCF",setValueForKeyCF);

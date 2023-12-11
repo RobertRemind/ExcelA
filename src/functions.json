@@ -29,6 +29,24 @@
               }
           ],
           "result": {}
-      }
+      }, 
+      {
+        "description": "Add two numbers",
+        "id": "ADD",
+        "name": "ADD",
+        "parameters": [
+            {
+                "description": "1st value",
+                "name": "a",
+                "type": "any"
+            },
+            {
+              "description": "2nd Valve",
+              "name": "b",
+              "type": "any"
+          }
+        ],
+        "result": {}
+    }
   ]
 }
