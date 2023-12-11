@@ -1,26 +1,28 @@
-﻿/* global clearInterval, console, setInterval */
+﻿﻿/*
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the project root for license information.
+ */
 
 /**
- * Add two numbers
+ * Get value for key
  * @customfunction
- * @param {number} first First number
- * @param {number} second Second number
- * @returns {number} The sum of the two numbers.
+ * @param key The key
+ * @returns The value for the key.
  */
-export function add(first, second) {
-  logMessage("started Add");
-  return first + second;
+function getValueForKeyCF(key) {
+  return getValueForKey(key);
 }
-
 
 /**
- * Writes a message to console.log().
- * @customfunction LOG
- * @param {string} message String to write.
- * @returns String to write.
+ * Get value for key
+ * @customfunction
+ * @param key The key
+ * @returns The value for the key.
  */
-export function logMessage(message) {
-  console.log(message);
-
-  return message;
+function setValueForKeyCF(key, value) {
+  setValueForKey(key, value);
+  return "Stored key/value pair";
 }
+
+CustomFunctions.associate("GETVALUEFORKEYCF", getValueForKeyCF);
+CustomFunctions.associate("SETVALUEFORKEYCF",setValueForKeyCF);

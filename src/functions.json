@@ -1,30 +1,34 @@
 {
-    "allowCustomDataForDataTypeAny": true,
-    "allowErrorForDataTypeAny": true,
-    "functions": [
+  "functions": [
       {
-        "id": "ADD",
-        "name": "ADD",
-        "description": "Add two numbers",
-        "helpUrl": "http://www.contoso.com/help",
-        "result": {
-          "type": "number",
-          "dimensionality": "scalar"
-        },
-        "parameters": [
-          {
-            "name": "first",
-            "description": "first number to add",
-            "type": "number",
-            "dimensionality": "scalar"
-          },
-          {
-            "name": "second",
-            "description": "second number to add",
-            "type": "number",
-            "dimensionality": "scalar"
-          }
-        ]
+          "description": "Get value for key",
+          "id": "GETVALUEFORKEYCF",
+          "name": "GETVALUEFORKEYCF",
+          "parameters": [
+              {
+                  "description": "The key",
+                  "name": "key",
+                  "type": "any"
+              }
+          ],
+          "result": {}
+      },
+      {
+          "description": "Get value for key",
+          "id": "SETVALUEFORKEYCF",
+          "name": "SETVALUEFORKEYCF",
+          "parameters": [
+              {
+                  "description": "The key",
+                  "name": "key",
+                  "type": "any"
+              },
+              {
+                  "name": "value",
+                  "type": "any"
+              }
+          ],
+          "result": {}
       }
-    ]
-  }
+  ]
+}
