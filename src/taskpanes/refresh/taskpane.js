@@ -1,7 +1,18 @@
 const azureFunctions = [
-    { id: 1, name: 'Function 1' },
-    { id: 2, name: 'Function 2' },
-    // ... other functions
+    { 
+        id: 1, 
+        name: 'Shopify Products', 
+        url: "http://localhost:7071/api/SyncShopify",
+        data: {
+            "importRequest": [
+                {
+                    "sourceSystem": "Shopify", 
+                    "obj": ["Product", "Sales"]
+                }
+            ]
+        }
+    }    
+    
 ];
 
 let completedFunctionsCount = 0;
@@ -15,6 +26,8 @@ document.getElementById('startFunctionsBtn').addEventListener('click', function(
     });
 });
 
+
+
 function startAzureFunction(functionId) {
     if (!document.getElementById('statusIndicator' + functionId)) {
         createStatusIndicator(functionId);
@@ -22,16 +35,21 @@ function startAzureFunction(functionId) {
     updateStatus(functionId, 'Starting...', 'running');
     callAzureFunction(functionId)
         .then(() => {
+            debugger
             updateStatus(functionId, 'Completed', 'completed');
         })
         .catch((error) => {
+            debugger
             updateStatus(functionId, 'Error: ' + error.message, 'error');
             errorOccurred = true;
         })
         .finally(() => {
+            debugger
             checkAllFunctionsCompleted();
         });
 }
+
+
 
 function createStatusIndicator(functionId) {
     const statusIndicators = document.getElementById('statusIndicators');
@@ -47,16 +65,13 @@ function updateStatus(functionId, message, status) {
 }
 
 async function callAzureFunction(functionId) {
-    // Replace with actual Azure function call logic
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const simulatedError = false; // Set to true to simulate an error
-            if (simulatedError) {
-                reject(new Error('Simulated error'));
-            } else {
-                resolve();
-            }
-        }, 3000 * functionId);
+    debugger
+    return await fetch(azureFunctions[functionId].url, {        
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: azureFunctions[functionId].data
     });
 }
 
