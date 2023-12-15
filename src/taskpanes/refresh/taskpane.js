@@ -356,13 +356,13 @@ function getSupplier(supplierID) {
 
 /** Set up Sample worksheet. */
 async function setup() {
-    
-  debugger
+
+
   const x = await getShopifyProducts()
   if (x && x[0] && x[0].result) {
     const j = JSON.parse(x[0].result)
     j.map((r) => {        
-        shopifyProducts.push(j);
+        shopifyProducts.push(r);
     });
   }
   

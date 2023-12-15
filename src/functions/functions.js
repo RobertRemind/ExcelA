@@ -34,13 +34,13 @@ function setValueForKeyCF(key, value) {
  * @returns The value for the key.
  */
 function add(a, b) {
-  debugger;
+  
   return a + b;
 }
 
 
 function dim(dimension, filters) {
-  debugger
+  
   return dimension
 }
 
