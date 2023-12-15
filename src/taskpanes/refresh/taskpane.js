@@ -190,7 +190,7 @@ async function addEntitiesToTable() {
 }
 
 // Create entities from product properties.
-function makeProductEntity(productID, productName, product, category, supplier?) {
+function makeProductEntity(productID, productName, product, category, supplier) {
   const entity: Excel.EntityCellValue = {
     type: Excel.CellValueType.entity,
     text: productName,
