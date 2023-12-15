@@ -356,8 +356,8 @@ function getSupplier(supplierID: number): any {
 /** Set up Sample worksheet. */
 async function setup() {
   await Excel.run(async (context) => {
-    context.workbook.worksheets.getItemOrNullObject("Sample").delete();
-    const sheet = context.workbook.worksheets.add("Sample");
+    context.workbook.worksheets.getItemOrNullObject("Products").delete();
+    const sheet = context.workbook.worksheets.add("Products");
 
     const productsTable = sheet.tables.add("A1:C1", true /*hasHeaders*/);
     productsTable.name = "ProductsTable";
