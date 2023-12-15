@@ -361,6 +361,10 @@ async function setup() {
   const x = await getShopifyProducts()
   if (x && x[0] && x[0].result) {
     const j = JSON.parse(x[0].result)
+    
+    // Remove all elements from the array
+    shopifyProducts.splice(0, myArray.length);
+
     j.map((r) => {        
         shopifyProducts.push(r);
     });
