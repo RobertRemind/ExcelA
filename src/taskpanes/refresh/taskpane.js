@@ -187,7 +187,7 @@ async function addEntitiesToTable() {
       // Create entities by combining product, category, and supplier properties.
       return [makeProductEntity(rowValues[1], rowValues[2], product)];
     });
-    debugger;
+    
     // Add the complete entities to the Products Table.
     productColumn.getDataBodyRange().valuesAsJson = entities;
 
@@ -383,7 +383,6 @@ async function setup() {
     });
   }
   
-  debugger
 
   await Excel.run(async (context) => {
     context.workbook.worksheets.getItemOrNullObject("Products").delete();
