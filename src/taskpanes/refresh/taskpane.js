@@ -172,8 +172,7 @@ async function addEntitiesToTable() {
 
     await context.sync();
 
-    // Set up the entities by mapping the product names to
-    // the sample JSON product data.
+    // Loop through the rows of the table
     const entities = dataRange.values.map((rowValues) => {
       // Get products and product properties.
       debugger;
@@ -203,8 +202,10 @@ function makeProductEntity(productID, productName, product) {
   const entity = {
     type: Excel.CellValueType.entity,
     text: productName,
+
+
     properties: {
-      "Product ID": {
+      "Code": {
         type: Excel.CellValueType.string,
         basicValue: productID.toString() || ""
       },
@@ -212,20 +213,23 @@ function makeProductEntity(productID, productName, product) {
         type: Excel.CellValueType.string,
         basicValue: productName || ""
       },
-      "Quantity Per Unit": {
+      "Description": {
         type: Excel.CellValueType.string,
-        basicValue: product.quantityPerUnit || ""
+        basicValue: product.description || ""
       },
-      // Add Unit Price as a formatted number.
-      "Unit Price": {
-        type: Excel.CellValueType.formattedNumber,
-        basicValue: product.unitPrice,
-        numberFormat: "$* #,##0.00"
-      },
-      Discontinued: {
-        type: Excel.CellValueType.boolean,
-        basicValue: product.discontinued || false
+      "Handle": {
+        type: Excel.CellValueType.string,
+        basicValue: product.handle || ""
+      },      
+      "Created By": {
+        type: Excel.CellValueType.string,
+        basicValue: product.createdBy || ""
+      },      
+      "Created": {
+        type: Excel.CellValueType.string,
+        basicValue: product.created || ""
       }
+      
     },
     layouts: {
       compact: {
@@ -236,20 +240,20 @@ function makeProductEntity(productID, productName, product) {
         sections: [
           {
             layout: "List",
-            properties: ["Product ID"]
+            properties: ["Code"]
           },
           {
             layout: "List",
-            title: "Quantity and price",
+            title: "Details",
             collapsible: true,
             collapsed: false,
-            properties: ["Quantity Per Unit", "Unit Price"]
+            properties: ["Description", "Handle"]
           },
           {
             layout: "List",
             title: "Additional information",
             collapsed: true,
-            properties: ["Discontinued"]
+            properties: ["Created By", "Created "]
           }
         ]
       }
@@ -257,16 +261,16 @@ function makeProductEntity(productID, productName, product) {
   };
 
   // Add image property to the entity and then add it to the card layout.
-  if (product.productImage) {
+  /*if (product.productImage) {
     entity.properties["Image"] = {
       type: Excel.CellValueType.webImage,
       address: product.productImage || ""
     };
     entity.layouts.card.mainImage = { property: "Image" };
   }
-
+*/
   // Add a nested entity for the product category.
-  if (category) {
+  /*if (category) {
     entity.properties["Category"] = {
       type: Excel.CellValueType.entity,
       text: category.categoryName,
@@ -301,9 +305,9 @@ function makeProductEntity(productID, productName, product) {
     // Add nested product category to the card layout.
     entity.layouts.card.sections[0].properties.push("Category");
   }
-
+*/
   // Add a nested entity for the supplier.
-  if (supplier) {
+ /* if (supplier) {
     entity.properties["Supplier"] = {
       type: Excel.CellValueType.entity,
       text: supplier.companyName,
@@ -344,6 +348,7 @@ function makeProductEntity(productID, productName, product) {
     // Add nested product supplier to the card layout.
     entity.layouts.card.sections[2].properties.push("Supplier");
   }
+  */
   return entity;
 }
 
