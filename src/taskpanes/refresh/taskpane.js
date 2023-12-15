@@ -190,7 +190,7 @@ async function addEntitiesToTable() {
 }
 
 // Create entities from product properties.
-function makeProductEntity(productID: number, productName: string, product?: any, category?: any, supplier?: any) {
+function makeProductEntity(productID, productName, product, category, supplier?) {
   const entity: Excel.EntityCellValue = {
     type: Excel.CellValueType.entity,
     text: productName,
@@ -339,17 +339,17 @@ function makeProductEntity(productID: number, productName: string, product?: any
 }
 
 // Get products and product properties.
-function getProduct(productID: number): any {
+function getProduct(productID) {
   return products.find((p) => p.productID == productID);
 }
 
 // Get product categories and category properties.
-function getCategory(categoryID: number): any {
+function getCategory(categoryID) {
   return categories.find((c) => c.categoryID == categoryID);
 }
 
 // Get product suppliers and supplier properties.
-function getSupplier(supplierID: number): any {
+function getSupplier(supplierID) {
   return suppliers.find((s) => s.supplierID == supplierID);
 }
 
