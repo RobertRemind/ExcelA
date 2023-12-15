@@ -175,7 +175,7 @@ async function addEntitiesToTable() {
     // Loop through the rows of the table
     const entities = dataRange.values.map((rowValues) => {
       // Get products and product properties.
-      debugger;
+      
       const product = getProduct(rowValues[1]);
 
       // Get product categories and category properties.
@@ -187,7 +187,7 @@ async function addEntitiesToTable() {
       // Create entities by combining product, category, and supplier properties.
       return [makeProductEntity(rowValues[1], rowValues[2], product)];
     });
-
+    debugger;
     // Add the complete entities to the Products Table.
     productColumn.getDataBodyRange().valuesAsJson = entities;
 
@@ -253,7 +253,7 @@ function makeProductEntity(productID, productName, product) {
             layout: "List",
             title: "Additional information",
             collapsed: true,
-            properties: ["Created By", "Created "]
+            properties: ["Created By", "Created"]
           }
         ]
       }
