@@ -81,7 +81,7 @@ function createStatusIndicator(functionId) {
  */
 function updateStatus(functionId, message, status) {
     const statusIndicator = document.getElementById('statusIndicator' + functionId);
-    statusIndicator.innerHTML = `Function ${functionId} Status: <span class="${status}">${message}</span>`;
+    statusIndicator.innerHTML = `${azureFunctions[functionId].name} Status: <span class="${status}">${message}</span>`;
 }
 
 
@@ -98,7 +98,7 @@ async function callAzureFunction(functionId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: azureFunctions[functionId].data
+        body: JSON.stringify(azureFunctions[functionId].data);
     });
 
 }
