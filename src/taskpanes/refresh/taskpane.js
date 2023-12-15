@@ -391,8 +391,9 @@ async function setup() {
  * Start an Azure function for Dimension Query
  * @returns promise
  */
-async function getShopifyProducts() {        
-    return await fetch("http://localhost:7071/api/DimensionQuery", {        
+async function getShopifyProducts() {  
+    
+    const response = await fetch("http://localhost:7071/api/DimensionQuery", {        
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -408,6 +409,13 @@ async function getShopifyProducts() {
         }
         `
     });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data; // This is your JSON object
 
 }
 
