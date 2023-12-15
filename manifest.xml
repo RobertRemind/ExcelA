@@ -18,7 +18,8 @@
    <Requirements>
     <Sets DefaultMinVersion="1.1">
       <Set Name="SharedRuntime" MinVersion="1.1"/>
-    </Sets>
+      <Set Name="ExcelApi" MinVersion="1.1"/>
+    </Sets>    
   </Requirements>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpanes/refresh/taskpane.html"/>
