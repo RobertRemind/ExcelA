@@ -178,7 +178,7 @@ async function addEntitiesToTable() {
       const supplier = product ? getSupplier(product.supplierID) : null;
 
       // Create entities by combining product, category, and supplier properties.
-      //return [makeProductEntity(rowValues[1], rowValues[2], product, category, supplier)];
+      return [makeProductEntity(rowValues[1], rowValues[2], product, category, supplier)];
     });
 
     // Add the complete entities to the Products Table.
@@ -189,10 +189,10 @@ async function addEntitiesToTable() {
   });
 }
 
-/*
+
 // Create entities from product properties.
 function makeProductEntity(productID, productName, product, category, supplier) {
-  const entity: Excel.EntityCellValue = {
+  const entity = {
     type: Excel.CellValueType.entity,
     text: productName,
     properties: {
@@ -338,7 +338,6 @@ function makeProductEntity(productID, productName, product, category, supplier) 
   }
   return entity;
 }
-*/
 
 // Get products and product properties.
 function getProduct(productID) {
