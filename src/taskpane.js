@@ -26,13 +26,22 @@ let errorOccurred = false;
 /**
  * Bind the update button to the function call events.
  */
-document.getElementById('startFunctionsBtn').addEventListener('click', function() {
-    completedFunctionsCount = 0;
-    errorOccurred = false;
-    azureFunctions.forEach(functionDetails => {
-        startAzureFunction(functionDetails.id);
-    });
+Office.onReady((info) => {
+    
+    if (info.host === Office.HostType.Excel) {
+        debugger;
+        document.getElementById('startFunctionsBtn').addEventListener('click', function() {
+            completedFunctionsCount = 0;
+            errorOccurred = false;
+            azureFunctions.forEach(functionDetails => {
+                startAzureFunction(functionDetails.id);
+            });
+        });
+    }
 });
+
+
+
 
 
 /**
@@ -45,17 +54,14 @@ function startAzureFunction(functionId) {
     }
     updateStatus(functionId, 'Starting...', 'running');
     callAzureFunction(functionId)
-        .then(() => {
-            debugger
+        .then(() => {            
             updateStatus(functionId, 'Completed', 'completed');
         })
-        .catch((error) => {
-            debugger
+        .catch((error) => {            
             updateStatus(functionId, 'Error: ' + error.message, 'error');
             errorOccurred = true;
         })
-        .finally(() => {
-            debugger
+        .finally(() => {            
             checkAllFunctionsCompleted();
         });
 }
@@ -90,8 +96,7 @@ function updateStatus(functionId, message, status) {
  * @param {number} functionId index of the azureFunctions array
  * @returns promise
  */
-async function callAzureFunction(functionId) {
-    debugger
+async function callAzureFunction(functionId) {    
     updateStatus(functionId, 'Running...', 'running');
     return await fetch(azureFunctions[functionId].url, {        
         method: 'POST',
