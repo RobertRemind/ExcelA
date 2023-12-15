@@ -356,9 +356,16 @@ function getSupplier(supplierID) {
 
 /** Set up Sample worksheet. */
 async function setup() {
-
+    
   debugger
   const x = await getShopifyProducts()
+  if (x && x[0] && x[0].result) {
+    const j = JSON.parse(x[0].result)
+    j.map((r) => {        
+        shopifyProducts.push(j);
+    });
+  }
+  
   debugger
 
   await Excel.run(async (context) => {
@@ -431,7 +438,10 @@ async function tryCatch(callback) {
   }
 }
 
+const shopifyProducts = []
 
+
+/*
 const shopifyProducts = [
     {
         primarySystemCode: "gid://shopify/Product/7287719264318",
@@ -466,7 +476,7 @@ const shopifyProducts = [
         handle: "bulldog"
     }
 ]
-
+*/
 
 
 /** Sample JSON product data. */
