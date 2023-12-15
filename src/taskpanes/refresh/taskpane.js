@@ -98,7 +98,7 @@ async function callAzureFunction(functionId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(azureFunctions[functionId].data);
+        body: JSON.stringify(azureFunctions[functionId].data)
     });
 
 }
