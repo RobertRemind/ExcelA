@@ -356,6 +356,11 @@ function getSupplier(supplierID) {
 
 /** Set up Sample worksheet. */
 async function setup() {
+
+  debugger
+  const x = await getShopifyProducts()
+  debugger
+  
   await Excel.run(async (context) => {
     context.workbook.worksheets.getItemOrNullObject("Products").delete();
     const sheet = context.workbook.worksheets.add("Products");
@@ -378,6 +383,36 @@ async function setup() {
     await context.sync();
   });
 }
+
+
+
+
+/**
+ * Start an Azure function for Dimension Query
+ * @returns promise
+ */
+async function getShopifyProducts() {    
+    updateStatus(functionId, 'Running...', 'running');
+    return await fetch("http://localhost:7071/api/DimensionQuery", {        
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: `{
+            "query": [
+                {
+                    "dimension": "Product"
+                    "filters": []
+                }
+            ]
+        }
+        `
+    });
+
+}
+
+
 
 /** Default helper for invoking an action and handling errors. */
 async function tryCatch(callback) {
