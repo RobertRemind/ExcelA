@@ -95,6 +95,7 @@ async function callAzureFunction(functionId) {
     updateStatus(functionId, 'Running...', 'running');
     return await fetch(azureFunctions[functionId].url, {        
         method: 'POST',
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
         },
