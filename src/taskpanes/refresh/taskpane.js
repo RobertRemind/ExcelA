@@ -176,16 +176,17 @@ async function addEntitiesToTable() {
     // the sample JSON product data.
     const entities = dataRange.values.map((rowValues) => {
       // Get products and product properties.
+      debugger;
       const product = getProduct(rowValues[1]);
 
       // Get product categories and category properties.
-      const category = product ? getCategory(product.categoryID) : null;
+      /*const category = product ? getCategory(product.categoryID) : null;
 
       // Get product suppliers and supplier properties.
       const supplier = product ? getSupplier(product.supplierID) : null;
-
+        */
       // Create entities by combining product, category, and supplier properties.
-      return [makeProductEntity(rowValues[1], rowValues[2], product, category, supplier)];
+      return [makeProductEntity(rowValues[1], rowValues[2], product)];
     });
 
     // Add the complete entities to the Products Table.
@@ -198,7 +199,7 @@ async function addEntitiesToTable() {
 
 
 // Create entities from product properties.
-function makeProductEntity(productID, productName, product, category, supplier) {
+function makeProductEntity(productID, productName, product) {
   const entity = {
     type: Excel.CellValueType.entity,
     text: productName,
@@ -347,8 +348,8 @@ function makeProductEntity(productID, productName, product, category, supplier) 
 }
 
 // Get products and product properties.
-function getProduct(productID) {
-  return products.find((p) => p.productID == productID);
+function getProduct(id) {
+  return shopifyProducts.find((p) => p.primarySystemCode == id);
 }
 
 // Get product categories and category properties.
@@ -452,42 +453,6 @@ async function tryCatch(callback) {
 const shopifyProducts = []
 
 
-/*
-const shopifyProducts = [
-    {
-        primarySystemCode: "gid://shopify/Product/7287719264318",
-        memberCaption: "French Bulldog",
-        created: "2023-12-14T23:12:41.777",
-        createdBy: "ETL",
-        description: "Playful, Sociable, Lively, Patient",
-        handle: "french-bulldog"
-    },
-    {
-        primarySystemCode: "gid://shopify/Product/7299607396414",
-        memberCaption: "Labrador Retriever",
-        created: "2023-12-14T23:12:41.777",
-        createdBy: "ETL",
-        description: "The Labrador is considered a purebred dog breed, but many mixes and hybrids have been created from this breed.",
-        handle: "labrador-retriever"
-    },
-    {
-        primarySystemCode: "gid://shopify/Product/7299686301758",
-        memberCaption: "German Shepherd",
-        created: "2023-12-15T01:44:50.977",
-        createdBy: "ETL",
-        description: "The German Shepherd is considered a purebred dog breed, but many mixes and hybrids have been created from this breed.",
-        handle: "german-shepherd"
-    },
-    {
-        primarySystemCode: "gid://shopify/Product/7300172677182",
-        memberCaption: "Bulldog",
-        created: "2023-12-15T01:44:50.977",
-        createdBy: "ETL",
-        description: "The Bulldog is one of the dog breeds that have the lowest degree of obedience intelligence. You need to work hard if you want to impress people with these dog tricks and commands. They understand and memorize new commands in 80-100 repetitions, and obey the first command 25% of the time or better.",
-        handle: "bulldog"
-    }
-]
-*/
 
 
 /** Sample JSON product data. */

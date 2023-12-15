@@ -34,6 +34,12 @@ Office.onReady((info) => {
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
             completedFunctionsCount = 0;
             errorOccurred = false;
+
+            const finalStatus = document.getElementById('finalStatusIndicator')
+            if(finalStatus) {
+                finalStatus.textContent = "";
+            }
+
             azureFunctions.forEach(functionDetails => {
                 startAzureFunction(functionDetails.id);
             });
@@ -139,10 +145,11 @@ function checkAllFunctionsCompleted() {
  * Update the taskpane with a final status message success/fail.
  * @param {string} message Text or icon html
  */
-function showFinalStatus(message) {
-    const finalStatus = document.createElement('div');
-    finalStatus.textContent = '<p>' + message + '</p>';
-    document.body.appendChild(finalStatus);
+function showFinalStatus(message) {    
+    const finalStatus = document.getElementById('finalStatusIndicator')
+    if(finalStatus) {
+        finalStatus.textContent = message    
+    }
 }
 
 
@@ -356,6 +363,22 @@ function getSupplier(supplierID) {
 
 /** Set up Sample worksheet. */
 async function setup() {
+
+
+  const x = await getShopifyProducts()
+  if (x && x[0] && x[0].result) {
+    const j = JSON.parse(x[0].result)
+    
+    // Remove all elements from the array
+    shopifyProducts.splice(0, shopifyProducts.length);
+
+    j.map((r) => {        
+        shopifyProducts.push(r);
+    });
+  }
+  
+  debugger
+
   await Excel.run(async (context) => {
     context.workbook.worksheets.getItemOrNullObject("Products").delete();
     const sheet = context.workbook.worksheets.add("Products");
@@ -363,11 +386,11 @@ async function setup() {
     const productsTable = sheet.tables.add("A1:C1", true /*hasHeaders*/);
     productsTable.name = "ProductsTable";
 
-    productsTable.getHeaderRowRange().values = [["Product", "ProductID", "ProductName"]];
+    productsTable.getHeaderRowRange().values = [["Product", "primarySystemCode", "memberCaption"]];
 
     productsTable.rows.add(
       null /*add at the end*/,
-      products.map((p) => [null, p.productID, p.productName])
+      shopifyProducts.map((p) => [null, p.primarySystemCode, p.memberCaption])
     );
 
     sheet.getUsedRange().format.autofitColumns();
@@ -379,6 +402,43 @@ async function setup() {
   });
 }
 
+
+
+
+/**
+ * Start an Azure function for Dimension Query
+ * @returns promise
+ */
+async function getShopifyProducts() {  
+    
+    const response = await fetch("http://localhost:7071/api/DimensionQuery", {        
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: `{
+            "query": [
+                {
+                    "dimension": "Product"
+                    "filters": []
+                }
+            ]
+        }
+        `
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data; // This is your JSON object
+
+}
+
+
+
 /** Default helper for invoking an action and handling errors. */
 async function tryCatch(callback) {
   try {
@@ -388,6 +448,47 @@ async function tryCatch(callback) {
     console.error(error);
   }
 }
+
+const shopifyProducts = []
+
+
+/*
+const shopifyProducts = [
+    {
+        primarySystemCode: "gid://shopify/Product/7287719264318",
+        memberCaption: "French Bulldog",
+        created: "2023-12-14T23:12:41.777",
+        createdBy: "ETL",
+        description: "Playful, Sociable, Lively, Patient",
+        handle: "french-bulldog"
+    },
+    {
+        primarySystemCode: "gid://shopify/Product/7299607396414",
+        memberCaption: "Labrador Retriever",
+        created: "2023-12-14T23:12:41.777",
+        createdBy: "ETL",
+        description: "The Labrador is considered a purebred dog breed, but many mixes and hybrids have been created from this breed.",
+        handle: "labrador-retriever"
+    },
+    {
+        primarySystemCode: "gid://shopify/Product/7299686301758",
+        memberCaption: "German Shepherd",
+        created: "2023-12-15T01:44:50.977",
+        createdBy: "ETL",
+        description: "The German Shepherd is considered a purebred dog breed, but many mixes and hybrids have been created from this breed.",
+        handle: "german-shepherd"
+    },
+    {
+        primarySystemCode: "gid://shopify/Product/7300172677182",
+        memberCaption: "Bulldog",
+        created: "2023-12-15T01:44:50.977",
+        createdBy: "ETL",
+        description: "The Bulldog is one of the dog breeds that have the lowest degree of obedience intelligence. You need to work hard if you want to impress people with these dog tricks and commands. They understand and memorize new commands in 80-100 repetitions, and obey the first command 25% of the time or better.",
+        handle: "bulldog"
+    }
+]
+*/
+
 
 /** Sample JSON product data. */
 const products = [
