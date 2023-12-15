@@ -1,0 +1,52 @@
+{
+  "functions": [
+      {
+          "description": "Get value for key",
+          "id": "GETVALUEFORKEYCF",
+          "name": "GETVALUEFORKEYCF",
+          "parameters": [
+              {
+                  "description": "The key",
+                  "name": "key",
+                  "type": "any"
+              }
+          ],
+          "result": {}
+      },
+      {
+          "description": "Get value for key",
+          "id": "SETVALUEFORKEYCF",
+          "name": "SETVALUEFORKEYCF",
+          "parameters": [
+              {
+                  "description": "The key",
+                  "name": "key",
+                  "type": "any"
+              },
+              {
+                  "name": "value",
+                  "type": "any"
+              }
+          ],
+          "result": {}
+      }, 
+      {
+        "description": "Add two numbers",
+        "id": "ADD",
+        "name": "ADD",
+        "parameters": [
+            {
+                "description": "1st value",
+                "name": "a",
+                "type": "any"
+            },
+            {
+              "description": "2nd Valve",
+              "name": "b",
+              "type": "any"
+          }
+        ],
+        "result": {}
+    }
+  ]
+}

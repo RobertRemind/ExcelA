@@ -1,0 +1,47 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    padding: 20px;
+    color: #333333;
+}
+
+#startFunctionsBtn {
+    padding: 10px 20px;
+    background-color: #0078D4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#statusIndicators div {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+}
+
+.completed {
+    color: #28a745; /* Green for success */
+}
+
+.error {
+    color: #dc3545; /* Red for error */
+}
+
+/* Spinner styles remain unchanged */
+.spinner {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0078D4;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

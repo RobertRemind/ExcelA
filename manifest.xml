@@ -8,9 +8,9 @@
   <Description DefaultValue="A template to get started."/>
   <IconUrl DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/"/>
+  <SupportUrl DefaultValue="https://www.contoso.com/help"/>
   <AppDomains>
-    <AppDomain>https://kind-hill-08927eb00.4.azurestaticapps.net/</AppDomain>
+    <AppDomain>https://www.contoso.com</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Workbook"/>
@@ -21,7 +21,7 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpanes/refresh/taskpane.html"/>
+    <SourceLocation DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpane.html"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
@@ -89,20 +89,20 @@
         <bt:Image id="Icon.80x80" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Functions.Script.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/functions.js"/>        
-        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/functions.json"/>
+        <bt:Url id="Functions.Script.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions.js"/>        
+        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions.json"/>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>
-        <bt:Url id="Commands.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/commands.html"/>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpanes/refresh/taskpane.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/commands.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpane.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Functions.Namespace" DefaultValue="REMIND"/>
-        <bt:String id="GetStarted.Title" DefaultValue="Shopify connected addin loaded"/>
+        <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!"/>
         <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="V0.05"/>
+        <bt:String id="GetStarted.Description" DefaultValue="V4"/>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Changed this"/>
       </bt:LongStrings>
     </Resources>
