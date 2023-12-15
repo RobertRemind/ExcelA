@@ -360,7 +360,7 @@ async function setup() {
   debugger
   const x = await getShopifyProducts()
   debugger
-  
+
   await Excel.run(async (context) => {
     context.workbook.worksheets.getItemOrNullObject("Products").delete();
     const sheet = context.workbook.worksheets.add("Products");
@@ -391,8 +391,7 @@ async function setup() {
  * Start an Azure function for Dimension Query
  * @returns promise
  */
-async function getShopifyProducts() {    
-    updateStatus(functionId, 'Running...', 'running');
+async function getShopifyProducts() {        
     return await fetch("http://localhost:7071/api/DimensionQuery", {        
         method: 'POST',
         mode: 'cors',
