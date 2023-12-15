@@ -34,6 +34,12 @@ Office.onReady((info) => {
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
             completedFunctionsCount = 0;
             errorOccurred = false;
+
+            const finalStatus = document.getElementById('finalStatusIndicator')
+            if(finalStatus) {
+                finalStatus.textContent = "";
+            }
+
             azureFunctions.forEach(functionDetails => {
                 startAzureFunction(functionDetails.id);
             });
@@ -139,10 +145,11 @@ function checkAllFunctionsCompleted() {
  * Update the taskpane with a final status message success/fail.
  * @param {string} message Text or icon html
  */
-function showFinalStatus(message) {
-    const finalStatus = document.createElement('div');
-    finalStatus.textContent = '<p>' + message + '</p>';
-    document.body.appendChild(finalStatus);
+function showFinalStatus(message) {    
+    const finalStatus = document.getElementById('finalStatusIndicator')
+    if(finalStatus) {
+        finalStatus.textContent = message    
+    }
 }
 
 
@@ -363,7 +370,7 @@ async function setup() {
     const j = JSON.parse(x[0].result)
     
     // Remove all elements from the array
-    shopifyProducts.splice(0, myArray.length);
+    shopifyProducts.splice(0, shopifyProducts.length);
 
     j.map((r) => {        
         shopifyProducts.push(r);
