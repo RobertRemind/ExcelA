@@ -38,6 +38,15 @@ function add(a, b) {
   return a + b;
 }
 
+
+function dim(dimension, filters) {
+  debugger
+  return dimension
+}
+
+
+
 CustomFunctions.associate("GETVALUEFORKEYCF", getValueForKeyCF);
 CustomFunctions.associate("SETVALUEFORKEYCF",setValueForKeyCF);
 CustomFunctions.associate("ADD",add);
+CustomFunctions.associate("DIM",dim);

@@ -47,6 +47,24 @@
           }
         ],
         "result": {}
+    }, 
+    {
+        "description": "Get filtered Dimension data",
+        "id": "DIM",
+        "name": "DIM",
+        "parameters": [
+            {
+                "description": "Dimension Name",
+                "name": "dimension",
+                "type": "any"
+            },
+            {
+              "description": "Filter string",
+              "name": "filter",
+              "type": "any"
+          }
+        ],
+        "result": {}
     }
   ]
 }
