@@ -28,8 +28,7 @@ let errorOccurred = false;
  */
 Office.onReady((info) => {
     
-    if (info.host === Office.HostType.Excel) {
-        debugger;
+    if (info.host === Office.HostType.Excel) {        
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
             completedFunctionsCount = 0;
             errorOccurred = false;
