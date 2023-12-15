@@ -363,11 +363,11 @@ async function setup() {
     const productsTable = sheet.tables.add("A1:C1", true /*hasHeaders*/);
     productsTable.name = "ProductsTable";
 
-    productsTable.getHeaderRowRange().values = [["Product", "ProductID", "ProductName"]];
+    productsTable.getHeaderRowRange().values = [["Product", "primarySystemCode", "memberCaption"]];
 
     productsTable.rows.add(
       null /*add at the end*/,
-      products.map((p) => [null, p.productID, p.productName])
+      shopifyProducts.map((p) => [null, p.primarySystemCode, p.memberCaption])
     );
 
     sheet.getUsedRange().format.autofitColumns();
@@ -388,6 +388,44 @@ async function tryCatch(callback) {
     console.error(error);
   }
 }
+
+
+const shopifyProducts = [
+    {
+        primarySystemCode: "gid://shopify/Product/7287719264318",
+        memberCaption: "French Bulldog",
+        created: "2023-12-14T23:12:41.777",
+        createdBy: "ETL",
+        description: "Playful, Sociable, Lively, Patient",
+        handle: "french-bulldog"
+    },
+    {
+        primarySystemCode: "gid://shopify/Product/7299607396414",
+        memberCaption: "Labrador Retriever",
+        created: "2023-12-14T23:12:41.777",
+        createdBy: "ETL",
+        description: "The Labrador is considered a purebred dog breed, but many mixes and hybrids have been created from this breed.",
+        handle: "labrador-retriever"
+    },
+    {
+        primarySystemCode: "gid://shopify/Product/7299686301758",
+        memberCaption: "German Shepherd",
+        created: "2023-12-15T01:44:50.977",
+        createdBy: "ETL",
+        description: "The German Shepherd is considered a purebred dog breed, but many mixes and hybrids have been created from this breed.",
+        handle: "german-shepherd"
+    },
+    {
+        primarySystemCode: "gid://shopify/Product/7300172677182",
+        memberCaption: "Bulldog",
+        created: "2023-12-15T01:44:50.977",
+        createdBy: "ETL",
+        description: "The Bulldog is one of the dog breeds that have the lowest degree of obedience intelligence. You need to work hard if you want to impress people with these dog tricks and commands. They understand and memorize new commands in 80-100 repetitions, and obey the first command 25% of the time or better.",
+        handle: "bulldog"
+    }
+]
+
+
 
 /** Sample JSON product data. */
 const products = [
