@@ -102,29 +102,26 @@ async function applyGradient() {
 async function applyGradient() { 
   Excel.run(function (context) {
     // Get the currently selected range
-    const range = context.workbook.getSelectedRange();
-        
+    const range = context.workbook.getSelectedRange();        
 
     // Load the size of the range and the column widths
     range.load('rowCount');
     range.load('columnCount');
     range.load('width');
 
+
+
+
     return context.sync().then(function () {
 
-        const rows = range.rowCount;
-        const columns = range.columnCount;
-        const columnWidths = range.width;
+      // Loop through the columns of the first row and request the width.
+      for (let col = 0; col < columns; col++) {
+        const cell = range.getCell(0, col);
+        cell.load('width');
+      }
 
-        const startColorHex = "#FFD700";
-        const endColorHex = "#008080";
-
-        // get the total column width
-        var totalWidth = 0;
-        for (let i = 0; i < columns; i++) {               
-          totalWidth += range.columnWidths[i];
-        }                
-
+      return context.sync().then(function () {
+        
         // Loop through each cell in the range
         var runningWidth = 0;
         for (let row = 0; row < rows; row++) {
@@ -133,7 +130,7 @@ async function applyGradient() {
                 
               // Get the individual cell
               const cell = range.getCell(row, col);
-              runningWidth += range.columnWidths[col];
+              runningWidth += cell.width
               
               // Find the gradient colour by percentage
               let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningWidth / totalWidth);
@@ -145,12 +142,11 @@ async function applyGradient() {
               cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
 
               // Set the cell's value to the width of the column
-              cell.values = [[columnWidths[col]]];
+              cell.values = [cell.width;
             }
         }
-
-        return context.sync();
     });
+      
   }).catch(function (error) {
     console.error("Error: " + error);
   });
