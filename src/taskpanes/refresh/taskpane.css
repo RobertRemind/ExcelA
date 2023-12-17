@@ -110,23 +110,6 @@ body {
     background-color: #006666;
 }
 
-#btnCreateDimensionTable {
-    padding: 10px 20px;
-    background-color: #0078D4;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#btnAddEntity {
-    padding: 10px 20px;
-    background-color: #0078D4;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
 
 #statusIndicators div {
     margin-top: 10px;
