@@ -157,33 +157,33 @@ async function applyGradient() {
 */
 
 async function applyGradient() { 
-  Excel.run(function (context) {
-    // Get the currently selected range
-    const range = context.workbook.getSelectedRange();
+	Excel.run(function (context) {
+		// Get the currently selected range
+		const range = context.workbook.getSelectedRange();
 
-    // Load the size of the range
-    range.load('rowCount');
-    range.load('columnCount');
-    range.load('width');
+		// Load the size of the range
+		range.load('rowCount');
+		range.load('columnCount');
+		range.load('width');
 
-    return context.sync().then(function () {
-        const rows = range.rowCount;
-        const columns = range.columnCount;
-        const totalWidth = range.width;
+		return context.sync().then(function () {
+			const rows = range.rowCount;
+			const columns = range.columnCount;
+			const totalWidth = range.width;
 
-        // Loop through each column in the range        
-        const columnRange = range.getColumn(0);
+			// Loop through each column in the range        
+			const columnRange = range.getColumn(0);
 
-        // Load the width of the column
-        columnRange.load('width');
-        
+			// Load the width of the column
+			columnRange.load('width');
 
-        return context.sync().then(function () {
-          debugger'
-          console.log(columnRange.width);
-        });
-    });
-});
+
+			return context.sync().then(function () {
+				debugger;
+				console.log(columnRange.width);
+			});
+		});
+	});
 
 }
 
