@@ -181,7 +181,8 @@ async function applyGradient() {
 
 			return context.sync().then(function () {
 				debugger;
-				console.log(columns);
+				range.getCells(0,0).values = [[columns[0].width]];
+				return context.sync();
 			});
 		});
 	});
