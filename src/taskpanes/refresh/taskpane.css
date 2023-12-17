@@ -24,25 +24,6 @@ body {
     z-index: 1000;
 }
 
-.menu-left, .menu-right, .menu-center {
-    display: flex;
-    align-items: center;
-}
-
-.menu-group {
-    display: flex; /* Align items in a row */
-    justify-content: space-around; /* Evenly space the left and right menus around the center */
-    width: 100%; /* Use full width of the banner menu */
-}
-
-.menu-left, .menu-right {
-    flex: 1; /* Allow these elements to grow and take up equal space */
-}
-
-.menu-center {
-    flex-basis: auto; /* Auto width based on content (icon) */
-    padding: 0 20px; /* Add some padding around the icon */
-}
 
 .menu-link {
     color: #222;
@@ -74,6 +55,7 @@ body {
 .menu-center img {
     height: 64px; /* Adjust as needed */
     width: auto;
+    padding: 15px
 }
 
 
