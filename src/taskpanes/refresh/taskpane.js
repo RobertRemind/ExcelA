@@ -74,9 +74,8 @@ async function applyGradient() {
 		const range = context.workbook.getSelectedRange();
 
 		// Load the required range attributes.
-		range.load('rowCount');		
-    range.load('columnCount');		
-    range.load('width');		
+		range.load(['rowCount', 'columnCount', 'width']);		
+  
 
 		return context.sync().then(function () {
 			      						
@@ -100,13 +99,18 @@ async function applyGradient() {
 				for (let row=0; row<range.rowCount; row++ ) {
 					for (let col=0; col < range.columnCount; col++ ) {
 
-						const cell = range.getCell(row,col)
+						/*
+            const cell = range.getCell(row,col)
 						const value = columns[col].width / range.width * 100;
 						cell.values = [[value]]; 		
+            */
 
 						runningTotal += columns[col].width;
-
+            
+            // Find the colour at this cells percentage of the total width.
 						let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / range.width);
+
+            // Set the cell border colour.
 						cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
 						cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
 						cell.format.borders.getItem('EdgeBottom').weight = 'Thick';
