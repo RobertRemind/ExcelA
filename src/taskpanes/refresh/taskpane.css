@@ -8,18 +8,19 @@ body {
 }
 
 .top-banner {
-    background-image: linear-gradient(to right, 
-                                      #008080 /* Teal */, 
-                                      #FF7F50 /* Coral */, 
-                                      #708090 /* Slate Gray */, 
-                                      #DDA0DD /* Plum */);
+    
                                       
     position: fixed; /* Fixed position */
     top: 0;         /* Stick to the top */
     left: 0;        /* Align to the left */
     width: 100%;    /* Full width */
     height: 10px;   /* Adjust the height as needed */
-    background-image: linear-gradient(to right, #ff7e5f, #feb47b); /* Gradient from left to right */
+    background-image: 
+        linear-gradient(to bottom right, transparent 90%, white), /* Diagonal fade to white in the last 10% */
+        linear-gradient(to right, #FFD700 0%, #008080 100%); /* Left to right gold to teal */
+    background-size: 100% 100%, 100% 100%;
+    background-position: 0 0, 0 0;
+    background-blend-mode: normal;
     color: white;   /* Text color */
     text-align: center; /* Center the text */
     line-height: 50px; /* Align the text vertically */
