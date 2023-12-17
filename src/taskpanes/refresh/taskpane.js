@@ -63,131 +63,41 @@ Office.onReady((info) => {
     }
 });
 
-/*------------------------------------------------------------------------*/
-/*
+
+/**
+ * Apply a colour gradient to a selected range based on the columns width.
+ */
 async function applyGradient() { 
-
-  Excel.run(async function (context) {
-    // Get the current worksheet.
-    var sheet = context.workbook.worksheets.getActiveWorksheet();    
-
-    // Colors in Hex
-    var startColorHex = "#FFD700";
-    var endColorHex = "#008080";
-
-    // Convert to RGB
-    var startColorRgb = hexToRgb(startColorHex);
-    var endColorRgb = hexToRgb(endColorHex);
-
-    // Interpolate at 20%
-    var interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, 1);
-
-    // Convert back to Hex
-    var interpolatedColorHex = rgbToHex(interpolatedColorRgb);
-
-    console.log(interpolatedColorHex);
-
-    const range = context.workbook.getSelectedRange();
-    
-    range.format.fill.color = interpolatedColorHex;
-    
-    await context.sync();
-
-  });
-
-}
-
-*/
-/*
-async function applyGradient() { 
-  Excel.run(function (context) {
-    // Get the currently selected range
-    const range = context.workbook.getSelectedRange();        
-
-    // Load the size of the range and the column widths
-    range.load('rowCount');
-    range.load('columnCount');
-    range.load('width');
-
-
-    debugger;
-
-    return context.sync().then(function () {
-
-      // Loop through the columns of the first row and request the width.
-      for (let col = 0; col < range.columnCount; col++) {
-        const cell = range.getCell(0, col);
-        cell.load('width');
-      }
-
-      return context.sync().then(function () {
-        debugger
-        // Loop through each cell in the range
-        var runningWidth = 0;
-        for (let row = 0; row < range.rowCount; row++) {
-
-            for (let col = 0; col < range.columnCount; col++) {
-                
-              // Get the individual cell
-              const cell = range.getCell(row, col);
-              runningWidth += cell.width
-              
-              // Find the gradient colour by percentage
-              let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningWidth / totalWidth);
-              
-
-              // Set the bottom border of the cell
-              cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
-              cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
-              cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
-
-              // Set the cell's value to the width of the column
-              cell.values = [cell.width];
-            }
-        }
-    });
-
-      
-  }).catch(function (error) {
-    console.error("Error: " + error);
-  });
-
-});
-}
-*/
-
-async function applyGradient() { 
+  
 	Excel.run(function (context) {
 		// Get the currently selected range
 		const range = context.workbook.getSelectedRange();
 
-		// Load the size of the range
-		range.load('rowCount');
-		range.load('columnCount');
-		range.load('width');
+		// Load the required range attributes.
+		range.load('rowCount','columnCount', 'width');		
 
 		return context.sync().then(function () {
-			const rows = range.rowCount;
-			const columnCount = range.columnCount;
-			const totalWidth = range.width;
-			const columns = []
-			// Loop through each column in the range        
-
-			for (let i=0; i<columnCount; i++) {
+			      						
+			// Loop through each column in the range and get the width.
+      const columns = []
+			for (let i=0; i < range.columnCount; i++) {
 				columns.push(range.getColumn(i));				
 				columns[i].load('width');
 			}
 
 
 			return context.sync().then(function () {
-				let runningTotal = 0;
-				// Colors in Hex
+				
+        let runningTotal = 0;
+				
+        // Colors in Hex
 				var startColorRgb = hexToRgb("#FFD700");
 				var endColorRgb = hexToRgb("#008080");
 				
+        // Loop through the rows and columns in the range.
 				for (let row=0; row<range.rowCount; row++ ) {
 					for (let col=0; col < range.columnCount; col++ ) {
-						debugger;
+
 						const cell = range.getCell(row,col)
 						const value = columns[col].width / range.width * 100;
 						cell.values = [[value]]; 		
@@ -197,7 +107,7 @@ async function applyGradient() {
 						let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / range.width);
 						cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
 						cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
-						cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
+						cell.format.borders.getItem('EdgeBottom').weight = 'Thick';
 
 					}
 				}				
