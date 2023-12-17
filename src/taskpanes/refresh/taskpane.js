@@ -164,34 +164,23 @@ async function applyGradient() {
     // Load the size of the range
     range.load('rowCount');
     range.load('columnCount');
+    range.load('width');
 
     return context.sync().then(function () {
         const rows = range.rowCount;
         const columns = range.columnCount;
+        const totalWidth = range.width;
 
-        // Loop through each column in the range
-        for (let col = 0; col < columns; col++) {
-            // Get the entire column within the range
-            const columnRange = range.getColumn(col);
+        // Loop through each column in the range        
+        const columnRange = range.getColumn(0);
 
-            // Load the width of the column
-            columnRange.load('width');
-        }
+        // Load the width of the column
+        columnRange.load('width');
+        
 
         return context.sync().then(function () {
-            // Loop through each cell in the range and set its value to the column width
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < columns; col++) {
-                    // Get the individual cell
-                    const cell = range.getCell(row, col);
-
-                    // Set the cell's value to the width of its column
-                    const columnWidth = range.getColumn(col).width;
-                    cell.values = [[columnWidth]];
-                }
-            }
-
-            return context.sync();
+          debugger'
+          console.log(columnRange.width);
         });
     });
 });
