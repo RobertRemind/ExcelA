@@ -44,6 +44,38 @@ body {
     padding: 0 20px; /* Add some padding around the icon */
 }
 
+.menu-link {
+    color: #222;
+    text-decoration: none;
+    position: relative;
+    margin: 0 10px;
+    overflow: hidden; /* To hide the part of pseudo-element that overflows */
+}
+
+.menu-link::after {
+    content: '';
+    position: absolute;
+    left: 50%; /* Start from the center */
+    bottom: -5px;
+    width: 0; /* Start with no width */
+    height: 2px;
+    background-image: linear-gradient(to right, #FFD700, #008080);
+    transition: all 0.3s ease; /* Smooth transition for the expanding effect */
+    transform: translateX(-50%); /* Align the center correctly */
+}
+
+.menu-link:hover::after {
+    width: 100%; /* Full width on hover */
+    left: 0; /* Reset to normal positioning */
+    transform: translateX(0%); /* No translation needed after expansion */
+}
+
+
+.menu-center img {
+    height: 64px; /* Adjust as needed */
+    width: auto;
+}
+
 
 /* End menu */
 
