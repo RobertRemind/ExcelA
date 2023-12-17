@@ -7,14 +7,12 @@ body {
     color: #333333;
 }
 
-.top-banner {
-    
-                                      
+.top-banner {                                      
     position: fixed; /* Fixed position */
     top: 0;         /* Stick to the top */
     left: 0;        /* Align to the left */
     width: 100%;    /* Full width */
-    height: 10px;   /* Adjust the height as needed */
+    height: 5px;   /* Adjust the height as needed */
     background-image: linear-gradient(to right,#FFD700 0%,#008080 89%,   white 100%);
     background-blend-mode: normal;
     color: white;   /* Text color */
@@ -38,6 +36,10 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease; /* Smooth transition for hover effect */
     border-radius: 5px; /* Optional: rounded corners */
+}
+
+#startFunctionsBtn:hover {
+    background-image: linear-gradient(to right, #FFD700, #008080); /* Gradient on hover */
 }
 
 /*
