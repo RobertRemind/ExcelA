@@ -89,7 +89,8 @@ async function applyGradient() {
 
     const range = context.workbook.getSelectedRange();
     
-    //range.format.fill.color = 'green';
+    range.format.fill.color = interpolatedColorHex;
+    /*
     range.format.fill.gradient = {
       type: "Linear", // or "Radial"
       degree: 45,     // angle of the gradient, for linear gradient
@@ -98,6 +99,7 @@ async function applyGradient() {
           { position: 1, color: interpolatedColorHex }    // end color
       ]
     };
+    */
     await context.sync();
 
   });
