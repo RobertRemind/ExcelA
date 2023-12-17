@@ -37,7 +37,7 @@ body {
     position: relative;
     margin: 0 10px;
     font-family: Roboto, Arial, sans-serif;
-    font-size: 10px; /* Adjust the font size as needed */
+    font-size: 14px; 
 }
 
 .menu-link::after {
@@ -62,7 +62,7 @@ body {
 
 
 .menu-center img {
-    height: 50px; /* Adjust as needed */
+    height: 50px; 
     width: auto;
     padding: 0px 15px 0px 15px;
 }
