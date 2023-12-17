@@ -74,7 +74,9 @@ async function applyGradient() {
 		const range = context.workbook.getSelectedRange();
 
 		// Load the required range attributes.
-		range.load('rowCount','columnCount', 'width');		
+		range.load('rowCount');		
+    range.load('columnCount');		
+    range.load('width');		
 
 		return context.sync().then(function () {
 			      						
@@ -119,6 +121,11 @@ async function applyGradient() {
 
 }
 
+/**
+ * Convert a Hex colour value to rgb format.
+ * @param {string} hex Hex colour value
+ * @returns {string}
+ */
 function hexToRgb(hex) {
     // Remove the hash at the start if it's there
     hex = hex.replace(/^\s*#|\s*$/g, '');
@@ -132,6 +139,14 @@ function hexToRgb(hex) {
     return [r, g, b];
 }
 
+
+/**
+ * The rgb value of a point on a gradient between two colours.
+ * @param {integer[]} color1 rgb colour array
+ * @param {integer[]} color2 rgb colour array
+ * @param {number} factor percentage of gradient completion
+ * @returns 
+ */
 function interpolateColor(color1, color2, factor) {
     // Linear interpolation between the color components
     var result = color1.slice();
@@ -141,6 +156,11 @@ function interpolateColor(color1, color2, factor) {
     return result;
 }
 
+/**
+ * Converts an rgb array to a Hex colour string
+ * @param {number[]} rgb rgb colour array
+ * @returns 
+ */
 function rgbToHex(rgb) {
     return "#" + rgb.map(function (value) {
         return ("0" + value.toString(16)).slice(-2);
