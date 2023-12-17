@@ -115,7 +115,7 @@ async function applyGradient() {
     return context.sync().then(function () {
 
       // Loop through the columns of the first row and request the width.
-      for (let col = 0; col < columns; col++) {
+      for (let col = 0; col < range.columnCount; col++) {
         const cell = range.getCell(0, col);
         cell.load('width');
       }
@@ -124,9 +124,9 @@ async function applyGradient() {
         debugger
         // Loop through each cell in the range
         var runningWidth = 0;
-        for (let row = 0; row < rows; row++) {
+        for (let row = 0; row < range.rowCount; row++) {
 
-            for (let col = 0; col < columns; col++) {
+            for (let col = 0; col < range.columnCount; col++) {
                 
               // Get the individual cell
               const cell = range.getCell(row, col);
