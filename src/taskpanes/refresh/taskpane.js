@@ -123,7 +123,7 @@ async function applyGradient() {
 
         // get the total column width
         var totalWidth = 0;
-        for (let i = 0; c < columns; i++) {               
+        for (let i = 0; i < columns; i++) {               
           totalWidth += range.columnWidths[i];
         }                
 
