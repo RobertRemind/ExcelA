@@ -168,19 +168,20 @@ async function applyGradient() {
 
 		return context.sync().then(function () {
 			const rows = range.rowCount;
-			const columns = range.columnCount;
+			const columnCount = range.columnCount;
 			const totalWidth = range.width;
-
+			const columns = []
 			// Loop through each column in the range        
-			const columnRange = range.getColumn(0);
 
-			// Load the width of the column
-			columnRange.load('width');
+			for (let i=0; i<columnCount; i++) {
+				columns.push(range.getColumn(i));				
+				columns[i].load('width');
+			}
 
 
 			return context.sync().then(function () {
 				debugger;
-				console.log(columnRange.width);
+				console.log(columns);
 			});
 		});
 	});
