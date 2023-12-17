@@ -35,24 +35,24 @@ body {
     text-decoration: none;
     position: relative;
     margin: 0 10px;
+    overflow: hidden; /* To hide the expanding border initially */
 }
 
 .menu-link::after {
     content: '';
     position: absolute;
-    left: 50%; /* Start from the center */
     bottom: -5px; /* Position below the text */
-    width: 0; /* Start with no width */
+    left: 50%; /* Center of the element */
     height: 2px; /* Thickness of the gradient line */
     background-image: linear-gradient(to right, #FFD700, #008080);
-    transition: width 0.3s ease, left 0.3s ease; /* Transition for width and left */
-    transform: translateX(-50%); /* Center the pseudo-element */
+    transition: all 0.3s ease; /* Smooth transition for expanding effect */
+    width: 0; /* Start with no width */
+    transform: translateX(-50%) scaleX(0); /* Start from center, scaled down to 0 */
 }
 
 .menu-link:hover::after {
     width: 100%; /* Full width on hover */
-    left: 0; /* Align to the start */
-    transform: translateX(0%); /* No translation needed after expansion */
+    transform: translateX(-50%) scaleX(1); /* Expand from center */
 }
 
 
