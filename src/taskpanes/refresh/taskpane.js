@@ -64,7 +64,7 @@ Office.onReady((info) => {
 });
 
 /*------------------------------------------------------------------------*/
-
+/*
 async function applyGradient() { 
 
   Excel.run(async function (context) {
@@ -90,18 +90,71 @@ async function applyGradient() {
     const range = context.workbook.getSelectedRange();
     
     range.format.fill.color = interpolatedColorHex;
-    /*
-    range.format.fill.gradient = {
-      type: "Linear", // or "Radial"
-      degree: 45,     // angle of the gradient, for linear gradient
-      stops: [
-          { position: 0, color: startColorHex },   // start color
-          { position: 1, color: interpolatedColorHex }    // end color
-      ]
-    };
-    */
+    
     await context.sync();
 
+  });
+
+}
+
+*/
+
+async function applyGradient() { 
+  Excel.run(function (context) {
+    // Get the currently selected range
+    const range = context.workbook.getSelectedRange();
+
+    // Colors in Hex
+    
+
+    // Load the size of the range and the column widths
+    range.load('rowCount');
+    range.load('columnCount');
+    range.load('columnWidths');
+
+    return context.sync().then(function () {
+
+        const rows = range.rowCount;
+        const columns = range.columnCount;
+        const columnWidths = range.columnWidths;
+
+        const startColorHex = "#FFD700";
+        const endColorHex = "#008080";
+
+        // get the total column width
+        var totalWidth = 0;
+        for (let i = 0; c < columns; i++) {               
+          totalWidth += range.columnWidths[i];
+        }                
+
+        // Loop through each cell in the range
+        var runningWidth = 0;
+        for (let row = 0; row < rows; row++) {
+
+            for (let col = 0; col < columns; col++) {
+                
+              // Get the individual cell
+              const cell = range.getCell(row, col);
+              runningWidth += range.columnWidths[col];
+              
+              // Find the gradient colour by percentage
+              let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningWidth / totalWidth);
+              
+
+              // Set the bottom border of the cell
+              cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
+              cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
+              cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
+
+              // Set the cell's value to the width of the column
+              cell.values = [[columnWidths[col]]];
+            }
+        }
+
+        return context.sync();
+    });
+  }).catch(function (error) {
+    console.error("Error: " + error);
   });
 
 }
