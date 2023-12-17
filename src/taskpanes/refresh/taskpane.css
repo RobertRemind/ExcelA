@@ -14,7 +14,7 @@ body {
     justify-content: center; /* Center the entire menu horizontally */
     align-items: center; /* Align the entire menu vertically */
     background-color: #FFF; /* or any other color */
-    padding: 10px;
+    padding: 5px;
     position: fixed;
     top: 0;
     left: 0;
@@ -62,7 +62,7 @@ body {
 .menu-center img {
     height: 64px; /* Adjust as needed */
     width: auto;
-    padding: 15px
+    padding: 0px 15px 0px 15px;
 }
 
 
