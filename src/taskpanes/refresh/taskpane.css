@@ -7,6 +7,47 @@ body {
     color: #333333;
 }
 
+/* Menu */
+
+.banner-menu {
+    display: flex;
+    justify-content: center; /* Center the entire menu */
+    align-items: center;
+    background-color: #FFF; /* or any other color */
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-bottom: 2px solid #ccc;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.menu-left, .menu-right, .menu-center {
+    display: flex;
+    align-items: center;
+}
+
+.menu-group {
+    display: flex; /* Align items in a row */
+    justify-content: space-around; /* Evenly space the left and right menus around the center */
+    width: 100%; /* Use full width of the banner menu */
+}
+
+.menu-left, .menu-right {
+    flex: 1; /* Allow these elements to grow and take up equal space */
+}
+
+.menu-center {
+    flex-basis: auto; /* Auto width based on content (icon) */
+    padding: 0 20px; /* Add some padding around the icon */
+}
+
+
+/* End menu */
+
+/* Top Gradient */
 
 
 .top-gradient {                                      
@@ -23,73 +64,9 @@ body {
     z-index: 1001;  /* Ensure it's above other content */
 
 }
-.banner-menu {
-    display: flex;
-    justify-content: center; /* Center the entire menu */
-    align-items: center;
-    background-color: #FFF; /* or any other color */
-    padding: 10px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    border-bottom: 2px solid #ccc;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-
-.menu-group {
-    display: flex; /* Align items in a row */
-    justify-content: space-around; /* Evenly space the left and right menus around the center */
-    width: 100%; /* Use full width of the banner menu */
-}
-
-.menu-left, .menu-right {
-    display: flex;
-    align-items: center;
-    flex: 1; /* Allow these elements to grow and take up equal space */
-}
-
-.menu-center {
-    display: flex;
-    align-items: center;
-    flex-basis: auto; /* Auto width based on content (icon) */
-    padding: 0 20px; /* Add some padding around the icon */
-    
-}
 
 
-.menu-link {
-    color: #222;
-    text-decoration: none;
-    position: relative;
-    margin: 0 10px;
-    overflow: hidden; /* To hide the part of pseudo-element that overflows */
-}
-
-.menu-link::after {
-    content: '';
-    position: absolute;
-    left: 50%; /* Start from the center */
-    bottom: -5px;
-    width: 0; /* Start with no width */
-    height: 2px;
-    background-image: linear-gradient(to right, #FFD700, #008080);
-    transition: all 0.3s ease; /* Smooth transition for the expanding effect */
-    transform: translateX(-50%); /* Align the center correctly */
-}
-
-.menu-link:hover::after {
-    width: 100%; /* Full width on hover */
-    left: 0; /* Reset to normal positioning */
-    transform: translateX(0%); /* No translation needed after expansion */
-}
-
-
-.menu-center img {
-    height: 64px; /* Adjust as needed */
-    width: auto;
-}
+/* End Gradient */
 
 #startFunctionsBtn {
 
