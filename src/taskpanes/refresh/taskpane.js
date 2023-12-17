@@ -181,13 +181,17 @@ async function applyGradient() {
 
 			return context.sync().then(function () {
 				let runningTotal = 0;
+				// Colors in Hex
+				var startColorRgb = hexToRgb("#FFD700");
+				var endColorRgb = hexToRgb("#008080");
+				
 				for (let row=0; row<range.rowCount; row++ ) {
 					for (let col=0; col < range.columnCount; col++ ) {
 						debugger;
 						const cell = range.getCell(row,col)
 						const value = columns[col].width / range.width * 100;
 						cell.values = [[value]]; 		
-						
+
 						runningTotal += columns[col].width;
 
 						let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / range.width);
