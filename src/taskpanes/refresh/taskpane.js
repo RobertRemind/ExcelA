@@ -108,13 +108,13 @@ async function applyGradient() {
     // Load the size of the range and the column widths
     range.load('rowCount');
     range.load('columnCount');
-    range.load('columnWidth');
+    range.load('width');
 
     return context.sync().then(function () {
 
         const rows = range.rowCount;
         const columns = range.columnCount;
-        const columnWidths = range.columnWidths;
+        const columnWidths = range.width;
 
         const startColorHex = "#FFD700";
         const endColorHex = "#008080";
