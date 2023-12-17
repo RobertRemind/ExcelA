@@ -1,9 +1,32 @@
+
+
 body {
     font-family: Arial, sans-serif;
     background-color: white;
     padding: 20px;
     color: #333333;
 }
+
+.top-banner {
+    background-image: linear-gradient(to right, 
+                                      #008080 /* Teal */, 
+                                      #FF7F50 /* Coral */, 
+                                      #708090 /* Slate Gray */, 
+                                      #DDA0DD /* Plum */);
+                                      
+    position: fixed; /* Fixed position */
+    top: 0;         /* Stick to the top */
+    left: 0;        /* Align to the left */
+    width: 100%;    /* Full width */
+    height: 10px;   /* Adjust the height as needed */
+    background-image: linear-gradient(to right, #ff7e5f, #feb47b); /* Gradient from left to right */
+    color: white;   /* Text color */
+    text-align: center; /* Center the text */
+    line-height: 50px; /* Align the text vertically */
+    z-index: 1000;  /* Ensure it's above other content */
+
+}
+
 
 #startFunctionsBtn {
     padding: 10px 20px;
