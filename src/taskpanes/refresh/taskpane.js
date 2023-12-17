@@ -110,7 +110,7 @@ async function applyGradient() {
     range.load('width');
 
 
-
+    debugger
 
     return context.sync().then(function () {
 
@@ -121,7 +121,7 @@ async function applyGradient() {
       }
 
       return context.sync().then(function () {
-        
+        debugger
         // Loop through each cell in the range
         var runningWidth = 0;
         for (let row = 0; row < rows; row++) {
@@ -142,7 +142,7 @@ async function applyGradient() {
               cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
 
               // Set the cell's value to the width of the column
-              cell.values = [cell.width;
+              cell.values = [cell.width];
             }
         }
     });
