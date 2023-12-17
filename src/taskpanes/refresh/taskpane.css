@@ -14,7 +14,7 @@ body {
     justify-content: center; /* Center the entire menu horizontally */
     align-items: center; /* Align the entire menu vertically */
     background-color: #FFF; /* or any other color */
-    padding: 5px;
+    padding: 8px 5px 5px 5px;  /* top needs to include the height of the gradient banner */
     position: fixed;
     top: 0;
     left: 0;
