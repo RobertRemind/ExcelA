@@ -55,12 +55,99 @@ Office.onReady((info) => {
         });
 
 
+        document.getElementById('btnGradient').addEventListener('click', function() {
+          applyGradient();
+      });
+
+
     }
 });
 
+/*------------------------------------------------------------------------*/
+
+function applyGradient() { 
+
+  Excel.run(function (context) {
+    // Get the current worksheet.
+    var sheet = context.workbook.worksheets.getActiveWorksheet();
+
+    // Specify the range to format.
+    var range = sheet.getRange("A1:C3");
+
+    // Load the range to read its properties.
+    range.load();
+
+    // Colors in Hex
+    var startColorHex = "#FFD700";
+    var endColorHex = "#008080";
+
+    // Convert to RGB
+    var startColorRgb = hexToRgb(startColorHex);
+    var endColorRgb = hexToRgb(endColorHex);
+
+    // Interpolate at 20%
+    var interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, 1);
+
+    // Convert back to Hex
+    var interpolatedColorHex = rgbToHex(interpolatedColorRgb);
+
+    console.log(interpolatedColorHex);
+
+    return context.sync().then(function () {
+        // Apply a gradient fill (assuming this feature is now available).
+        range.format.fill.gradient = {
+            type: "Linear", // or "Radial"
+            degree: 45,     // angle of the gradient, for linear gradient
+            stops: [
+                { position: 0, color: startColorHex },   // start color
+                { position: 1, color: interpolatedColorHex }    // end color
+            ]
+        };
+
+        return context.sync();
+    });
+  }).catch(function (error) {
+      console.log("Error: " + error);
+      if (error instanceof OfficeExtension.Error) {
+          console.log("Debug info: " + JSON.stringify(error.debugInfo));
+      }
+  });
+
+  
+
+}
 
 
+function hexToRgb(hex) {
+    // Remove the hash at the start if it's there
+    hex = hex.replace(/^\s*#|\s*$/g, '');
 
+    // Parse the hex color
+    var bigint = parseInt(hex, 16);
+    var r = (bigint >> 16) & 255;
+    var g = (bigint >> 8) & 255;
+    var b = bigint & 255;
+
+    return [r, g, b];
+}
+
+function interpolateColor(color1, color2, factor) {
+    // Linear interpolation between the color components
+    var result = color1.slice();
+    for (var i = 0; i < 3; i++) {
+        result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+    }
+    return result;
+}
+
+function rgbToHex(rgb) {
+    return "#" + rgb.map(function (value) {
+        return ("0" + value.toString(16)).slice(-2);
+    }).join('');
+}
+
+
+/*------------------------------------------------------------------------*/
 
 /**
  * Start and Azure function from the array of function calls.
