@@ -98,7 +98,7 @@ async function applyGradient() {
 }
 
 */
-
+/*
 async function applyGradient() { 
   Excel.run(function (context) {
     // Get the currently selected range
@@ -154,7 +154,63 @@ async function applyGradient() {
 
 });
 }
+*/
 
+async function applyGradient() { 
+  Excel.run(function (context) {
+    // Get the currently selected range
+    const range = context.workbook.getSelectedRange();
+
+    // Load the size of the range
+    range.load('rowCount');
+    range.load('columnCount');
+
+    // Load the address to get column letters for width loading
+    range.load('address');
+
+    return context.sync().then(function () {
+        const rows = range.rowCount;
+        const columns = range.columnCount;
+        const columnLetters = range.address.split(':')[0].match(/[A-Z]+/g); // Extract column letters
+
+        let columnWidths = [];
+        let columnWidthPromises = [];
+
+        // Get the width of each column in the range
+        debugger;
+        for (let i = 0; i < columns; i++) {
+            let colRange = range.worksheet.getRange(columnLetters[i] + "1:" + columnLetters[i] + "1"); // Get single cell range for column width
+            colRange.load('width');
+            columnWidthPromises.push(context.sync().then(() => columnWidths.push(colRange.width)));
+        }
+
+        // Define the color for the bottom border
+        const borderColor = "red"; // Change this to your desired color
+
+        return Promise.all(columnWidthPromises).then(() => {
+            // Loop through each cell in the range
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < columns; col++) {
+                    // Get the individual cell
+                    const cell = range.getCell(row, col);
+
+                    // Set the bottom border of the cell
+                    cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
+                    cell.format.borders.getItem('EdgeBottom').color = borderColor;
+                    cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
+                    debugger;
+                    // Set the cell's value to the width of the column
+                    cell.values = [[columnWidths[col]]];
+                }
+            }
+
+            return context.sync();
+        });
+    });
+  }).catch(function (error) {
+    console.error("Error: " + error);
+  });
+}
 
 function hexToRgb(hex) {
     // Remove the hash at the start if it's there
