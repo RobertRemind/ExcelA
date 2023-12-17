@@ -14,7 +14,7 @@ body {
     justify-content: center; /* Center the entire menu horizontally */
     align-items: center; /* Align the entire menu vertically */
     background-color: #FFF; /* or any other color */
-    padding: 8px 5px 5px 5px;  /* top needs to include the height of the gradient banner */
+    padding: 10px 5px 5px 5px;  /* top needs to include the height of the gradient banner */
     position: fixed;
     top: 0;
     left: 0;
@@ -36,6 +36,7 @@ body {
     text-decoration: none;
     position: relative;
     margin: 0 10px;
+    font-family: Roboto;
 }
 
 .menu-link::after {
@@ -60,7 +61,7 @@ body {
 
 
 .menu-center img {
-    height: 64px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
     width: auto;
     padding: 0px 15px 0px 15px;
 }
