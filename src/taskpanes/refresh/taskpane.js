@@ -175,7 +175,7 @@ async function applyGradient() {
             const columnRange = range.getColumn(col);
 
             // Load the width of the column
-            columnRange.load('columnWidth');
+            columnRange.load('width');
         }
 
         return context.sync().then(function () {
@@ -186,7 +186,7 @@ async function applyGradient() {
                     const cell = range.getCell(row, col);
 
                     // Set the cell's value to the width of its column
-                    const columnWidth = range.getColumn(col).columnWidth;
+                    const columnWidth = range.getColumn(col).width;
                     cell.values = [[columnWidth]];
                 }
             }
