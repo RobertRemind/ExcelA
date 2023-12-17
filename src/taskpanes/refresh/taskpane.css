@@ -35,27 +35,26 @@ body {
     text-decoration: none;
     position: relative;
     margin: 0 10px;
-    overflow: hidden; /* To hide the part of pseudo-element that overflows */
 }
-
 
 .menu-link::after {
     content: '';
     position: absolute;
     left: 50%; /* Start from the center */
-    bottom: -5px;
+    bottom: -5px; /* Position below the text */
     width: 0; /* Start with no width */
-    height: 2px;
+    height: 2px; /* Thickness of the gradient line */
     background-image: linear-gradient(to right, #FFD700, #008080);
-    transition: all 0.3s ease; /* Smooth transition for the expanding effect */
-    transform: translateX(-50%); /* Align the center correctly */
+    transition: width 0.3s ease, left 0.3s ease; /* Transition for width and left */
+    transform: translateX(-50%); /* Center the pseudo-element */
 }
 
 .menu-link:hover::after {
     width: 100%; /* Full width on hover */
-    left: 0; /* Reset to normal positioning */
+    left: 0; /* Align to the start */
     transform: translateX(0%); /* No translation needed after expansion */
 }
+
 
 
 .menu-center img {
@@ -76,7 +75,7 @@ body {
     left: 0;        /* Align to the left */
     width: 100%;    /* Full width */
     height: 5px;   /* Adjust the height as needed */
-    background-image: linear-gradient(to right,#FFD700 0%,#008080 89%,   white 100%);
+    background-image: linear-gradient(to right,white 0%, #FFD700 2%,#008080 89%,   white 100%);
     background-blend-mode: normal;
     color: white;   /* Text color */
     text-align: center; /* Center the text */
@@ -88,7 +87,7 @@ body {
 
 /* End Gradient */
 
-#startFunctionsBtn {
+.styledButton {
 
     background-color: #008080; /* Teal background */
     border: none;
@@ -99,25 +98,16 @@ body {
     display: inline-block;
     font-size: 16px;
     margin: 4px 2px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease; /* Smooth transition for hover effect */
     
 }
 
-#startFunctionsBtn:hover {
+.styledButton:hover {
     background-color: #006666;
 }
 
-/*
-#startFunctionsBtn {
-    padding: 10px 20px;
-    background-color: #0078D4;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-*/
 #btnCreateDimensionTable {
     padding: 10px 20px;
     background-color: #0078D4;
