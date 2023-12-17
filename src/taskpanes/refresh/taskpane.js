@@ -103,14 +103,12 @@ async function applyGradient() {
   Excel.run(function (context) {
     // Get the currently selected range
     const range = context.workbook.getSelectedRange();
-
-    // Colors in Hex
-    
+        
 
     // Load the size of the range and the column widths
     range.load('rowCount');
     range.load('columnCount');
-    range.load('columnWidths');
+    range.load('columnWidth');
 
     return context.sync().then(function () {
 
