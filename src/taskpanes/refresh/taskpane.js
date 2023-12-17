@@ -55,8 +55,8 @@ Office.onReady((info) => {
         });
 
 
-        document.getElementById('btnGradient').addEventListener('click', function() {
-          applyGradient();
+        document.getElementById('btnGradient').addEventListener('click', async function() {
+          await applyGradient();
       });
 
 
@@ -65,17 +65,11 @@ Office.onReady((info) => {
 
 /*------------------------------------------------------------------------*/
 
-function applyGradient() { 
+async function applyGradient() { 
 
-  Excel.run(function (context) {
+  Excel.run(async function (context) {
     // Get the current worksheet.
-    var sheet = context.workbook.worksheets.getActiveWorksheet();
-
-    // Specify the range to format.
-    var range = sheet.getRange("A1:C3");
-
-    // Load the range to read its properties.
-    range.load();
+    var sheet = context.workbook.worksheets.getActiveWorksheet();    
 
     // Colors in Hex
     var startColorHex = "#FFD700";
@@ -93,30 +87,20 @@ function applyGradient() {
 
     console.log(interpolatedColorHex);
 
+    const range = context.workbook.getSelectedRange();
+    
+    //range.format.fill.color = 'green';
+    range.format.fill.gradient = {
+      type: "Linear", // or "Radial"
+      degree: 45,     // angle of the gradient, for linear gradient
+      stops: [
+          { position: 0, color: startColorHex },   // start color
+          { position: 1, color: interpolatedColorHex }    // end color
+      ]
+    };
+    await context.sync();
 
-
-    return context.sync().then(function () {
-        // Apply a gradient fill (assuming this feature is now available).
-        debugger;
-        range.format.fill.gradient = {
-            type: "Linear", // or "Radial"
-            degree: 45,     // angle of the gradient, for linear gradient
-            stops: [
-                { position: 0, color: startColorHex },   // start color
-                { position: 1, color: interpolatedColorHex }    // end color
-            ]
-        };
-
-        return context.sync();
-    });
-  }).catch(function (error) {
-      console.log("Error: " + error);
-      if (error instanceof OfficeExtension.Error) {
-          console.log("Debug info: " + JSON.stringify(error.debugInfo));
-      }
   });
-
-  
 
 }
 
