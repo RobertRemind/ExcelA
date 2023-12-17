@@ -180,8 +180,17 @@ async function applyGradient() {
 
 
 			return context.sync().then(function () {
-				debugger;
-				range.getCell(0,0).values = [[columns[0].width]];
+				let runningTotal = 0;
+				for (let row=0; row<range.rowCount; row++ ) {
+					for (let col=0; col < range.columnCount; row++ ) {
+						debugger;
+						const value = columns[col].width / range.width * 100;
+						range.getCell(row,col).values = [[value]]; 		
+						runningTotal += columns[col].width;
+						
+					}
+				}				
+				
 				return context.sync();
 			});
 		});
