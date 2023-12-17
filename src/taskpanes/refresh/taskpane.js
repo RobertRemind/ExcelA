@@ -110,7 +110,7 @@ async function applyGradient() {
     range.load('width');
 
 
-    debugger
+    debugger;
 
     return context.sync().then(function () {
 
@@ -146,11 +146,13 @@ async function applyGradient() {
             }
         }
     });
+
       
   }).catch(function (error) {
     console.error("Error: " + error);
   });
 
+});
 }
 
 
