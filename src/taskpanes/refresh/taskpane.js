@@ -93,8 +93,11 @@ function applyGradient() {
 
     console.log(interpolatedColorHex);
 
+
+
     return context.sync().then(function () {
         // Apply a gradient fill (assuming this feature is now available).
+        debugger;
         range.format.fill.gradient = {
             type: "Linear", // or "Radial"
             degree: 45,     // angle of the gradient, for linear gradient
