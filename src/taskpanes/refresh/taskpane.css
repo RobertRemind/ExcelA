@@ -3,7 +3,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: white;    
-    padding: 60px 20px 20px 20px;
+    padding: 100px 20px 20px 20px;
     color: #333333;
 }
 
@@ -11,8 +11,8 @@ body {
 
 .banner-menu {
     display: flex;
-    justify-content: center; /* Center the entire menu */
-    align-items: center;
+    justify-content: center; /* Center the entire menu horizontally */
+    align-items: center; /* Align the entire menu vertically */
     background-color: #FFF; /* or any other color */
     padding: 10px;
     position: fixed;
@@ -24,6 +24,11 @@ body {
     z-index: 1000;
 }
 
+.menu-left, .menu-right {
+    display: flex;
+    align-items: center; /* Vertically center the contents */
+    justify-content: center; /* Horizontally center the contents */
+}
 
 .menu-link {
     color: #222;
@@ -32,6 +37,7 @@ body {
     margin: 0 10px;
     overflow: hidden; /* To hide the part of pseudo-element that overflows */
 }
+
 
 .menu-link::after {
     content: '';
