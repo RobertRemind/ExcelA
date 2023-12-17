@@ -15,11 +15,7 @@ body {
     left: 0;        /* Align to the left */
     width: 100%;    /* Full width */
     height: 10px;   /* Adjust the height as needed */
-    background-image: 
-        linear-gradient(to bottom right, transparent 90%, white), /* Diagonal fade to white in the last 10% */
-        linear-gradient(to right, #FFD700 0%, #008080 100%); /* Left to right gold to teal */
-    background-size: 100% 100%, 100% 100%;
-    background-position: 0 0, 0 0;
+    background-image: linear-gradient(to right,#FFD700 0%,#008080 89%,   white 100%);
     background-blend-mode: normal;
     color: white;   /* Text color */
     text-align: center; /* Center the text */
@@ -28,7 +24,23 @@ body {
 
 }
 
+#startFunctionsBtn {
 
+    background-color: #008080; /* Teal background */
+    border: none;
+    color: white; /* White text */
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    border-radius: 5px; /* Optional: rounded corners */
+}
+
+/*
 #startFunctionsBtn {
     padding: 10px 20px;
     background-color: #0078D4;
@@ -37,7 +49,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
 }
-
+*/
 #btnCreateDimensionTable {
     padding: 10px 20px;
     background-color: #0078D4;
