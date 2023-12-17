@@ -182,12 +182,19 @@ async function applyGradient() {
 			return context.sync().then(function () {
 				let runningTotal = 0;
 				for (let row=0; row<range.rowCount; row++ ) {
-					for (let col=0; col < range.columnCount; row++ ) {
+					for (let col=0; col < range.columnCount; col++ ) {
 						debugger;
+						const cell = range.getCell(row,col)
 						const value = columns[col].width / range.width * 100;
-						range.getCell(row,col).values = [[value]]; 		
-						runningTotal += columns[col].width;
+						cell.values = [[value]]; 		
 						
+						runningTotal += columns[col].width;
+
+						let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / range.width);
+						cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
+						cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
+						cell.format.borders.getItem('EdgeBottom').weight = 'Medium';
+
 					}
 				}				
 				
