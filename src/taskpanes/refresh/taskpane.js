@@ -99,14 +99,9 @@ async function applyGradient() {
 				for (let row=0; row<range.rowCount; row++ ) {
 					for (let col=0; col < range.columnCount; col++ ) {
 
-						/*
             const cell = range.getCell(row,col)
-						const value = columns[col].width / range.width * 100;
-						cell.values = [[value]]; 		
-            */
-
 						runningTotal += columns[col].width;
-            
+
             // Find the colour at this cells percentage of the total width.
 						let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / range.width);
 
@@ -114,6 +109,13 @@ async function applyGradient() {
 						cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
 						cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
 						cell.format.borders.getItem('EdgeBottom').weight = 'Thick';
+
+            
+            /*
+            //Testing - Set the value of the cell to be it's width
+            const value = columns[col].width / range.width * 100;
+						cell.values = [[value]]; 		
+            */
 
 					}
 				}				
