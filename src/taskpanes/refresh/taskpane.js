@@ -179,9 +179,13 @@ async function applyGradient() {
         // Get the width of each column in the range
         debugger;
         for (let i = 0; i < columns; i++) {
+          debugger;
             let colRange = range.worksheet.getRange(columnLetters[i] + "1:" + columnLetters[i] + "1"); // Get single cell range for column width
             colRange.load('width');
-            columnWidthPromises.push(context.sync().then(() => columnWidths.push(colRange.width)));
+            columnWidthPromises.push(context.sync().then(() => {
+                debugger;
+                columnWidths.push(colRange.width)
+            }));
         }
 
         // Define the color for the bottom border
@@ -207,8 +211,6 @@ async function applyGradient() {
             return context.sync();
         });
     });
-  }).catch(function (error) {
-    console.error("Error: " + error);
   });
 }
 
