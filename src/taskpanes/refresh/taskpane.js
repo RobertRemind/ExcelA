@@ -598,41 +598,15 @@ async function formatGradientTable(context, table) {
 
 
 async function cleartableFormat(tableName) {
-	Excel.run(function (context) {
-		var sheet = context.workbook.worksheets.getActiveWorksheet();
-		var table = sheet.tables.getItem(tableName); // Replace with your table's name
+	await Excel.run(async (context) => {
+		let sheet = context.workbook.worksheets.getItem("Products");
+		let expensesTable = sheet.tables.getItem("ProductsTable");
 	
-		var dataRange = table.getDataBodyRange();
-	
-		// Clear font formatting
-		dataRange.format.font.name = 'Calibri'; // Default font
-		dataRange.format.font.size = 11;        // Default font size
-		dataRange.format.font.color = 'black';  // Default font color
-		dataRange.format.font.bold = false;     // Default bold setting
-		dataRange.format.font.italic = false;   // Default italic setting
-	
-		// Clear fill
-		dataRange.format.fill.clear();
-	
-		// Clear borders
-		var borders = ['EdgeBottom', 'EdgeLeft', 'EdgeRight', 'EdgeTop', 'InsideHorizontal', 'InsideVertical'];
-		borders.forEach(function (border) {
-			dataRange.format.borders.getItem(border).style = 'None';
-		});
-	
-		// Reset number format
-		dataRange.numberFormat = [['General']];
-	
-		return context.sync()
-			.then(function () {
-				console.log("Cleared all formatting from the data table.");
-			})
-			.catch(function (error) {
-				console.error("Error: " + error);
-				if (error instanceof OfficeExtension.Error) {
-					console.log("Debug info: " + JSON.stringify(error.debugInfo));
-				}
-			});
+		expensesTable.getHeaderRowRange().format.fill.color = "#FFFFFF";
+		expensesTable.getHeaderRowRange().format.font.color = "#000000";
+		expensesTable.getDataBodyRange().format.fill.color = "#FFFFFF";
+		
+		await context.sync();
 	});
 	
 }
