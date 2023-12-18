@@ -647,8 +647,7 @@ async function setupProducts() {
 		
 		const sheet = await createWorksheet(context, "Products", true, true);
 		const productsTable = await createDataTable(context, sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
-
-		await cleartableFormat("ProductsTable");	
+		
 
 		sheet.getUsedRange().format.autofitColumns();
 		sheet.getUsedRange().format.autofitRows();
@@ -659,6 +658,8 @@ async function setupProducts() {
 
 	});
 
+
+	await cleartableFormat("ProductsTable");	
 }
 
 
