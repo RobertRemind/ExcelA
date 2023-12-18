@@ -47,7 +47,7 @@ Office.onReady((info) => {
 
         // Bind make table
         document.getElementById('btnCreateDimensionTable').addEventListener('click', function() {
-            setup();
+          setupProducts();
         });
 
         document.getElementById('btnAddEntity').addEventListener('click', function() {
@@ -523,52 +523,78 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
  * @returns table
  */
 async function createDataTable(context, worksheet, range, name, columns, rows) {
-  const tbl = worksheet.tables.add(range, true /*hasHeaders*/);
-  tbl.name = name;
+	const tbl = worksheet.tables.add(range, true /*hasHeaders*/);
+	tbl.name = name;
 
-  tbl.getHeaderRowRange().values = [columns];
+	tbl.getHeaderRowRange().values = [columns];
 
-  rows.forEach((r) => {
-      let rowData = columns.map((c) => r[c]);
-      tbl.rows.add(null /*add at the end*/, [rowData]);
-  });
+	rows.forEach((r) => {
+		let rowData = columns.map((c) => r[c]);
+		tbl.rows.add(null /*add at the end*/, [rowData]);
+	});
 
-  worksheet.getUsedRange().format.autofitColumns();
-  worksheet.getUsedRange().format.autofitRows();
-  await context.sync();
-  return tbl;
+	worksheet.getUsedRange().format.autofitColumns();
+	worksheet.getUsedRange().format.autofitRows();
+
+	formatGradientTable(tbl);
+
+	await context.sync();  
+
+	return tbl;
 }
 
+
+
+/**
+ * Apply formatting to the table
+ * @param {Excel.Table} table The table to format
+ */
+function formatGradientTable(table) {
+    // Format the header row
+    const headerRange = table.getHeaderRowRange();
+    headerRange.format.fill.color = 'yellow'; // Example header fill color
+    headerRange.format.font.bold = true;      // Example header font style
+
+    // Set a new bottom border style for each column in the header
+    const columnCount = table.columns.count;
+    for (let i = 0; i < columnCount; i++) {
+        const columnHeader = headerRange.getColumn(i);
+        columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
+        columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
+        columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
+    }
+
+    // Format the data rows
+    const dataRange = table.getDataBodyRange();
+    dataRange.format.fill.color = 'lightgray';  // Example data row fill color
+    dataRange.format.font.name = 'Arial';       // Example data row font name
+    dataRange.format.font.size = 10;             // Example data row font size
+    // Add other formatting as needed
+}
 
 
 
 /** Set up Sample worksheet. */
-async function setup() {
+async function setupProducts() {
 
-  const x = await getShopifyProducts()
+	await getShopifyProducts();
 
-  if (x && x[0] && x[0].result) {
-    const j = JSON.parse(x[0].result)
-        
-    shopifyProducts.splice(0, shopifyProducts.length); // Remove all elements from the array
-    shopifyProducts.push(...j); // Merge arrays
-  }
-  
+	await Excel.run(async (context) => {
+		
+		const sheet = await createWorksheet(context, "Products", true, true);
+		const productsTable = await createDataTable(context, sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
 
-  await Excel.run(async (context) => {
-        
-    const sheet = await createWorksheet(context, "Products", true, true);
-    const productsTable = await createDataTable(context, sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
+		sheet.getUsedRange().format.autofitColumns();
+		sheet.getUsedRange().format.autofitRows();
 
-    sheet.getUsedRange().format.autofitColumns();
-    sheet.getUsedRange().format.autofitRows();
+		sheet.activate();
 
-    sheet.activate();
+		await context.sync();
 
-    await context.sync();
-  });
+	});
 
 }
+
 
 
 
@@ -601,7 +627,14 @@ async function getShopifyProducts() {
     }
 
     const data = await response.json();
-    return data; // This is your JSON object
+
+    if (data && data[0] && data[0].result) {
+      const j = JSON.parse(data[0].result)
+          
+      shopifyProducts.splice(0, shopifyProducts.length); // Remove all elements from the array
+      shopifyProducts.push(...j); // Merge arrays
+    }
+    
 
 }
 
