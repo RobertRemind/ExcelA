@@ -575,7 +575,7 @@ async function formatGradientTable(context, table) {
 
 	debugger;
 	// Set a new bottom border style for each column in the header	
-	for (let i = 0; i < cells.count; i++) {		
+	for (let i = 0; i < cells.length; i++) {		
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
