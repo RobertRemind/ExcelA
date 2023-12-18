@@ -536,7 +536,7 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 	worksheet.getUsedRange().format.autofitColumns();
 	worksheet.getUsedRange().format.autofitRows();
 
-	formatGradientTable(tbl);
+	await formatGradientTable(tbl);
 
 	await context.sync();  
 
@@ -549,21 +549,23 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
  * Apply formatting to the table
  * @param {Excel.Table} table The table to format
  */
-function formatGradientTable(table) {
+async function formatGradientTable(table) {
     // Format the header row
     const headerRange = table.getHeaderRowRange();
-    headerRange.format.fill.color = 'yellow'; // Example header fill color
+    headerRange.format.clear	
     headerRange.format.font.bold = true;      // Example header font style
 
     // Format the data rows
     const dataRange = table.getDataBodyRange();
-    dataRange.format.fill.color = 'lightgray';  // Example data row fill color
-    dataRange.format.font.name = 'Arial';       // Example data row font name
-    dataRange.format.font.size = 10;             // Example data row font size
+    dataRange.format.clear();	
+    dataRange.format.font.name = 'Arial';       
+    dataRange.format.font.size = 10;
 
+	headerRange.load("width");
+	table.load(['rowCount', 'columnCount', 'width']);			
 
-	/*
-
+	await context.sync();  
+	debugger;
 	// Set a new bottom border style for each column in the header
 	const columnCount = table.columns.count;
 	for (let i = 0; i < columnCount; i++) {
@@ -572,7 +574,7 @@ function formatGradientTable(table) {
 		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
 		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
 	}
-	*/
+	
     
 }
 
