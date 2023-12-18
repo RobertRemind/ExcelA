@@ -609,11 +609,11 @@ async function addNewStyle() {
   
 	  // The "Diagonal Orientation Style" properties.
 	  newStyle.textOrientation = 38;
-	  newStyle.autoIndent = true;
+	/*  newStyle.autoIndent = true;
 	  newStyle.includeProtection = true;
 	  newStyle.shrinkToFit = true;
 	  newStyle.locked = false;
-  
+  */
 	  await context.sync();
   
 	  console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
