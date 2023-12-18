@@ -605,7 +605,25 @@ async function cleartableFormat(tableName) {
 		var table = sheet.tables.getItem(tableName); // Replace with your table's name
 	
 		var dataRange = table.getDataBodyRange();
-		dataRange.format.clear(); // Clear all formatting
+	
+		// Clear font formatting
+		dataRange.format.font.name = 'Calibri'; // Default font
+		dataRange.format.font.size = 11;        // Default font size
+		dataRange.format.font.color = 'black';  // Default font color
+		dataRange.format.font.bold = false;     // Default bold setting
+		dataRange.format.font.italic = false;   // Default italic setting
+	
+		// Clear fill
+		dataRange.format.fill.clear();
+	
+		// Clear borders
+		var borders = ['EdgeBottom', 'EdgeLeft', 'EdgeRight', 'EdgeTop', 'InsideHorizontal', 'InsideVertical'];
+		borders.forEach(function (border) {
+			dataRange.format.borders.getItem(border).style = 'None';
+		});
+	
+		// Reset number format
+		dataRange.numberFormat = [['General']];
 	
 		return context.sync()
 			.then(function () {
