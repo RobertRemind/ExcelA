@@ -549,7 +549,7 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
  * Apply formatting to the table
  * @param {Excel.Table} table The table to format
  */
-async function formatGradientTable(table) {
+async function formatGradientTable(context, table) {
     // Format the header row
     const headerRange = table.getHeaderRowRange();
     headerRange.format.fill.clear();
@@ -565,6 +565,7 @@ async function formatGradientTable(table) {
 	table.load(['rowCount', 'columnCount', 'width']);			
 
 	await context.sync();  
+	
 	debugger;
 	// Set a new bottom border style for each column in the header
 	const columnCount = table.columns.count;
