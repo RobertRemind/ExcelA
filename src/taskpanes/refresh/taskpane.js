@@ -466,51 +466,97 @@ function makeProductEntity(productID, productName, product) {
   return entity;
 }
 
+
 // Get products and product properties.
 function getProduct(id) {
   return shopifyProducts.find((p) => p.primarySystemCode == id);
 }
+
 
 // Get product categories and category properties.
 function getCategory(categoryID) {
   return categories.find((c) => c.categoryID == categoryID);
 }
 
+
 // Get product suppliers and supplier properties.
 function getSupplier(supplierID) {
   return suppliers.find((s) => s.supplierID == supplierID);
 }
 
+
+/**
+ * Create a new worksheet in workbook.
+ * @param {Excel.RequestContext} context Excel request context
+ * @param {string} name New worksheet name
+ * @param {boolean} deleteFirst Delete before create
+ * @param {boolean} activate Focus after create
+ * @returns new worksheet
+ */
+async function createWorksheet(context, name, deleteFirst = false, activate = true) {
+    if (deleteFirst) {
+        let worksheet = context.workbook.worksheets.getItemOrNullObject(name);
+        worksheet.load('name');
+        await context.sync();
+        if (worksheet.name) {
+            worksheet.delete();
+        }
+    }
+
+    const sheet = context.workbook.worksheets.add(name);
+    if (activate) {
+        sheet.activate();
+    }
+    await context.sync();
+    return sheet;
+}
+
+/**
+ * Create and populate a new data table
+ * @param {Excel.Worksheet} worksheet Target worksheet object
+ * @param {string} range Cell range "A1:C3"
+ * @param {string} name New table name
+ * @param {string[]} columns Array of column names
+ * @param {any[]} rows Array of objects representing rows
+ * @returns table
+ */
+async function createDataTable(worksheet, range, name, columns, rows) {
+  const tbl = worksheet.tables.add(range, true /*hasHeaders*/);
+  tbl.name = name;
+
+  tbl.getHeaderRowRange().values = [columns];
+
+  rows.forEach((r) => {
+      let rowData = columns.map((c) => r[c]);
+      tbl.rows.add(null /*add at the end*/, [rowData]);
+  });
+
+  worksheet.getUsedRange().format.autofitColumns();
+  worksheet.getUsedRange().format.autofitRows();
+  await context.sync();
+  return tbl;
+}
+
+
+
+
 /** Set up Sample worksheet. */
 async function setup() {
 
-
   const x = await getShopifyProducts()
+
   if (x && x[0] && x[0].result) {
     const j = JSON.parse(x[0].result)
-    
-    // Remove all elements from the array
-    shopifyProducts.splice(0, shopifyProducts.length);
-
-    j.map((r) => {        
-        shopifyProducts.push(r);
-    });
+        
+    shopifyProducts.splice(0, shopifyProducts.length); // Remove all elements from the array
+    shopifyProducts.push(...j); // Merge arrays
   }
   
 
   await Excel.run(async (context) => {
-    context.workbook.worksheets.getItemOrNullObject("Products").delete();
-    const sheet = context.workbook.worksheets.add("Products");
-
-    const productsTable = sheet.tables.add("A1:C1", true /*hasHeaders*/);
-    productsTable.name = "ProductsTable";
-
-    productsTable.getHeaderRowRange().values = [["Product", "primarySystemCode", "memberCaption"]];
-
-    productsTable.rows.add(
-      null /*add at the end*/,
-      shopifyProducts.map((p) => [null, p.primarySystemCode, p.memberCaption])
-    );
+    
+    const sheet = await createWorksheet("Products", true, true);
+    const productsTable = await createDataTable("Products", "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
 
     sheet.getUsedRange().format.autofitColumns();
     sheet.getUsedRange().format.autofitRows();
