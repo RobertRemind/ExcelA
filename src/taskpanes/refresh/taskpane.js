@@ -552,23 +552,21 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 async function formatGradientTable(context, table) {
     // Format the header row
     const headerRange = table.getHeaderRowRange();
-    headerRange.format.fill.clear();
+    headerRange.format.fill.color = 'white';  // I dont like this but I can't seem to get clear() to work
     headerRange.format.font.bold = true;      // Example header font style
 
     // Format the data rows
     const dataRange = table.getDataBodyRange();
-    dataRange.format.fill.color = 'lightgray';	
+    dataRange.format.fill.color = 'white';	
     dataRange.format.font.name = 'Arial';       
     dataRange.format.font.size = 10;
 
-	await context.sync();  
-
+	
 	headerRange.load(["width", "columnCount"]);	
 	
 	await context.sync();  
 
-	return
-
+	
 	const cells = []
 	for (let i=0; i < headerRange.columnCount; i++) {
 		cells.push(headerRange.getCell(0,i));				
