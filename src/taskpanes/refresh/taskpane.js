@@ -582,7 +582,7 @@ async function formatGradientTable(context, table) {
 	let runningTotal = 0;
 	// Set a new bottom border style for each column in the header	
 	for (let i = 0; i < cells.length; i++) {			
-		runningTotal += columns[col].width;	
+		runningTotal += cells[i].width;	
 
 		let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / headerRange.width);
 
