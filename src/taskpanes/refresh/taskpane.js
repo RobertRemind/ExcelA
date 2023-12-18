@@ -609,7 +609,7 @@ await Excel.run(async (context) => {
 	let tableStyle = context.workbook.tableStyles.add("MyCustomStyle");
   
 	// Set the style type to custom.
-	tableStyle.set({ type: "Custom" });
+	//tableStyle.set({ type: "Custom" });
   
 	// Get the style elements collection.
 	let styleElements = tableStyle.tableStyleElements;
