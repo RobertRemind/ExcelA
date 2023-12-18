@@ -536,7 +536,7 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 	worksheet.getUsedRange().format.autofitColumns();
 	worksheet.getUsedRange().format.autofitRows();
 
-	await formatGradientTable(tbl);
+	await formatGradientTable(context, tbl);
 
 	await context.sync();  
 
@@ -565,7 +565,7 @@ async function formatGradientTable(context, table) {
 	table.load(['rowCount', 'columnCount', 'width']);			
 
 	await context.sync();  
-	
+
 	debugger;
 	// Set a new bottom border style for each column in the header
 	const columnCount = table.columns.count;
