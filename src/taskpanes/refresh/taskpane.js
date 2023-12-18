@@ -536,10 +536,7 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 	worksheet.getUsedRange().format.autofitColumns();
 	worksheet.getUsedRange().format.autofitRows();
 	
-	await context.sync();  
-
-	await cleartableFormat(tbl.name);
-	//await formatGradientTable(context, tbl);
+	await context.sync(); 	
 	
 	return tbl;
 }
@@ -650,6 +647,8 @@ async function setupProducts() {
 		
 		const sheet = await createWorksheet(context, "Products", true, true);
 		const productsTable = await createDataTable(context, sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
+
+		await cleartableFormat(tbl.name);	
 
 		sheet.getUsedRange().format.autofitColumns();
 		sheet.getUsedRange().format.autofitRows();
