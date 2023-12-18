@@ -486,7 +486,7 @@ function getSupplier(supplierID) {
 
 
 /**
- * Create a new worksheet in workbook.
+ * Create a new worksheet in workbook. 
  * @param {Excel.RequestContext} context Excel request context
  * @param {string} name New worksheet name
  * @param {boolean} deleteFirst Delete before create
@@ -514,6 +514,7 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
 
 /**
  * Create and populate a new data table
+ * @param {Excel.RequestContext} context Context of the Excel request
  * @param {Excel.Worksheet} worksheet Target worksheet object
  * @param {string} range Cell range "A1:C3"
  * @param {string} name New table name
@@ -521,7 +522,7 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
  * @param {any[]} rows Array of objects representing rows
  * @returns table
  */
-async function createDataTable(worksheet, range, name, columns, rows) {
+async function createDataTable(context, worksheet, range, name, columns, rows) {
   const tbl = worksheet.tables.add(range, true /*hasHeaders*/);
   tbl.name = name;
 
@@ -555,9 +556,9 @@ async function setup() {
   
 
   await Excel.run(async (context) => {
-    
+        
     const sheet = await createWorksheet(context, "Products", true, true);
-    const productsTable = await createDataTable(sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
+    const productsTable = await createDataTable(context, sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
 
     sheet.getUsedRange().format.autofitColumns();
     sheet.getUsedRange().format.autofitRows();
@@ -566,6 +567,7 @@ async function setup() {
 
     await context.sync();
   });
+
 }
 
 
