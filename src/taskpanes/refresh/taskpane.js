@@ -589,7 +589,7 @@ async function formatGradientTable(context, table) {
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = rgbToHex(interpolatedColorRgb);
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
-		cells[i].format.fill.clear();
+		cells[i].format.fill.color = 'white';	
 	}
 	
     
