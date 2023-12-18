@@ -99,23 +99,23 @@ async function applyGradient() {
 				for (let row=0; row<range.rowCount; row++ ) {
 					for (let col=0; col < range.columnCount; col++ ) {
 
-            const cell = range.getCell(row,col)
+						const cell = range.getCell(row,col)
 						runningTotal += columns[col].width;
 
-            // Find the colour at this cells percentage of the total width.
+						// Find the colour at this cells percentage of the total width.
 						let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / range.width);
 
-            // Set the cell border colour.
+            			// Set the cell border colour.
 						cell.format.borders.getItem('EdgeBottom').style = 'Continuous';
 						cell.format.borders.getItem('EdgeBottom').color = rgbToHex(interpolatedColorRgb);
 						cell.format.borders.getItem('EdgeBottom').weight = 'Thick';
 
             
-            /*
-            //Testing - Set the value of the cell to be it's width
-            const value = columns[col].width / range.width * 100;
-						cell.values = [[value]]; 		
-            */
+						/*
+						//Testing - Set the value of the cell to be it's width
+						const value = columns[col].width / range.width * 100;
+									cell.values = [[value]]; 		
+						*/
 
 					}
 				}				
@@ -573,12 +573,23 @@ async function formatGradientTable(context, table) {
 
 	await context.sync();  
 
+
 	debugger;
+
+	var startColorRgb = hexToRgb("#FFD700");
+	var endColorRgb = hexToRgb("#008080");
+				
+	let runningTotal = 0;
 	// Set a new bottom border style for each column in the header	
-	for (let i = 0; i < cells.length; i++) {		
+	for (let i = 0; i < cells.length; i++) {			
+		runningTotal += columns[col].width;	
+
+		let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / headerRange.width);
+
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
-		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = rgbToHex(interpolatedColorRgb);
 		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
+		cell[i].format.fill.clear()
 	}
 	
     
