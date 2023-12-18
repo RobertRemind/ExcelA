@@ -557,7 +557,7 @@ async function setup() {
   await Excel.run(async (context) => {
     
     const sheet = await createWorksheet(context, "Products", true, true);
-    const productsTable = await createDataTable("Products", "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
+    const productsTable = await createDataTable(sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
 
     sheet.getUsedRange().format.autofitColumns();
     sheet.getUsedRange().format.autofitRows();
