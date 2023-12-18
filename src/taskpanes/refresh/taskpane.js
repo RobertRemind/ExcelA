@@ -598,6 +598,48 @@ async function formatGradientTable(context, table) {
 
 
 
+async function customTableStyle () {
+	Excel.run(function (context) {
+		var workbook = context.workbook;
+		var styles = workbook.tableStyles;
+		var newStyle = styles.add("MyCustomStyle");
+	
+		// Define the header row format
+		var headerRowFormat = {
+			borders: {
+				bottom: {
+					style: "Continuous",
+					color: "black"
+				}
+			}
+		};
+		newStyle.headerRowFormat.applyFormats(headerRowFormat);
+	
+		// Define the body format with no fill and no borders
+		var bodyFormat = {
+			fill: {
+				color: "none"
+			},
+			borders: {
+				color: "none"
+			}
+		};
+		newStyle.wholeTableFormat.applyFormats(bodyFormat);
+	
+		// Apply the custom style to the table named "productTable"
+		var productTable = context.workbook.tables.getItem("productTable");
+		productTable.style = newStyle.name;
+	
+		return context.sync();
+	}).catch(function (error) {
+		console.log("Error: " + error);
+		if (error instanceof OfficeExtension.Error) {
+			console.log("Debug info: " + JSON.stringify(error.debugInfo));
+		}
+	});
+	
+}
+
 async function tableStyle() {
 	Excel.run(function (context) {
 		var sheet = context.workbook.worksheets.getItem("Products"); // Replace with your sheet name
@@ -605,7 +647,7 @@ async function tableStyle() {
 	
 		// Reset table formatting to defaults
 		//table.style = "TableStyleLight1";
-		table.style = "None";
+		table.style = null;
 	
 		return context.sync();
 	}).catch(function (error) {
@@ -654,7 +696,7 @@ async function setupProducts() {
 
 
 	//await cleartableFormat("ProductsTable");	
-	tableStyle();
+	customTableStyle();
 }
 
 
