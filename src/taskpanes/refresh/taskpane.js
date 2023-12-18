@@ -557,9 +557,11 @@ async function formatGradientTable(context, table) {
 
     // Format the data rows
     const dataRange = table.getDataBodyRange();
-    dataRange.format.fill.clear();	
+    dataRange.format.fill.color = 'lightgray';	
     dataRange.format.font.name = 'Arial';       
     dataRange.format.font.size = 10;
+
+	await context.sync();  
 
 	headerRange.load(["width", "columnCount"]);	
 	
