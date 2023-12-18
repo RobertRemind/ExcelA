@@ -597,6 +597,25 @@ async function formatGradientTable(context, table) {
 }
 
 
+
+async function tableStyle() {
+	Excel.run(function (context) {
+		var sheet = context.workbook.worksheets.getItem("Products"); // Replace with your sheet name
+		var table = sheet.tables.getItem("ProductsTable"); // Replace with your table name
+	
+		// Reset table formatting to defaults
+		table.style = "TableStyleLight1";
+	
+		return context.sync();
+	}).catch(function (error) {
+		console.log("Error: " + error);
+		if (error instanceof OfficeExtension.Error) {
+			console.log("Debug info: " + JSON.stringify(error.debugInfo));
+		}
+	});
+	
+}
+
 async function cleartableFormat(tableName) {
 	await Excel.run(async (context) => {
 		let sheet = context.workbook.worksheets.getItem("Products");
@@ -633,7 +652,8 @@ async function setupProducts() {
 	});
 
 
-	await cleartableFormat("ProductsTable");	
+	//await cleartableFormat("ProductsTable");	
+	tableStyle();
 }
 
 
