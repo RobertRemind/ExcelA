@@ -511,6 +511,7 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
     return sheet;
 }
 
+
 /**
  * Create and populate a new data table
  * @param {Excel.Worksheet} worksheet Target worksheet object
@@ -555,7 +556,7 @@ async function setup() {
 
   await Excel.run(async (context) => {
     
-    const sheet = await createWorksheet("Products", true, true);
+    const sheet = await createWorksheet(context, "Products", true, true);
     const productsTable = await createDataTable("Products", "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
 
     sheet.getUsedRange().format.autofitColumns();
