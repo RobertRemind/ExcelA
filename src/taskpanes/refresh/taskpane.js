@@ -565,6 +565,8 @@ async function formatGradientTable(context, table) {
 	
 	await context.sync();  
 
+	return
+
 	const cells = []
 	for (let i=0; i < headerRange.columnCount; i++) {
 		cells.push(headerRange.getCell(0,i));				
@@ -573,8 +575,6 @@ async function formatGradientTable(context, table) {
 
 	await context.sync();  
 
-
-	debugger;
 
 	var startColorRgb = hexToRgb("#FFD700");
 	var endColorRgb = hexToRgb("#008080");
