@@ -597,57 +597,39 @@ async function formatGradientTable(context, table) {
 }
 
 
+async function addNewStyle() {
+	await Excel.run(async (context) => {
+	  let styles = context.workbook.styles;
+  
+	  // Add a new style to the style collection.
+	  // Styles is in the Home tab ribbon.
+	  styles.add("Diagonal Orientation Style");
+  
+	  let newStyle = styles.getItem("Diagonal Orientation Style");
+  
+	  // The "Diagonal Orientation Style" properties.
+	  newStyle.textOrientation = 38;
+	  newStyle.autoIndent = true;
+	  newStyle.includeProtection = true;
+	  newStyle.shrinkToFit = true;
+	  newStyle.locked = false;
+  
+	  await context.sync();
+  
+	  console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
+	});
+  }
+  
+
 
 async function customTableStyle () {
-// This code sample shows how to create and apply a custom table style using the JavaScript API for Excel.
-await Excel.run(async (context) => {
-	// Get the worksheet and the table.
 	let sheet = context.workbook.worksheets.getItem("Products");
-	let table = sheet.tables.getItem("ProductsTable");
-  
-	// Create a new table style with the name "MyCustomStyle".
-	let tableStyle = context.workbook.tableStyles.add("MyCustomStyle");
-  
-	// Set the style type to custom.
-	//tableStyle.set({ type: "Custom" });
-  
-	// Get the style elements collection.
-	let styleElements = tableStyle.tableStyleElements;
-  
-	// Format the header row of the table with a green background and white font.
-	let headerRow = styleElements.getItem(Excel.TableStyleElementType.headerRow);
-	headerRow.set({
-	  fontColor: "white",
-	  fillColor: "green",
-	});
-  
-	// Format the total row of the table with a blue background and white font.
-	let totalRow = styleElements.getItem(Excel.TableStyleElementType.totalRow);
-	totalRow.set({
-	  fontColor: "white",
-	  fillColor: "blue",
-	});
-  
-	// Format the first column of the table with a yellow background and bold font.
-	let firstColumn = styleElements.getItem(Excel.TableStyleElementType.firstColumn);
-	firstColumn.set({
-	  fontColor: "black",
-	  fillColor: "yellow",
-	  fontStyle: "bold",
-	});
-  
-	// Format the second column of the table with a number format.
-	let secondColumn = styleElements.getItemAt(1);
-	secondColumn.set({
-	  numberFormat: "$#,##0.00",
-	});
-  
-	// Apply the custom style to the table.
-	table.style = tableStyle;
-  
+	let expensesTable = sheet.tables.getItem("ProductsTable");
+
+	expensesTable.getHeaderRowRange().style = "Diagonal Orientation Style";
+	
 	await context.sync();
-  });
-  
+
 }
 
 async function tableStyle() {
@@ -705,6 +687,7 @@ async function setupProducts() {
 
 
 	//await cleartableFormat("ProductsTable");	
+	await addNewStyle();
 	customTableStyle();
 }
 
