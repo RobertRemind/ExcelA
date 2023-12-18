@@ -550,17 +550,20 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
  * @param {Excel.Table} table The table to format
  */
 async function formatGradientTable(context, table) {
-    // Format the header row
+    await cleartableFormat(table.name);
+	
+	// Format the header row
     const headerRange = table.getHeaderRowRange();
     headerRange.format.fill.color = 'white';  // I dont like this but I can't seem to get clear() to work
     headerRange.format.font.bold = true;      // Example header font style
 
-    // Format the data rows
+    /*
+	// Format the data rows
     const dataRange = table.getDataBodyRange();
     dataRange.format.fill.color = 'white';	
     dataRange.format.font.name = 'Arial';       
     dataRange.format.font.size = 10;
-
+	*/
 	
 	headerRange.load(["width", "columnCount"]);	
 	
@@ -595,6 +598,28 @@ async function formatGradientTable(context, table) {
     
 }
 
+
+async function cleartableFormat(tableName) {
+	Excel.run(function (context) {
+		var sheet = context.workbook.worksheets.getActiveWorksheet();
+		var table = sheet.tables.getItem(tableName); // Replace with your table's name
+	
+		var dataRange = table.getDataBodyRange();
+		dataRange.format.clear(); // Clear all formatting
+	
+		return context.sync()
+			.then(function () {
+				console.log("Cleared all formatting from the data table.");
+			})
+			.catch(function (error) {
+				console.error("Error: " + error);
+				if (error instanceof OfficeExtension.Error) {
+					console.log("Debug info: " + JSON.stringify(error.debugInfo));
+				}
+			});
+	});
+	
+}
 
 
 /** Set up Sample worksheet. */
