@@ -603,17 +603,17 @@ async function addNewStyle() {
   
 	  // Add a new style to the style collection.
 	  // Styles is in the Home tab ribbon.
-	  styles.add("RM 2 Style");
+	  styles.add("RM 3 Style");
   
-	  let newStyle = styles.getItem("RM 2 Style");
+	  let newStyle = styles.getItem("RM 3 Style");
   
 	  // The "Diagonal Orientation Style" properties.
-	  newStyle.textOrientation = 38;
-	/*  newStyle.autoIndent = true;
+	  newStyle.textOrientation = 90;
+	  newStyle.autoIndent = true;
 	  newStyle.includeProtection = true;
 	  newStyle.shrinkToFit = true;
 	  newStyle.locked = false;
-  */
+  
 	  await context.sync();
   
 	  console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
@@ -628,7 +628,7 @@ async function customTableStyle () {
 		let sheet = context.workbook.worksheets.getItem("Products");
 		let expensesTable = sheet.tables.getItem("ProductsTable");
 
-		expensesTable.getHeaderRowRange().style = "RM 2 Style";
+		expensesTable.getDataBodyRange().style = "RM 3 Style";
 		
 		await context.sync();
 	  });
