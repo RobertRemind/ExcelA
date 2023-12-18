@@ -536,7 +536,8 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 	worksheet.getUsedRange().format.autofitColumns();
 	worksheet.getUsedRange().format.autofitRows();
 
-	await formatGradientTable(context, tbl);
+	await cleartableFormat(table.name);
+	//await formatGradientTable(context, tbl);
 
 	await context.sync();  
 
