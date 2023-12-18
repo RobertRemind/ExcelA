@@ -603,9 +603,9 @@ async function addNewStyle() {
   
 	  // Add a new style to the style collection.
 	  // Styles is in the Home tab ribbon.
-	  styles.add("Diagonal Orientation Style");
+	  styles.add("RM 1 Style");
   
-	  let newStyle = styles.getItem("Diagonal Orientation Style");
+	  let newStyle = styles.getItem("RM 1 Style");
   
 	  // The "Diagonal Orientation Style" properties.
 	  newStyle.textOrientation = 38;
@@ -626,7 +626,7 @@ async function customTableStyle () {
 	let sheet = context.workbook.worksheets.getItem("Products");
 	let expensesTable = sheet.tables.getItem("ProductsTable");
 
-	expensesTable.getHeaderRowRange().style = "Diagonal Orientation Style";
+	expensesTable.getHeaderRowRange().style = "RM 1 Style";
 	
 	await context.sync();
 
