@@ -555,21 +555,25 @@ function formatGradientTable(table) {
     headerRange.format.fill.color = 'yellow'; // Example header fill color
     headerRange.format.font.bold = true;      // Example header font style
 
-    // Set a new bottom border style for each column in the header
-    const columnCount = table.columns.count;
-    for (let i = 0; i < columnCount; i++) {
-        const columnHeader = headerRange.getColumn(i);
-        columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
-        columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
-        columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
-    }
-
     // Format the data rows
     const dataRange = table.getDataBodyRange();
     dataRange.format.fill.color = 'lightgray';  // Example data row fill color
     dataRange.format.font.name = 'Arial';       // Example data row font name
     dataRange.format.font.size = 10;             // Example data row font size
-    // Add other formatting as needed
+
+
+	/*
+
+	// Set a new bottom border style for each column in the header
+	const columnCount = table.columns.count;
+	for (let i = 0; i < columnCount; i++) {
+		const columnHeader = headerRange.getColumn(i);
+		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
+		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
+		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
+	}
+	*/
+    
 }
 
 
