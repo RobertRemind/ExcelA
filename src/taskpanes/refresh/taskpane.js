@@ -604,7 +604,8 @@ async function tableStyle() {
 		var table = sheet.tables.getItem("ProductsTable"); // Replace with your table name
 	
 		// Reset table formatting to defaults
-		table.style = "TableStyleLight1";
+		//table.style = "TableStyleLight1";
+		table.style = "None";
 	
 		return context.sync();
 	}).catch(function (error) {
