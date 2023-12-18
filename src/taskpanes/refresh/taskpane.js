@@ -603,9 +603,9 @@ async function addNewStyle() {
   
 	  // Add a new style to the style collection.
 	  // Styles is in the Home tab ribbon.
-	  styles.add("RM 1 Style");
+	  styles.add("RM 2 Style");
   
-	  let newStyle = styles.getItem("RM 1 Style");
+	  let newStyle = styles.getItem("RM 2 Style");
   
 	  // The "Diagonal Orientation Style" properties.
 	  newStyle.textOrientation = 38;
@@ -623,12 +623,17 @@ async function addNewStyle() {
 
 
 async function customTableStyle () {
-	let sheet = context.workbook.worksheets.getItem("Products");
-	let expensesTable = sheet.tables.getItem("ProductsTable");
 
-	expensesTable.getHeaderRowRange().style = "RM 1 Style";
+	await Excel.run(async (context) => {
+		let sheet = context.workbook.worksheets.getItem("Products");
+		let expensesTable = sheet.tables.getItem("ProductsTable");
+
+		expensesTable.getHeaderRowRange().style = "RM 2 Style";
+		
+		await context.sync();
+	  });
+
 	
-	await context.sync();
 
 }
 
