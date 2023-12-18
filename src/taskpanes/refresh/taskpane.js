@@ -80,14 +80,14 @@ async function applyGradient() {
 		return context.sync().then(function () {
 			      						
 			// Loop through each column in the range and get the width.
-      const columns = []
-			for (let i=0; i < range.columnCount; i++) {
-				columns.push(range.getColumn(i));				
-				columns[i].load('width');
-			}
+      	const columns = []
+		for (let i=0; i < range.columnCount; i++) {
+			columns.push(range.getColumn(i));				
+			columns[i].load('width');
+		}
 
 
-			return context.sync().then(function () {
+		return context.sync().then(function () {
 				
         let runningTotal = 0;
 				
@@ -561,19 +561,24 @@ async function formatGradientTable(context, table) {
     dataRange.format.font.name = 'Arial';       
     dataRange.format.font.size = 10;
 
-	headerRange.load("width");
-	table.load(['rowCount', 'columnCount', 'width']);			
+	headerRange.load(["width", "columnCount"]);	
+	
+	await context.sync();  
+
+	const cells = []
+	for (let i=0; i < headerRange.columnCount; i++) {
+		cells.push(headerRange.getCell(0,i));				
+		cells[i].load('width');
+	}
 
 	await context.sync();  
 
 	debugger;
-	// Set a new bottom border style for each column in the header
-	const columnCount = table.columns.count;
-	for (let i = 0; i < columnCount; i++) {
-		const columnHeader = headerRange.getColumn(i);
-		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
-		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
-		columnHeader.format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
+	// Set a new bottom border style for each column in the header	
+	for (let i = 0; i < cells.count; i++) {		
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = 'black';
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
 	}
 	
     
