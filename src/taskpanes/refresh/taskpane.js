@@ -552,12 +552,12 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 async function formatGradientTable(table) {
     // Format the header row
     const headerRange = table.getHeaderRowRange();
-    headerRange.format.clear	
+    headerRange.format.fill.clear();
     headerRange.format.font.bold = true;      // Example header font style
 
     // Format the data rows
     const dataRange = table.getDataBodyRange();
-    dataRange.format.clear();	
+    dataRange.format.fill.clear();	
     dataRange.format.font.name = 'Arial';       
     dataRange.format.font.size = 10;
 
