@@ -26,6 +26,18 @@ const azureFunctions = [
 ];
 
 
+const visualStyle = {
+	colors: {
+		startColor: "#FFD700",
+		endColor: "#008080",
+		startRGB: () => { hexToRgb(this.colors.startColor) },
+		endRGB: () => { hexToRgb(this.colors.endColor) }
+	}
+	
+		
+}
+
+
 let completedFunctionsCount = 0;
 let errorOccurred = false;
 
@@ -204,7 +216,8 @@ async function addNewStyle(styleName, removeFirst) {
 		if(styleName == "Remind Table Body") {
 			newStyle.fill.clear();
 		} else {
-			newStyle.fill.color = "#000099";
+			newStyle.fill.clear();
+			newStyle.font.bold = true;
 		}
 
 		newStyle.formulaHidden = false;
@@ -271,8 +284,6 @@ function removeStyleBorders(style) {
 		style.borderDiagonal = borderProperties;
 		style.borderHorizontal = borderProperties;
 		style.borderVertical = borderProperties;
-		
-		
 
 	}
 	return style
@@ -321,8 +332,8 @@ async function formatGradientTable(context, table) {
 	await context.sync();  
 
 
-	var startColorRgb = hexToRgb("#FFD700");
-	var endColorRgb = hexToRgb("#008080");
+	var startColorRgb = visualStyle.colors.startRGB();
+	var endColorRgb = visualStyle.colors.endRGB();
 				
 	let runningTotal = 0;
 	// Set a new bottom border style for each column in the header	
@@ -341,29 +352,6 @@ async function formatGradientTable(context, table) {
 }
 
 
-async function demo_addNewStyle() {
-	await Excel.run(async (context) => {
-	  let styles = context.workbook.styles;
-  
-	  // Add a new style to the style collection.
-	  // Styles is in the Home tab ribbon.
-	  styles.add("RM 3 Style");
-  
-	  let newStyle = styles.getItem("RM 3 Style");
-  
-	  // The "Diagonal Orientation Style" properties.
-	  newStyle.textOrientation = 90;
-	  newStyle.autoIndent = true;
-	  newStyle.includeProtection = true;
-	  newStyle.shrinkToFit = true;
-	  newStyle.locked = false;
-  
-	  await context.sync();
-  
-	  console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
-	});
-  }
-  
 
 
 async function applyCustomStyleToTable(tableName, styleName) {
@@ -396,16 +384,11 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
 		
-		table.style = null;
-		await context.sync();
-		
+		// Remove the table style		
 		table.load(["showTotals", "style"]);			
 		await context.sync();
-		
-		
-		
 
-
+		table.style = null; 		
 		table.showBandedRows = false;
 		
 		if(bodyStyleName) {
@@ -420,8 +403,9 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		if (table.showTotals && totalStyleName) {
             table.getTotalRowRange().style = totalStyleName;
         }
-
+		
 		await context.sync();
+		await formatGradientTable(context,table);
 	  });
 }
 
@@ -527,7 +511,7 @@ function hexToRgb(hex) {
 
 
 /**
- * The rgb value of a point on a gradient between two colours.
+ * The rgb value of a point on a gradient between two colors.
  * @param {integer[]} color1 rgb colour array
  * @param {integer[]} color2 rgb colour array
  * @param {number} factor percentage of gradient completion
@@ -920,7 +904,8 @@ async function setupProducts() {
 	debugger;
 	await addNewStyle("Remind Table Header", true);
 	await addNewStyle("Remind Table Body", true);		
-	applyTableStyle("Products", "ProductsTable", "Remind Table Header", "Remind Table Body")
+	applyTableStyle("Products", "ProductsTable", "Remind Table Header", "Remind Table Body");
+	
 }
 
 
