@@ -391,6 +391,24 @@ async function addNewStyle(styleName, removeFirst) {
 }
   
 
+async function removeStyle(styleName) {
+    await Excel.run(async (context) => {
+        let styles = context.workbook.styles;
+
+        // Get the style if it exists and delete it.
+        let style = styles.getItemOrNullObject(styleName);
+        await context.sync();
+
+        // Check if the style exists before trying to delete it.
+        if (!style.isNullObject) {
+            style.delete();            
+        }
+
+        await context.sync();
+    });
+}
+
+
 
 /**
  * Remove and Excel Style from the current context.
