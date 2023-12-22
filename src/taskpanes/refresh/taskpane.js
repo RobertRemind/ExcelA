@@ -154,9 +154,7 @@ async function addNewStyle(styleName, removeFirst) {
 		
 		
 		// Add a new style to the style collection.
-	  	// Styles is in the Home tab ribbon.
-		debugger;
-		
+	  	// Styles is in the Home tab ribbon.		
 		context.workbook.styles.add(styleName);  
 		let newStyle = context.workbook.styles.getItem(styleName);
 	
@@ -313,9 +311,9 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 	await Excel.run(async (context) => {
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
-
+		
 		if(headerStyleName) {
-			table.getDataHeaderRange().style = headerStyleName;		
+			table.getHeaderRowRange().style = headerStyleName;		
 		}
 		
 		if(bodyStyleName) {
@@ -323,7 +321,7 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		}
 		
 		if (table.showTotals && totalStyleName) {
-            table.getTotalsRowRange().style = totalStyleName;
+            table.getTotalRowRange().style = totalStyleName;
         }
 
 		await context.sync();
