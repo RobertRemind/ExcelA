@@ -356,10 +356,8 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
 		
-		debugger;
-		const styles = context.workbook.tableStyles;
-		await styles.load("items");
-
+		await listAllTableStyles()
+		debugger
 
 		table.load(["showTotals"]);	
 		await context.sync();
@@ -383,6 +381,21 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 	  });
 }
 
+
+async function listAllTableStyles() {
+    await Excel.run(async (context) => {
+        const workbook = context.workbook;
+        const styles = workbook.tableStyles;
+        styles.load('items/name');
+
+        await context.sync();
+
+        const styleNames = styles.items.map(style => style.name);
+        console.log("Available Table Styles:", styleNames);
+    }).catch(error => {
+        console.error(error);
+    });
+}
 
 
 async function tableStyle() {
