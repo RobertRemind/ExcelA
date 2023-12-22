@@ -54,6 +54,11 @@ const RefreshStatus = {
 }
 
 
+/**
+ * The list of styles created by the addin and how they should look.
+ * 
+ * To be imported from an Azure function, except for defaults which will be in this code.
+ */
 const TrackedStyles = { 
 	styles: {			
 		defaultTableHeader: {
@@ -157,16 +162,15 @@ const TrackedTables = {
 */
 
 
-
-
-
-
 /**
  * Bind the update button to the function call events.
  */
 Office.onReady((info) => {
-    
+    	
     if (info.host === Office.HostType.Excel) {        		
+
+		initTrackedStyles();	
+
         // Bind Refresh of source data
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
 			RefreshStatus.reset();
@@ -309,6 +313,17 @@ async function setTableStyle(tableName, styleName) {
 ########################################################################################### 
 */
 
+
+async function initTrackedStyles() {
+
+    const stylePromises = Object.keys(TrackedStyles.styles).map(key => {
+        return syncTrackedStyle(TrackedStyles.styles[key], true);
+    });
+
+    await Promise.all(stylePromises);
+}
+
+
 /**
  * Add a Tracked Style to the Excel workbook.
  * @param {TrackedStyle} trackedStyle Tracked Style to be added.
@@ -405,25 +420,7 @@ function syncStyleBorders(style, trackedStyle) {
 		});			
 	}
 	return style;
-	
-	/*
-	if (style) {
-		// Removing all borders from the style
-		const borderProperties = {
-			style: "None",
-			color: "none"
-		};
 
-		style.borderTop = borderProperties;
-		style.borderLeft = borderProperties;
-		style.borderRight = borderProperties;
-		style.borderBottom = borderProperties;
-		style.borderDiagonal = borderProperties;
-		style.borderHorizontal = borderProperties;
-		style.borderVertical = borderProperties;
-	}
-	return style;
-	*/	
 }
 
 
@@ -1063,21 +1060,13 @@ async function setupProducts() {
 	await Excel.run(async (context) => {
 		
 		const sheet = await createWorksheet(context, productSettings.worksheet, true, true);		
-		await createDataTable(context, productSettings);  // Create the new table on the target range.
+		await createDataTable(context, productSettings);  // Create the new table on the target range.				
 		
-		/*
-		sheet.getUsedRange().format.autofitColumns();
-		sheet.getUsedRange().format.autofitRows();
-		*/
 		sheet.activate();
 
 		await context.sync();
 
 	});
-
-
-	await syncTrackedStyle(TrackedStyles.styles.defaultTableHeader, true);
-	await syncTrackedStyle(TrackedStyles.styles.defaultTableBody, true);		
 
 	applyStyleToTable(productSettings)	
 	
