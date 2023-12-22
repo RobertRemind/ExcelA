@@ -315,6 +315,9 @@ async function setTableStyle(tableName, styleName) {
  * @param {boolean} sync sync the Excel settings with the tracked setttings. Only required where the tracked setting may have changed. 
  */
 async function syncTrackedStyle(trackedStyle, sync) {
+
+	return addNewStyle(trackedStyle.name, true);
+
 	await Excel.run(async (context) => {		
 				
 		if (sync) {						
@@ -341,6 +344,53 @@ async function syncTrackedStyle(trackedStyle, sync) {
   	  
 }
   
+async function addNewStyle(styleName, removeFirst) {
+	await Excel.run(async (context) => {		
+		debugger
+		if (removeFirst) {
+			// Remove the style with this name if it exists.		
+			await removeStyle(styleName); 
+		} else if(isStyleName(context, styleName)) {
+			// If the style already exists return.
+			return context.sync();			
+		}
+		
+		
+		// Add a new style to the style collection.
+	  	// Styles is in the Home tab ribbon.		
+		context.workbook.styles.add(styleName);  
+		let newStyle = context.workbook.styles.getItem(styleName);
+
+		// Set Formatting		
+		newStyle = removeStyleBorders(newStyle);
+		newStyle.includeBorder = true; 		// Set the style as including border information.
+		newStyle.includePatterns = true;
+		
+		if(styleName == "Remind Table Body") {
+			//newStyle.fill.clear();
+			newStyle.fill.color = visualStyle.colors.startColor;
+		} else {
+			newStyle.fill.clear();			
+			newStyle.font.bold = true;
+		}
+
+		newStyle.formulaHidden = false;
+		newStyle.locked = false;
+		newStyle.shrinkToFit = false;	
+		newStyle.textOrientation = 0;		
+		newStyle.autoIndent = true;
+		newStyle.includeProtection = false;
+		newStyle.wrapText = true;
+		
+	
+		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");		
+		return context.sync();	
+
+	  });
+  	  
+}
+  
+
 
 /**
  * Remove and Excel Style from the current context.
