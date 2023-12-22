@@ -157,8 +157,8 @@ async function addNewStyle(styleName, removeFirst) {
 	  	// Styles is in the Home tab ribbon.
 		debugger;
 		
-		let newStyle = context.workbook.styles.add(styleName);  
-		//let newStyle = styles.getItem(styleName);
+		context.workbook.styles.add(styleName);  
+		let newStyle = styles.getItem(styleName);
 	
 		// The "Diagonal Orientation Style" properties.
 		newStyle.textOrientation = 20;
