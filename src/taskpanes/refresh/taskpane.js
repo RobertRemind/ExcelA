@@ -942,7 +942,7 @@ async function setupProducts() {
 	debugger;
 	//await addNewStyle("Remind Table Header", true);
 	//await addNewStyle("Remind Table Body", true);		
-	await removeStyle("Remind Table Header";
+	await removeStyle("Remind Table Header");
 	await removeStyle("Remind Table Body");	
 	createCustomTableStyle("Remind Table");
 	applyTableStyle("Products", "ProductsTable", "Remind Table Header", "Remind Table Body")
