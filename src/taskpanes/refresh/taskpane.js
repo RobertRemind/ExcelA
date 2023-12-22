@@ -215,7 +215,7 @@ async function isStyleName(context, styleName) {
 }
 
 
-async function removeStyleBorders(style) {
+function removeStyleBorders(style) {
     
 	// Check if the style exists before trying to modify it
 	if (style) {
