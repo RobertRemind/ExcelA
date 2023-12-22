@@ -391,23 +391,27 @@ async function addNewStyle(styleName, removeFirst) {
 }
   
 
-async function removeStyle(styleName) {
-    await Excel.run(async (context) => {
-        let styles = context.workbook.styles;
+function removeStyleBorders(style) {
+    
+	// Check if the style exists before trying to modify it
+	if (style) {
+		// Removing all borders from the style
+		const borderProperties = {
+			style: "None",
+			color: "none"
+		};
 
-        // Get the style if it exists and delete it.
-        let style = styles.getItemOrNullObject(styleName);
-        await context.sync();
+		style.borderTop = borderProperties;
+		style.borderLeft = borderProperties;
+		style.borderRight = borderProperties;
+		style.borderBottom = borderProperties;
+		style.borderDiagonal = borderProperties;
+		style.borderHorizontal = borderProperties;
+		style.borderVertical = borderProperties;
 
-        // Check if the style exists before trying to delete it.
-        if (!style.isNullObject) {
-            style.delete();            
-        }
-
-        await context.sync();
-    });
+	}
+	return style
 }
-
 
 
 /**
