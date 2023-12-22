@@ -312,6 +312,10 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
 		
+		table.load(["showTotals"]);	
+		await context.sync();
+
+
 		if(headerStyleName) {
 			table.getHeaderRowRange().style = headerStyleName;		
 		}
