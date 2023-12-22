@@ -139,56 +139,6 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
 */
 
 
-async function createCustomTableStyle(styleName) {
-    await Excel.run(async (context) => {
-        const workbook = context.workbook;
-        const styles = workbook.tableStyles;
-
-        // Create a new custom table style
-        const customStyle = styles.add(styleName);
-
-        // Define the border properties to remove borders
-        const borderProperties = {
-            style: "None",
-            color: "none"
-        };
-
-        // Define the fill property for the header row
-        const headerFillProperties = {
-            color: "blue"
-        };
-
-        // Apply the no-border properties to all elements of the table style
-        const elements = customStyle.tableStyleElements;
-        elements.load("items");
-        await context.sync();
-
-        elements.items.forEach(element => {
-            element.getBorders('EdgeTop').load(borderProperties);
-            element.getBorders('EdgeBottom').load(borderProperties);
-            element.getBorders('EdgeLeft').load(borderProperties);
-            element.getBorders('EdgeRight').load(borderProperties);
-            element.getBorders('InsideVertical').load(borderProperties);
-            element.getBorders('InsideHorizontal').load(borderProperties);
-            element.getBorders('DiagonalDown').load(borderProperties);
-            element.getBorders('DiagonalUp').load(borderProperties);
-
-            // Apply blue fill to the header row
-            if (element.type === Excel.TableStyleElementType.headerRow) {
-                element.getRange().format.fill.load(headerFillProperties);
-            }
-        });
-
-        await context.sync();
-        console.log(`Custom table style '${styleName}' created with no borders and blue header.`);
-    }).catch(error => {
-        console.error(error);
-    });
-}
-
-
-
-
 async function addNewStyle(styleName, removeFirst) {
 	await Excel.run(async (context) => {		
 				
@@ -402,12 +352,16 @@ async function applyCustomStyleToTable(tableName, styleName) {
  */
 async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleName, totalStyleName) {
 
-	return applyCustomStyleToTable(tableName, "Remind Table");
-
 	await Excel.run(async (context) => {
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
 		
+		debugger;
+		const styles = workbook.tableStyles;
+		await styles.load("items");
+
+		
+
 		table.load(["showTotals"]);	
 		await context.sync();
 
@@ -940,11 +894,8 @@ async function setupProducts() {
 
 	//await cleartableFormat("ProductsTable");	
 	debugger;
-	//await addNewStyle("Remind Table Header", true);
-	//await addNewStyle("Remind Table Body", true);		
-	await removeStyle("Remind Table Header");
-	await removeStyle("Remind Table Body");	
-	createCustomTableStyle("Remind Table");
+	await addNewStyle("Remind Table Header", true);
+	await addNewStyle("Remind Table Body", true);		
 	applyTableStyle("Products", "ProductsTable", "Remind Table Header", "Remind Table Body")
 }
 
