@@ -131,6 +131,46 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
 }
 
 
+/**
+ * Get a list of standard types styles. Apply style with applyStyleToTable()
+ */
+async function listAllTableStyles() {
+    await Excel.run(async (context) => {
+        const workbook = context.workbook;
+        const styles = workbook.tableStyles;
+        styles.load('items/name');
+
+        await context.sync();
+
+        const styleNames = styles.items.map(style => style.name);
+        console.log("Available Table Styles:", styleNames);
+    }).catch(error => {
+        console.error(error);
+    });
+}
+
+/**
+ * Apply a style to a data table.
+ * @param {string} tableName Data Table Name
+ * @param {string} styleName Style name see listAllTableStyles()
+ */
+async function applyStyleToTable(tableName, styleName) {
+    await Excel.run(async (context) => {
+        const sheet = context.workbook.worksheets.getActiveWorksheet();
+        const table = sheet.tables.getItem(tableName);
+
+        // Apply the custom style to the table
+        table.style = styleName;
+
+        await context.sync();
+        console.log(`Custom style '${styleName}' applied to table '${tableName}'.`);
+    }).catch(error => {
+        console.error(error);
+    });
+}
+
+
+
 
 /* 
 ###########################################################################################
@@ -356,12 +396,12 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
 		
-		await listAllTableStyles()
-		debugger
 
-		table.load(["showTotals"]);	
+		table.load(["showTotals", "style"]);	
 		await context.sync();
-
+		
+		debugger;
+		table.style.clear();
 		table.showBandedRows = false;
 		
 		if(bodyStyleName) {
@@ -382,39 +422,7 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 }
 
 
-async function listAllTableStyles() {
-    await Excel.run(async (context) => {
-        const workbook = context.workbook;
-        const styles = workbook.tableStyles;
-        styles.load('items/name');
 
-        await context.sync();
-
-        const styleNames = styles.items.map(style => style.name);
-        console.log("Available Table Styles:", styleNames);
-    }).catch(error => {
-        console.error(error);
-    });
-}
-
-
-async function tableStyle() {
-	Excel.run(function (context) {
-		var sheet = context.workbook.worksheets.getItem("Products"); // Replace with your sheet name
-		var table = sheet.tables.getItem("ProductsTable"); // Replace with your table name
-	
-		// Reset table formatting to defaults
-		table.style = "TableStyleLigt1";		
-	
-		return context.sync();
-	}).catch(function (error) {
-		console.log("Error: " + error);
-		if (error instanceof OfficeExtension.Error) {
-			console.log("Debug info: " + JSON.stringify(error.debugInfo));
-		}
-	});
-	
-}
 
 async function cleartableFormat(tableName) {
 	await Excel.run(async (context) => {
