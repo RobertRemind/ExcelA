@@ -322,7 +322,7 @@ async function syncTrackedStyle(trackedStyle, sync) {
 	
 		return context.sync();	
 
-	  });
+	});
   	  
 }
   
@@ -990,7 +990,7 @@ async function createDataTable(context, trackedTable) {
 	tbl.getHeaderRowRange().values = [trackedTable.columns];
 
 	trackedTable.rows.forEach((r) => {
-		let rowData = columns.map((c) => r[c]);
+		let rowData = trackedTable.columns.map((c) => r[c]);
 		tbl.rows.add(null /*add at the end*/, [rowData]);
 	});
 
