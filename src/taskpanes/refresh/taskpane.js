@@ -958,7 +958,7 @@ function makeProductEntity(productID, productName, product) {
 
 // Get products and product properties.
 function getProduct(id) {
-  return shopifyProducts.find((p) => p.primarySystemCode == id);
+  return TrackedTables.product.rows.find((p) => p.primarySystemCode == id);
 }
 
 
@@ -982,14 +982,16 @@ function getSupplier(supplierID) {
  * @returns 
  */
 async function createDataTable(context, trackedTable) {
+	
+	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
 	const tbl = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
 	tbl.name = trackedTable.name;
 
 	tbl.getHeaderRowRange().values = [trackedTable.columns];
 
-	rows.forEach((r) => {
+	trackedTable.rows.forEach((r) => {
 		let rowData = columns.map((c) => r[c]);
-		tbl.rows.add(null /*add at the end*/, [trackedTable.rows]);
+		tbl.rows.add(null /*add at the end*/, [rowData]);
 	});
 
 	// Auto fit new data. This is used by the gradient to determine colors.
@@ -1074,8 +1076,8 @@ async function getShopifyProducts() {
     if (data && data[0] && data[0].result) {
       const j = JSON.parse(data[0].result)
           
-      shopifyProducts.splice(0, shopifyProducts.length); // Remove all elements from the array
-      shopifyProducts.push(...j); // Merge arrays
+      TrackedTables.product.rows.splice(0, TrackedTables.product.rows.length); // Remove all elements from the array
+      TrackedTables.product.rows.push(...j); // Merge arrays
     }
     
 
@@ -1092,9 +1094,6 @@ async function tryCatch(callback) {
     console.error(error);
   }
 }
-
-const shopifyProducts = []
-
 
 
 
