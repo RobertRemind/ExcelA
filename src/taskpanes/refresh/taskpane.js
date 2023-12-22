@@ -157,19 +157,26 @@ async function addNewStyle(styleName, removeFirst) {
 	  	// Styles is in the Home tab ribbon.		
 		context.workbook.styles.add(styleName);  
 		let newStyle = context.workbook.styles.getItem(styleName);
-	
-		// The "Diagonal Orientation Style" properties.
-		newStyle.textOrientation = 20;
-		newStyle.autoIndent = true;
-		newStyle.includeProtection = true;
-		newStyle.shrinkToFit = true;
-		newStyle.locked = false;
 
-		if(styleName = "Remind Table Body") {
+		// Set Formatting		
+		newStyle = removeStyleBorders(newStyle);
+		newStyle.includeBorder = true; 		// Set the style as including border information.
+		
+		if(styleName == "Remind Table Body") {
 			newStyle.fill.color = "#900000";
 		} else {
-			newStyle.fill.color = "#000009";
-		}		
+			newStyle.fill.color = "#000099";
+		}
+
+		newStyle.formulaHidden = false;
+		newStyle.locked = false;
+		newStyle.shrinkToFit = false;	
+		newStyle.textOrientation = 0;		
+		newStyle.autoIndent = true;
+		newStyle.includeProtection = false;
+		newStyle.wrapText = true;
+
+		
 	
 		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");		
 		return context.sync();	
@@ -209,7 +216,27 @@ async function isStyleName(context, styleName) {
 }
 
 
+async function removeStyleBorders(style) {
+    
+	// Check if the style exists before trying to modify it
+	if (!style.isNullObject) {
+		// Removing all borders from the style
+		const borderProperties = {
+			style: "None",
+			color: "none"
+		};
 
+		style.borderTop = borderProperties;
+		style.borderLeft = borderProperties;
+		style.borderRight = borderProperties;
+		style.borderBottom = borderProperties;
+		style.borderDiagonal = borderProperties;
+		style.borderHorizontal = borderProperties;
+		style.borderVertical = borderProperties;
+
+	}
+	return style
+}
 
 
 /* 
