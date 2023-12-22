@@ -1,6 +1,7 @@
+
 /* 
 ###########################################################################################
-	Init
+	Global Objects - Essentailly our types.
 ########################################################################################### 
 */
 
@@ -8,7 +9,7 @@
 /**
  * List of Azure functions called for refresh. A function may request one or more Dimensions.
  */
-const azureFunctions = [
+const AzureFunctions = [
     { 
         id: 0, 
         name: 'Shopify Products', 
@@ -29,7 +30,7 @@ const azureFunctions = [
 /**
  * Object to hold the user's visual identity settings.
  */
-const visualStyle = {
+const VisualStyle = {
 	colors: {
 		startColor: "#FFD700",
 		endColor: "#008080",
@@ -43,7 +44,7 @@ const visualStyle = {
 /**
  * Status of refreshing data async process.
  */
-const refreshStatus = {
+const RefreshStatus = {
 	completedFunctionsCount: 0,
 	errorOccurred: false, 
 	reset: function () {
@@ -53,25 +54,116 @@ const refreshStatus = {
 }
 
 
+const TrackedStyles = { 
+	styles: {			
+		defaultTableHeader: {
+			name: "Remind Table Header",
+			format: { // Set the style as excluding border and fill information.
+				includeBorder: true, 						
+				formulaHidden: false,
+				locked:  false,
+				shrinkToFit:  false,
+				textOrientation:  0,
+				autoIndent: true,
+				includeProtection: false,
+				wrapText: true,
+			}, 
+			fill: {
+				color: "", 
+				isClear: true
+			}, 
+			borders: {}
+		}, 
+		defaultTableBody: {
+			name: "Remind Table Body"
+		}		 
+	}, 
+	defaults: {
+		format: { // Set the style as excluding border and fill information.
+			includeBorder: true, 		
+			includePatterns: true,
+			formulaHidden: false,
+			locked:  false,
+			shrinkToFit:  false,
+			textOrientation:  0,
+			autoIndent: true,
+			includeProtection: false,
+			wrapText: true,
+		},
+		borders: {
+			positions: [
+				"borderTop",
+				"borderLeft",
+				"borderRight",
+				"borderBottom ",
+				"borderDiagonal ",
+				"borderHorizontal",
+				"borderVertical"
+			], 
+			format: {
+				style: "None",
+				color: "none"
+			}
+		}
+	}
+}
+
+
+/**
+ * A list to tables that have been made by the add-in.
+ */
+const TrackedTables = {
+	tables: {		
+		products: {  // Dimension Name
+			name: "ProductsTable",
+			worksheet: "Product",
+			range: "A1:C1",
+			styles: {
+				header: "defaultTableHeader", 
+				body: "defaultTableBody"
+			}, 
+			trackedColumns: [
+				{name: "Product"}, 
+				{name: "primarySystemCode"}, 
+				{name: "memberCaption"}
+			], 
+			rows: []
+		}
+	}
+}
+
+
+
+
+/* 
+###########################################################################################
+	Init
+########################################################################################### 
+*/
+
+
+
+
+
 
 /**
  * Bind the update button to the function call events.
  */
 Office.onReady((info) => {
     
-    if (info.host === Office.HostType.Excel) {        		this
+    if (info.host === Office.HostType.Excel) {        		
         // Bind Refresh of source data
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
-			refreshStatus.reset();
-            refreshStatus.completedFunctionsCount = 0;
-            refreshStatus.errorOccurred = false;
+			RefreshStatus.reset();
+            RefreshStatus.completedFunctionsCount = 0;
+            RefreshStatus.errorOccurred = false;
 
             const finalStatus = document.getElementById('finalStatusIndicator')
             if(finalStatus) {
                 finalStatus.textContent = "";
             }
 
-            azureFunctions.forEach(functionDetails => {
+            AzureFunctions.forEach(functionDetails => {
                 startAzureFunction(functionDetails.id);
             });
         });
@@ -87,7 +179,7 @@ Office.onReady((info) => {
 
 
         document.getElementById('btnGradient').addEventListener('click', async function() {
-          await applyGradient();
+          await applyGradientToRange();
       });
 
 
@@ -105,18 +197,18 @@ Office.onReady((info) => {
 
 /**
  * Start an Azure function
- * @param {number} functionId index of the azureFunctions array
+ * @param {number} functionId index of the AzureFunctions array
  * @returns promise
  */
 async function callAzureFunction(functionId) {    
     updateStatus(functionId, 'Running...', 'running');
-    return await fetch(azureFunctions[functionId].url, {        
+    return await fetch(AzureFunctions[functionId].url, {        
         method: 'POST',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(azureFunctions[functionId].data)
+        body: JSON.stringify(AzureFunctions[functionId].data)
     });
 
 }
@@ -156,7 +248,7 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
 
 
 /**
- * Get a list of standard types styles. Apply style with applyStyleToTable()
+ * Get a list of standard types styles. Apply style with setTableStyle()
  */
 async function listAllTableStyles() {
     await Excel.run(async (context) => {
@@ -178,7 +270,7 @@ async function listAllTableStyles() {
  * @param {string} tableName Data Table Name
  * @param {string} styleName Style name see listAllTableStyles()
  */
-async function applyStyleToTable(tableName, styleName) {
+async function setTableStyle(tableName, styleName) {
     await Excel.run(async (context) => {
         const sheet = context.workbook.worksheets.getActiveWorksheet();
         const table = sheet.tables.getItem(tableName);
@@ -203,50 +295,31 @@ async function applyStyleToTable(tableName, styleName) {
 */
 
 /**
- * 
- * @param {*} styleName 
- * @param {*} removeFirst 
+ * Add a Tracked Style to the Excel workbook.
+ * @param {TrackedStyle} trackedStyle Tracked Style to be added.
+ * @param {boolean} sync sync the Excel settings with the tracked setttings. Only required where the tracked setting may have changed. 
  */
-async function addNewStyle(styleName, removeFirst) {
+async function syncTrackedStyle(trackedStyle, sync) {
 	await Excel.run(async (context) => {		
 				
-		if (removeFirst) {
-			// Remove the style with this name if it exists.		
-			await removeStyle(styleName); 
-		} else if(isStyleName(context, styleName)) {
-			// If the style already exists return.
-			return context.sync();			
+		if (sync) {						
+			await removeStyle(trackedStyle.name); 	// Remove the style with this name if it exists.		
+		} else if(isStyleName(context, trackedStyle.name)) {			
+			return context.sync();	// If the style already exists return.
 		}
 		
 		
 		// Add a new style to the style collection.
 	  	// Styles is in the Home tab ribbon.		
-		context.workbook.styles.add(styleName);  
-		let newStyle = context.workbook.styles.getItem(styleName);
+		context.workbook.styles.add(trackedStyle.name);  
+		let newStyle = context.workbook.styles.getItem(trackedStyle.name);
 
-		// Set Formatting		
-		newStyle = removeStyleBorders(newStyle);
-		newStyle.includeBorder = true; 		// Set the style as including border information.
-		newStyle.includePatterns = true;
-		
-		if(styleName == "Remind Table Body") {
-			//newStyle.fill.clear();
-			newStyle.fill.color = visualStyle.colors.startColor;
-		} else {
-			newStyle.fill.clear();			
-			newStyle.font.bold = true;
-		}
-
-		newStyle.formulaHidden = false;
-		newStyle.locked = false;
-		newStyle.shrinkToFit = false;	
-		newStyle.textOrientation = 0;		
-		newStyle.autoIndent = true;
-		newStyle.includeProtection = false;
-		newStyle.wrapText = true;
+		// Set borders		
+		newStyle = syncStyleBorders(trackedStyle, newStyle);
+		newStyle = syncStyleFill(trackedStyle, newStyle);
+		newStyle = syncStyleFormat(trackedStyle, newStyle);
 		
 	
-		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");		
 		return context.sync();	
 
 	  });
@@ -254,6 +327,10 @@ async function addNewStyle(styleName, removeFirst) {
 }
   
 
+/**
+ * Remove and Excel Style from the current context.
+ * @param {string} styleName Name of a Style
+ */
 async function removeStyle(styleName) {
     await Excel.run(async (context) => {
         let styles = context.workbook.styles;
@@ -272,7 +349,12 @@ async function removeStyle(styleName) {
 }
 
 
-
+/**
+ * Check if a Style name exists in this Context.
+ * @param {Excel.context} context Current Excel Context
+ * @param {string} styleName The name of an Excel Style to text
+ * @returns boolean
+ */
 async function isStyleName(context, styleName) {    
         let styles = context.workbook.styles;
 
@@ -284,26 +366,82 @@ async function isStyleName(context, styleName) {
 }
 
 
-function removeStyleBorders(style) {
+/**
+ * Apply border settings to an Excel Style
+ * @param {Excel.Style} style Excel Style to be sync'd
+ * @param {*} trackedStyle Tracked Style settings
+ * @returns Excel.Style
+ */
+function syncStyleBorders(style, trackedStyle) {
     
-	// Check if the style exists before trying to modify it
-	if (style) {
-		// Removing all borders from the style
-		const borderProperties = {
-			style: "None",
-			color: "none"
-		};
+	// Apply Borders 
+	if (style && trackedStyle && trackedStyle.borders) {
+		style.includeBorder = trackedStyle.includeBorder ? trackedStyle.includeBorder : true; 		// Set the style as including border information.
 
-		style.borderTop = borderProperties;
-		style.borderLeft = borderProperties;
-		style.borderRight = borderProperties;
-		style.borderBottom = borderProperties;
-		style.borderDiagonal = borderProperties;
-		style.borderHorizontal = borderProperties;
-		style.borderVertical = borderProperties;
+		//Apply defaults
+		TrackedStyles.defaults.borders.positions.map((pos) => {
+			style[pos] = TrackedStyles.defaults.borders.format;
+		});
+
+		// loop through border settings and apply
+		Object.keys(trackedStyle.borders).forEach(key => {
+			style[key] = trackedStyle.borders[key];
+		});			
+	}
+	
+	return style;
+}
+
+
+/**
+ * Apply fill settings to an Excel Style
+ * @param {Excel.Style} style Excel Style to be sync'd
+ * @param {*} trackedStyle Tracked Style settings
+ * @returns Excel.Style
+ */
+function syncStyleFill(style, trackedStyle) {
+	
+	// Apply fill
+	if (style && trackedStyle && trackedStyle.fill) {
+		style.includePatterns = true;		
+		
+		if (trackedStyle.fill.isClear) {
+			style.fill.clear();
+
+		} else if (trackedStyle.fill.color) {
+			style.fill.color = trackedStyle.fill.color;
+
+		} else {
+			style.fill.clear();			
+
+		}	
 
 	}
-	return style
+	return style;
+}
+
+
+
+
+/**
+ * Apply general format settings to an Excel Style
+ * @param {Excel.Style} style Excel Style to be sync'd
+ * @param {*} trackedStyle Tracked Style settings
+ * @returns Excel.Style
+ */
+function syncStyleFormat(style, trackedStyle) {
+	
+	if (style && trackedStyle && trackedStyle.format) {
+	
+		// Assign the style settings from tracked styles is it has been defined. Otherwise use the defaults.
+		const defaultFormat = TrackedStyles.defaults.format;
+		Object.keys(trackedStyle.format).forEach(key => {
+			newStyle[key] = trackedStyle[key] === undefined ? trackedStyle[key] : defaultFormat[key];
+		});
+
+	}			
+	
+	return style;
 }
 
 
@@ -311,9 +449,7 @@ function removeStyleBorders(style) {
 ###########################################################################################
 	Styles
 ########################################################################################### 
-*/
-
-
+*/ 
 
 /**
  * Apply formatting to the table
@@ -336,8 +472,8 @@ async function formatGradientTable(context, table) {
 	await context.sync();  
 
 
-	var startColorRgb = visualStyle.colors.startRGB();
-	var endColorRgb = visualStyle.colors.endRGB();
+	var startColorRgb = VisualStyle.colors.startRGB();
+	var endColorRgb = VisualStyle.colors.endRGB();
 				
 	let runningTotal = 0;
 	// Set a new bottom border style for each column in the header	
@@ -355,19 +491,23 @@ async function formatGradientTable(context, table) {
     
 }
 
-
-
-
-async function applyCustomStyleToTable(tableName, styleName) {
+/**
+ * Apply a TableStyle to a DataTable.
+ * @param {string} tableName Target Data Table name
+ * @param {string} tableStyleName Target TableStyle name
+ */
+async function applyCustomStyleToTable(tableName, tableStyleName) {
+	// TableStyles are different to a Style. TableStyles are found in Excels "Table Format" Ribbion. They control the table style default formatting. 
+	// Currently the Excel API does not allow table styles to be created or managed. 
+	
     await Excel.run(async (context) => {
-        const sheet = context.workbook.worksheets.getActiveWorksheet();
+        
+		const sheet = context.workbook.worksheets.getActiveWorksheet();
         const table = sheet.tables.getItem(tableName);
-
-        // Apply the custom style to the table
+        
         table.style = styleName;
+        await context.sync();        
 
-        await context.sync();
-        console.log(`Custom style '${styleName}' applied to table '${tableName}'.`);
     }).catch(error => {
         console.error(error);
     });
@@ -375,67 +515,52 @@ async function applyCustomStyleToTable(tableName, styleName) {
 
 
 /**
- * Apply a predefined Style to a table.
+ * Apply a Tracked Style to a Data Table.
  * @param {string} sheetName Name of Worksheet holding the table
  * @param {string} tableName Name of Data Table to be formatted
  * @param {string} headerStyleName Name of Style for Data Table header row.
  * @param {string} bodyStyleName Name of Style for the Data Table body rows.
  * @param {string} totalStyleName Name of Style for the Data Table total row.
  */
-async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleName, totalStyleName) {
+async function applyStyleToTable(trackedTable) {
 
 	await Excel.run(async (context) => {
-		let sheet = context.workbook.worksheets.getItem(sheetName);
-		let table = sheet.tables.getItem(tableName);
+
+		let sheet = context.workbook.worksheets.getItem(trackedTable.worksheet);
+		let table = sheet.tables.getItem(trackedTable.name);
 		
-		// Remove the table style		
+		// Get table info.
 		table.load(["showTotals", "style"]);			
 		await context.sync();
 
-		table.style = null; 		
+		table.style = null; // Remove the default TableStyle ( not Tracked Style )
 		table.showBandedRows = false;
 		
-		if(bodyStyleName) {
-			table.getRange().style = bodyStyleName; 
-			table.getDataBodyRange().style = bodyStyleName;		
+		if(trackedTable.styles.body) {
+			table.getRange().style = trackedTable.styles.body; // format the whole table to match the body.
+			table.getDataBodyRange().style = trackedTable.styles.body;		
 		}
 
-		if(headerStyleName) {
-			table.getHeaderRowRange().style = headerStyleName;		
+		if(trackedTable.styles.header) {
+			table.getHeaderRowRange().style = trackedTable.styles.header;		
 		}
 
-		if (table.showTotals && totalStyleName) {
-            table.getTotalRowRange().style = totalStyleName;
-        }
+		if (table.showTotals && trackedTable.styles.total) {
+			table.getTotalRowRange().style = trackedTable.styles.total;
+		}
 		
 		await context.sync();
+
 		await formatGradientTable(context,table);
-	  });
-}
 
-
-
-
-async function cleartableFormat(tableName) {
-	await Excel.run(async (context) => {
-		let sheet = context.workbook.worksheets.getItem("Products");
-		let expensesTable = sheet.tables.getItem("ProductsTable");
-	
-		expensesTable.getHeaderRowRange().format.fill.color = "#FFFFFF";
-		expensesTable.getHeaderRowRange().format.font.color = "#000000";
-		expensesTable.getDataBodyRange().format.fill.color = "#FFFFFF";
-		
-		await context.sync();
 	});
-	
 }
-
 
 
 /**
  * Apply a colour gradient to a selected range based on the columns width.
  */
-async function applyGradient() { 
+async function applyGradientToRange() { 
   
 	Excel.run(function (context) {
 		// Get the currently selected range
@@ -568,7 +693,7 @@ function startAzureFunction(functionId) {
         })
         .catch((error) => {            
             updateStatus(functionId, 'Error: ' + error.message, 'error');
-            refreshStatus.errorOccurred = true;
+            RefreshStatus.errorOccurred = true;
         })
         .finally(() => {            
             checkAllFunctionsCompleted();
@@ -584,7 +709,7 @@ function createStatusIndicator(functionId) {
     const statusIndicators = document.getElementById('statusIndicators');
     const indicator = document.createElement('div');
     indicator.id = 'statusIndicator' + functionId;
-    indicator.textContent = `Import ${azureFunctions[functionId].name} Status: Idle`;
+    indicator.textContent = `Import ${AzureFunctions[functionId].name} Status: Idle`;
     statusIndicators.appendChild(indicator);
 }
 
@@ -596,7 +721,7 @@ function createStatusIndicator(functionId) {
  */
 function updateStatus(functionId, message, status) {
     const statusIndicator = document.getElementById('statusIndicator' + functionId);
-    statusIndicator.innerHTML = `${azureFunctions[functionId].name} Status: <span class="${status}">${message}</span>`;
+    statusIndicator.innerHTML = `${AzureFunctions[functionId].name} Status: <span class="${status}">${message}</span>`;
 }
 
 
@@ -605,9 +730,9 @@ function updateStatus(functionId, message, status) {
  * We each Azure function promise returns check to see that overall status.
  */
 function checkAllFunctionsCompleted() {
-    refreshStatus.completedFunctionsCount++;
-    if (refreshStatus.completedFunctionsCount === azureFunctions.length) {
-        if (refreshStatus.errorOccurred) {
+    RefreshStatus.completedFunctionsCount++;
+    if (RefreshStatus.completedFunctionsCount === AzureFunctions.length) {
+        if (RefreshStatus.errorOccurred) {
             showFinalStatus('Completed with Errors');
         } else {
             showFinalStatus('All Functions Completed Successfully');
@@ -853,27 +978,29 @@ function getSupplier(supplierID) {
 /**
  * Create and populate a new data table
  * @param {Excel.RequestContext} context Context of the Excel request
- * @param {Excel.Worksheet} worksheet Target worksheet object
- * @param {string} range Cell range "A1:C3"
- * @param {string} name New table name
- * @param {string[]} columns Array of column names
- * @param {any[]} rows Array of objects representing rows
- * @returns table
+ * @param {TrackedTable} trackedTable Settings of the Tracked Table.
+ * @returns 
  */
-async function createDataTable(context, worksheet, range, name, columns, rows) {
-	const tbl = worksheet.tables.add(range, true /*hasHeaders*/);
-	tbl.name = name;
+async function createDataTable(context, trackedTable) {
+	const tbl = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
+	tbl.name = trackedTable.name;
 
-	tbl.getHeaderRowRange().values = [columns];
+	tbl.getHeaderRowRange().values = [trackedTable.columns];
 
 	rows.forEach((r) => {
 		let rowData = columns.map((c) => r[c]);
-		tbl.rows.add(null /*add at the end*/, [rowData]);
+		tbl.rows.add(null /*add at the end*/, [trackedTable.rows]);
 	});
 
-	worksheet.getUsedRange().format.autofitColumns();
-	worksheet.getUsedRange().format.autofitRows();
-	
+	// Auto fit new data. This is used by the gradient to determine colors.
+	table.getRange().format.autofitColumns();
+	table.getRange().format.autofitRows();
+
+	/*
+		worksheet.getUsedRange().format.autofitColumns();
+		worksheet.getUsedRange().format.autofitRows();
+	*/
+
 	await context.sync(); 	
 	
 	return tbl;
@@ -886,17 +1013,18 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 /** Set up Sample worksheet. */
 async function setupProducts() {
 
+	const productSettings = TrackedTables.tables.products;
 	await getShopifyProducts();
 
 	await Excel.run(async (context) => {
 		
-		const sheet = await createWorksheet(context, "Products", true, true);
-		const productsTable = await createDataTable(context, sheet, "A1:C1", "ProductsTable", ["Product", "primarySystemCode", "memberCaption"], shopifyProducts);
+		const sheet = await createWorksheet(context, productSettings.worksheet, true, true);		
+		await createDataTable(context, productSettings);  // Create the new table on the target range.
 		
-
+		/*
 		sheet.getUsedRange().format.autofitColumns();
 		sheet.getUsedRange().format.autofitRows();
-
+		*/
 		sheet.activate();
 
 		await context.sync();
@@ -904,11 +1032,10 @@ async function setupProducts() {
 	});
 
 
-	//await cleartableFormat("ProductsTable");	
-	debugger;
-	await addNewStyle("Remind Table Header", true);
-	await addNewStyle("Remind Table Body", true);		
-	applyTableStyle("Products", "ProductsTable", "Remind Table Header", "Remind Table Body");
+	await syncTrackedStyle(TrackedStyles.styles.defaultTableHeader, true);
+	await syncTrackedStyle(TrackedStyles.styles.defaultTableBody, true);		
+
+	applyStyleToTable(productSettings)	
 	
 }
 
