@@ -388,7 +388,7 @@ async function isStyleName(context, styleName) {
  * @returns Excel.Style
  */
 function syncStyleBorders(style, trackedStyle) {
-    
+    /*
 	// Apply Borders 
 	if (style && trackedStyle && trackedStyle.borders) {
 		style.includeBorder = trackedStyle.borders.includeBorder ? trackedStyle.borders.includeBorder : true; 		// Set the style as including border information.
@@ -405,7 +405,7 @@ function syncStyleBorders(style, trackedStyle) {
 	}
 	return style;
 	
-	/*
+	*/
 	if (style) {
 		// Removing all borders from the style
 		const borderProperties = {
@@ -422,7 +422,7 @@ function syncStyleBorders(style, trackedStyle) {
 		style.borderVertical = borderProperties;
 	}
 	return style;
-	*/
+	
 }
 
 
