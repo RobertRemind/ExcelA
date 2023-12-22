@@ -996,7 +996,7 @@ async function createDataTable(context, trackedTable) {
 
 	// Auto fit new data. This is used by the gradient to determine colors.
 	tbl.getRange().format.autofitColumns();
-	v.getRange().format.autofitRows();
+	tbl.getRange().format.autofitRows();
 
 	/*
 		worksheet.getUsedRange().format.autofitColumns();
