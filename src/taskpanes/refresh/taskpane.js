@@ -167,10 +167,14 @@ async function addNewStyle(styleName, removeFirst) {
 		newStyle.includeProtection = true;
 		newStyle.shrinkToFit = true;
 		newStyle.locked = false;
-		newStyle.fill.color = "#900000";
+
+		if(styleName = "Remind Table Body") {
+			newStyle.fill.color = "#900000";
+		} else {
+			newStyle.fill.color = "#000009";
+		}		
 	
-		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
-		
+		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");		
 		return context.sync();	
 
 	  });
@@ -297,21 +301,37 @@ async function demo_addNewStyle() {
   }
   
 
-
-async function customTableStyle () {
+/**
+ * Apply a predefined Style to a table.
+ * @param {string} sheetName Name of Worksheet holding the table
+ * @param {string} tableName Name of Data Table to be formatted
+ * @param {string} headerStyleName Name of Style for Data Table header row.
+ * @param {string} bodyStyleName Name of Style for the Data Table body rows.
+ * @param {string} totalStyleName Name of Style for the Data Table total row.
+ */
+async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleName, totalStyleName) {
 
 	await Excel.run(async (context) => {
-		let sheet = context.workbook.worksheets.getItem("Products");
-		let expensesTable = sheet.tables.getItem("ProductsTable");
+		let sheet = context.workbook.worksheets.getItem(sheetName);
+		let table = sheet.tables.getItem(tableName);
 
-		expensesTable.getDataBodyRange().style = "RM 3 Style";
+		if(headerStyleName) {
+			table.getDataHeaderRange().style = headerStyleName;		
+		}
 		
+		if(bodyStyleName) {
+			table.getDataBodyRange().style = bodyStyleName;		
+		}
+		
+		if (table.showTotals && totalStyleName) {
+            table.getTotalsRowRange().style = totalStyleName;
+        }
+
 		await context.sync();
 	  });
-
-	
-
 }
+
+
 
 async function tableStyle() {
 	Excel.run(function (context) {
@@ -820,10 +840,11 @@ async function setupProducts() {
 
 
 	//await cleartableFormat("ProductsTable");	
-	await addNewStyle("Remind Table Header");
-	customTableStyle();
+	debugger;
+	await addNewStyle("Remind Table Header", true);
+	await addNewStyle("Remind Table Body", true);	
+	applyTableStyle("Products", "ProductsTable", "Remind Table Header", "Remind Table Body")
 }
-
 
 
 
