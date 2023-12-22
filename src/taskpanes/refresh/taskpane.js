@@ -316,8 +316,8 @@ async function syncTrackedStyle(trackedStyle, sync) {
 
 		// Set borders		
 		newStyle = syncStyleBorders(newStyle, trackedStyle);
-		newStyle = syncStyleFill(newStyle, trackedStyle);
-		newStyle = syncStyleFormat(newStyle, trackedStyle);
+		//newStyle = syncStyleFill(newStyle, trackedStyle);
+		//newStyle = syncStyleFormat(newStyle, trackedStyle);
 		
 	
 		return context.sync();	
@@ -989,7 +989,12 @@ async function createDataTable(context, trackedTable) {
 	const tbl = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
 	tbl.name = trackedTable.name;
 
-	tbl.getHeaderRowRange().values = [trackedTable.trackedColumns];
+	
+	const headerValues = []
+	trackedTable.trackedColumns.map((c) => {
+		headerValues.push(c.name);
+	});
+	tbl.getHeaderRowRange().values = [headerValues];
 
 	trackedTable.rows.forEach((r) => {
 		let rowData = trackedTable.trackedColumns.map((c) => r[c.name]);
