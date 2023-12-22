@@ -141,31 +141,71 @@ async function createWorksheet(context, name, deleteFirst = false, activate = tr
 
 
 
-async function addNewStyle() {
-
-	await Excel.run(async (context) => {
-		let styles = context.workbook.styles;
+async function addNewStyle(styleName, removeFirst) {
+	await Excel.run(async (context) => {		
+				
+		if (removeFirst) {
+			// Remove the style with this name if it exists.		
+			await removeStyle(styleName); 
+		} else if(isStyleName(context, styleName)) {
+			// If the style already exists return.
+			return context.sync();			
+		}
+		
+		
+		// Add a new style to the style collection.
+	  	// Styles is in the Home tab ribbon.
 		debugger;
 
-		// Add a new style to the style collection.
-		// Styles is in the Home tab ribbon.
-		styles.add("RM 3 Style");
-
-		let newStyle = styles.getItem("RM 3 Style");
-
+		styles.add(styleName);
+  
+		let newStyle = styles.getItem(styleName);
+	
 		// The "Diagonal Orientation Style" properties.
 		newStyle.textOrientation = 90;
 		newStyle.autoIndent = true;
 		newStyle.includeProtection = true;
 		newStyle.shrinkToFit = true;
 		newStyle.locked = false;
-
-		await context.sync();
-
+		newStyle.fill.color = "#900000";
+	
 		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
-	});
+		
+		return context.sync();	
+
+	  });
+  	  
 }
   
+
+async function removeStyle(styleName) {
+    await Excel.run(async (context) => {
+        let styles = context.workbook.styles;
+
+        // Get the style if it exists and delete it.
+        let style = styles.getItemOrNullObject(styleName);
+        await context.sync();
+
+        // Check if the style exists before trying to delete it.
+        if (!style.isNullObject) {
+            style.delete();            
+        }
+
+        await context.sync();
+    });
+}
+
+
+
+async function isStyleName(context, styleName) {    
+        let styles = context.workbook.styles;
+
+        // Get the style if it exists and delete it.
+        let style = styles.getItemOrNullObject(styleName);
+        await context.sync();
+
+        return !style.isNullObject
+}
 
 
 
@@ -780,7 +820,7 @@ async function setupProducts() {
 
 
 	//await cleartableFormat("ProductsTable");	
-	await addNewStyle();
+	await addNewStyle("Remind Table Header");
 	customTableStyle();
 }
 
