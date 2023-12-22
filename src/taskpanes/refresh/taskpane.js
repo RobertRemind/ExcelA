@@ -644,16 +644,17 @@ async function applyStyleToTable(trackedTable) {
 		table.showBandedRows = false;
 		
 		if(trackedTable.styles.body) {
-			table.getRange().style = trackedTable.styles.body; // format the whole table to match the body.
+			const bodyStyle = TrackedStyles.styles[trackedTable.styles.body].name
+			table.getRange().style = bodyStyle; // format the whole table to match the body.
 			table.getDataBodyRange().style = trackedTable.styles.body;		
 		}
 
 		if(trackedTable.styles.header) {
-			table.getHeaderRowRange().style = trackedTable.styles.header;		
+			table.getHeaderRowRange().style = TrackedStyles.styles[trackedTable.styles.header].name;		
 		}
 
 		if (table.showTotals && trackedTable.styles.total) {
-			table.getTotalRowRange().style = trackedTable.styles.total;
+			table.getTotalRowRange().style = TrackedStyles.styles[trackedTable.styles.total].name;
 		}
 		
 		await context.sync();
