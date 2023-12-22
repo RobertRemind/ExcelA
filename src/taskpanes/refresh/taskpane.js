@@ -158,7 +158,7 @@ async function addNewStyle(styleName, removeFirst) {
 		debugger;
 		
 		context.workbook.styles.add(styleName);  
-		let newStyle = styles.getItem(styleName);
+		let newStyle = context.workbook.styles.getItem(styleName);
 	
 		// The "Diagonal Orientation Style" properties.
 		newStyle.textOrientation = 20;
