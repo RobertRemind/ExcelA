@@ -95,8 +95,8 @@ const TrackedStyles = {
 				"borderTop",
 				"borderLeft",
 				"borderRight",
-				"borderBottom ",
-				"borderDiagonal ",
+				"borderBottom",
+				"borderDiagonal",
 				"borderHorizontal",
 				"borderVertical"
 			], 
