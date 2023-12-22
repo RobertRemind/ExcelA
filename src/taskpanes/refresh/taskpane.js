@@ -987,10 +987,10 @@ async function createDataTable(context, trackedTable) {
 	const tbl = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
 	tbl.name = trackedTable.name;
 
-	tbl.getHeaderRowRange().values = [trackedTable.columns];
+	tbl.getHeaderRowRange().values = [trackedTable.trackedColumns];
 
 	trackedTable.rows.forEach((r) => {
-		let rowData = trackedTable.columns.map((c) => r[c]);
+		let rowData = trackedTable.trackedColumns.map((c) => r[c]);
 		tbl.rows.add(null /*add at the end*/, [rowData]);
 	});
 
