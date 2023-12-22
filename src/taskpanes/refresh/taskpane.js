@@ -396,12 +396,16 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		let sheet = context.workbook.worksheets.getItem(sheetName);
 		let table = sheet.tables.getItem(tableName);
 		
-
-		table.load(["showTotals", "style"]);	
+		table.style = null;
 		await context.sync();
 		
-		debugger;
-		table.style.clear();
+		table.load(["showTotals", "style"]);			
+		await context.sync();
+		
+		
+		
+
+
 		table.showBandedRows = false;
 		
 		if(bodyStyleName) {
