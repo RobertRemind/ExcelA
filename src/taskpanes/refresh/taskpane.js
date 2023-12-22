@@ -30,8 +30,8 @@ const visualStyle = {
 	colors: {
 		startColor: "#FFD700",
 		endColor: "#008080",
-		startRGB: () => { hexToRgb(this.colors.startColor) },
-		endRGB: () => { hexToRgb(this.colors.endColor) }
+		startRGB: function(){ hexToRgb(this.colors.startColor) },
+		endRGB: function(){  hexToRgb(this.colors.endColor) }
 	}
 	
 		
