@@ -233,6 +233,8 @@ function removeStyleBorders(style) {
 		style.borderDiagonal = borderProperties;
 		style.borderHorizontal = borderProperties;
 		style.borderVertical = borderProperties;
+		
+		
 
 	}
 	return style
@@ -342,15 +344,17 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		table.load(["showTotals"]);	
 		await context.sync();
 
+		table.showBandedRows = false;
+		
+		if(bodyStyleName) {
+			table.getRange().style = bodyStyleName; 
+			table.getDataBodyRange().style = bodyStyleName;		
+		}
 
 		if(headerStyleName) {
 			table.getHeaderRowRange().style = headerStyleName;		
 		}
-		
-		if(bodyStyleName) {
-			table.getDataBodyRange().style = bodyStyleName;		
-		}
-		
+
 		if (table.showTotals && totalStyleName) {
             table.getTotalRowRange().style = totalStyleName;
         }
