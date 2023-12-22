@@ -1,3 +1,10 @@
+/* 
+###########################################################################################
+	Init
+########################################################################################### 
+*/
+
+
 /**
  * List of Azure functions called for refresh. A function may request one or more Dimensions.
  */
@@ -62,6 +69,242 @@ Office.onReady((info) => {
 
     }
 });
+
+
+/* 
+###########################################################################################
+	API Calls
+########################################################################################### 
+*/
+
+
+
+/**
+ * Start an Azure function
+ * @param {number} functionId index of the azureFunctions array
+ * @returns promise
+ */
+async function callAzureFunction(functionId) {    
+    updateStatus(functionId, 'Running...', 'running');
+    return await fetch(azureFunctions[functionId].url, {        
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(azureFunctions[functionId].data)
+    });
+
+}
+
+
+/* 
+###########################################################################################
+	General Excel Actions
+########################################################################################### 
+*/
+
+/**
+ * Create a new worksheet in workbook. 
+ * @param {Excel.RequestContext} context Excel request context
+ * @param {string} name New worksheet name
+ * @param {boolean} deleteFirst Delete before create
+ * @param {boolean} activate Focus after create
+ * @returns new worksheet
+ */
+async function createWorksheet(context, name, deleteFirst = false, activate = true) {
+    if (deleteFirst) {
+        let worksheet = context.workbook.worksheets.getItemOrNullObject(name);
+        worksheet.load('name');
+        await context.sync();
+        if (worksheet.name) {
+            worksheet.delete();
+        }
+    }
+
+    const sheet = context.workbook.worksheets.add(name);
+    if (activate) {
+        sheet.activate();
+    }
+    await context.sync();
+    return sheet;
+}
+
+
+
+/* 
+###########################################################################################
+	Styles - Generic
+########################################################################################### 
+*/
+
+
+
+
+async function addNewStyle() {
+
+	await Excel.run(async (context) => {
+		let styles = context.workbook.styles;
+		debugger;
+
+		// Add a new style to the style collection.
+		// Styles is in the Home tab ribbon.
+		styles.add("RM 3 Style");
+
+		let newStyle = styles.getItem("RM 3 Style");
+
+		// The "Diagonal Orientation Style" properties.
+		newStyle.textOrientation = 90;
+		newStyle.autoIndent = true;
+		newStyle.includeProtection = true;
+		newStyle.shrinkToFit = true;
+		newStyle.locked = false;
+
+		await context.sync();
+
+		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
+	});
+}
+  
+
+
+
+
+
+/* 
+###########################################################################################
+	Styles
+########################################################################################### 
+*/
+
+
+
+/**
+ * Apply formatting to the table
+ * @param {Excel.Table} table The table to format
+ */
+async function formatGradientTable(context, table) {
+    await cleartableFormat(table.name);
+	
+	// Format the header row
+    const headerRange = table.getHeaderRowRange();
+    headerRange.format.fill.color = 'white';  // I dont like this but I can't seem to get clear() to work
+    headerRange.format.font.bold = true;      // Example header font style
+
+    /*
+	// Format the data rows
+    const dataRange = table.getDataBodyRange();
+    dataRange.format.fill.color = 'white';	
+    dataRange.format.font.name = 'Arial';       
+    dataRange.format.font.size = 10;
+	*/
+	
+	headerRange.load(["width", "columnCount"]);	
+	
+	await context.sync();  
+
+	
+	const cells = []
+	for (let i=0; i < headerRange.columnCount; i++) {
+		cells.push(headerRange.getCell(0,i));				
+		cells[i].load('width');
+	}
+
+	await context.sync();  
+
+
+	var startColorRgb = hexToRgb("#FFD700");
+	var endColorRgb = hexToRgb("#008080");
+				
+	let runningTotal = 0;
+	// Set a new bottom border style for each column in the header	
+	for (let i = 0; i < cells.length; i++) {			
+		runningTotal += cells[i].width;	
+
+		let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / headerRange.width);
+
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = rgbToHex(interpolatedColorRgb);
+		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
+		cells[i].format.fill.color = 'white';	
+	}
+	
+    
+}
+
+
+async function demo_addNewStyle() {
+	await Excel.run(async (context) => {
+	  let styles = context.workbook.styles;
+  
+	  // Add a new style to the style collection.
+	  // Styles is in the Home tab ribbon.
+	  styles.add("RM 3 Style");
+  
+	  let newStyle = styles.getItem("RM 3 Style");
+  
+	  // The "Diagonal Orientation Style" properties.
+	  newStyle.textOrientation = 90;
+	  newStyle.autoIndent = true;
+	  newStyle.includeProtection = true;
+	  newStyle.shrinkToFit = true;
+	  newStyle.locked = false;
+  
+	  await context.sync();
+  
+	  console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
+	});
+  }
+  
+
+
+async function customTableStyle () {
+
+	await Excel.run(async (context) => {
+		let sheet = context.workbook.worksheets.getItem("Products");
+		let expensesTable = sheet.tables.getItem("ProductsTable");
+
+		expensesTable.getDataBodyRange().style = "RM 3 Style";
+		
+		await context.sync();
+	  });
+
+	
+
+}
+
+async function tableStyle() {
+	Excel.run(function (context) {
+		var sheet = context.workbook.worksheets.getItem("Products"); // Replace with your sheet name
+		var table = sheet.tables.getItem("ProductsTable"); // Replace with your table name
+	
+		// Reset table formatting to defaults
+		table.style = "TableStyleLigt1";		
+	
+		return context.sync();
+	}).catch(function (error) {
+		console.log("Error: " + error);
+		if (error instanceof OfficeExtension.Error) {
+			console.log("Debug info: " + JSON.stringify(error.debugInfo));
+		}
+	});
+	
+}
+
+async function cleartableFormat(tableName) {
+	await Excel.run(async (context) => {
+		let sheet = context.workbook.worksheets.getItem("Products");
+		let expensesTable = sheet.tables.getItem("ProductsTable");
+	
+		expensesTable.getHeaderRowRange().format.fill.color = "#FFFFFF";
+		expensesTable.getHeaderRowRange().format.font.color = "#000000";
+		expensesTable.getDataBodyRange().format.fill.color = "#FFFFFF";
+		
+		await context.sync();
+	});
+	
+}
+
 
 
 /**
@@ -174,7 +417,16 @@ function rgbToHex(rgb) {
 }
 
 
-/*------------------------------------------------------------------------*/
+
+
+/* 
+###########################################################################################
+	Refresh
+########################################################################################### 
+*/
+
+
+
 
 /**
  * Start and Azure function from the array of function calls.
@@ -223,23 +475,6 @@ function updateStatus(functionId, message, status) {
 }
 
 
-/**
- * Start an Azure function
- * @param {number} functionId index of the azureFunctions array
- * @returns promise
- */
-async function callAzureFunction(functionId) {    
-    updateStatus(functionId, 'Running...', 'running');
-    return await fetch(azureFunctions[functionId].url, {        
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(azureFunctions[functionId].data)
-    });
-
-}
 
 /**
  * We each Azure function promise returns check to see that overall status.
@@ -267,7 +502,11 @@ function showFinalStatus(message) {
 }
 
 
-/* ######################################################################################## */ 
+/* 
+###########################################################################################
+	Data Tables
+########################################################################################### 
+*/
 
 async function addEntitiesToTable() {
   // This function retrieves data for each of the existing products in the table,
@@ -485,32 +724,6 @@ function getSupplier(supplierID) {
 }
 
 
-/**
- * Create a new worksheet in workbook. 
- * @param {Excel.RequestContext} context Excel request context
- * @param {string} name New worksheet name
- * @param {boolean} deleteFirst Delete before create
- * @param {boolean} activate Focus after create
- * @returns new worksheet
- */
-async function createWorksheet(context, name, deleteFirst = false, activate = true) {
-    if (deleteFirst) {
-        let worksheet = context.workbook.worksheets.getItemOrNullObject(name);
-        worksheet.load('name');
-        await context.sync();
-        if (worksheet.name) {
-            worksheet.delete();
-        }
-    }
-
-    const sheet = context.workbook.worksheets.add(name);
-    if (activate) {
-        sheet.activate();
-    }
-    await context.sync();
-    return sheet;
-}
-
 
 /**
  * Create and populate a new data table
@@ -543,131 +756,6 @@ async function createDataTable(context, worksheet, range, name, columns, rows) {
 
 
 
-/**
- * Apply formatting to the table
- * @param {Excel.Table} table The table to format
- */
-async function formatGradientTable(context, table) {
-    await cleartableFormat(table.name);
-	
-	// Format the header row
-    const headerRange = table.getHeaderRowRange();
-    headerRange.format.fill.color = 'white';  // I dont like this but I can't seem to get clear() to work
-    headerRange.format.font.bold = true;      // Example header font style
-
-    /*
-	// Format the data rows
-    const dataRange = table.getDataBodyRange();
-    dataRange.format.fill.color = 'white';	
-    dataRange.format.font.name = 'Arial';       
-    dataRange.format.font.size = 10;
-	*/
-	
-	headerRange.load(["width", "columnCount"]);	
-	
-	await context.sync();  
-
-	
-	const cells = []
-	for (let i=0; i < headerRange.columnCount; i++) {
-		cells.push(headerRange.getCell(0,i));				
-		cells[i].load('width');
-	}
-
-	await context.sync();  
-
-
-	var startColorRgb = hexToRgb("#FFD700");
-	var endColorRgb = hexToRgb("#008080");
-				
-	let runningTotal = 0;
-	// Set a new bottom border style for each column in the header	
-	for (let i = 0; i < cells.length; i++) {			
-		runningTotal += cells[i].width;	
-
-		let interpolatedColorRgb = interpolateColor(startColorRgb, endColorRgb, runningTotal / headerRange.width);
-
-		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).style = 'Continuous';
-		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).color = rgbToHex(interpolatedColorRgb);
-		cells[i].format.borders.getItem(Excel.BorderIndex.edgeBottom).weight = 'Medium';
-		cells[i].format.fill.color = 'white';	
-	}
-	
-    
-}
-
-
-async function addNewStyle() {
-	await Excel.run(async (context) => {
-	  let styles = context.workbook.styles;
-  
-	  // Add a new style to the style collection.
-	  // Styles is in the Home tab ribbon.
-	  styles.add("RM 3 Style");
-  
-	  let newStyle = styles.getItem("RM 3 Style");
-  
-	  // The "Diagonal Orientation Style" properties.
-	  newStyle.textOrientation = 90;
-	  newStyle.autoIndent = true;
-	  newStyle.includeProtection = true;
-	  newStyle.shrinkToFit = true;
-	  newStyle.locked = false;
-  
-	  await context.sync();
-  
-	  console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");
-	});
-  }
-  
-
-
-async function customTableStyle () {
-
-	await Excel.run(async (context) => {
-		let sheet = context.workbook.worksheets.getItem("Products");
-		let expensesTable = sheet.tables.getItem("ProductsTable");
-
-		expensesTable.getDataBodyRange().style = "RM 3 Style";
-		
-		await context.sync();
-	  });
-
-	
-
-}
-
-async function tableStyle() {
-	Excel.run(function (context) {
-		var sheet = context.workbook.worksheets.getItem("Products"); // Replace with your sheet name
-		var table = sheet.tables.getItem("ProductsTable"); // Replace with your table name
-	
-		// Reset table formatting to defaults
-		table.style = "TableStyleLigt1";		
-	
-		return context.sync();
-	}).catch(function (error) {
-		console.log("Error: " + error);
-		if (error instanceof OfficeExtension.Error) {
-			console.log("Debug info: " + JSON.stringify(error.debugInfo));
-		}
-	});
-	
-}
-
-async function cleartableFormat(tableName) {
-	await Excel.run(async (context) => {
-		let sheet = context.workbook.worksheets.getItem("Products");
-		let expensesTable = sheet.tables.getItem("ProductsTable");
-	
-		expensesTable.getHeaderRowRange().format.fill.color = "#FFFFFF";
-		expensesTable.getHeaderRowRange().format.font.color = "#000000";
-		expensesTable.getDataBodyRange().format.fill.color = "#FFFFFF";
-		
-		await context.sync();
-	});
-	
-}
 
 
 /** Set up Sample worksheet. */
