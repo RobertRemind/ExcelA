@@ -646,7 +646,7 @@ async function applyStyleToTable(trackedTable) {
 		if(trackedTable.styles.body) {
 			const bodyStyle = TrackedStyles.styles[trackedTable.styles.body].name
 			table.getRange().style = bodyStyle; // format the whole table to match the body.
-			table.getDataBodyRange().style = trackedTable.styles.body;		
+			table.getDataBodyRange().style =  bodyStyle;		
 		}
 
 		if(trackedTable.styles.header) {
