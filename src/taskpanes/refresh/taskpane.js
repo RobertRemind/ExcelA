@@ -161,9 +161,10 @@ async function addNewStyle(styleName, removeFirst) {
 		// Set Formatting		
 		newStyle = removeStyleBorders(newStyle);
 		newStyle.includeBorder = true; 		// Set the style as including border information.
+		newStyle.includePatterns = true;
 		
 		if(styleName == "Remind Table Body") {
-			newStyle.fill.color = "#900000";
+			newStyle.fill.clear();
 		} else {
 			newStyle.fill.color = "#000099";
 		}
