@@ -315,9 +315,9 @@ async function syncTrackedStyle(trackedStyle, sync) {
 		let newStyle = context.workbook.styles.getItem(trackedStyle.name);
 
 		// Set borders		
-		newStyle = syncStyleBorders(trackedStyle, newStyle);
-		newStyle = syncStyleFill(trackedStyle, newStyle);
-		newStyle = syncStyleFormat(trackedStyle, newStyle);
+		newStyle = syncStyleBorders(newStyle, trackedStyle);
+		newStyle = syncStyleFill(newStyle, trackedStyle);
+		newStyle = syncStyleFormat(newStyle, trackedStyle);
 		
 	
 		return context.sync();	
@@ -376,7 +376,7 @@ function syncStyleBorders(style, trackedStyle) {
     
 	// Apply Borders 
 	if (style && trackedStyle && trackedStyle.borders) {
-		style.includeBorder = trackedStyle.includeBorder ? trackedStyle.includeBorder : true; 		// Set the style as including border information.
+		style.includeBorder = trackedStyle.borders.includeBorder ? trackedStyle.borders.includeBorder : true; 		// Set the style as including border information.
 
 		//Apply defaults
 		TrackedStyles.defaults.borders.positions.map((pos) => {
@@ -405,15 +405,17 @@ function syncStyleFill(style, trackedStyle) {
 	if (style && trackedStyle && trackedStyle.fill) {
 		style.includePatterns = true;		
 		
-		if (trackedStyle.fill.isClear) {
+		if (trackedStyle.fill.isClear && style.fill) {
 			style.fill.clear();
 
-		} else if (trackedStyle.fill.color) {
-			style.fill.color = trackedStyle.fill.color;
-
 		} else {
-			style.fill.clear();			
-
+			if (style.fill) {
+				if (trackedStyle.fill.color) {
+					style.fill.color = trackedStyle.fill.color;		
+				} else {
+					style.fill.clear();			
+				}				
+			}			
 		}	
 
 	}
