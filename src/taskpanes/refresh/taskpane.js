@@ -990,13 +990,13 @@ async function createDataTable(context, trackedTable) {
 	tbl.getHeaderRowRange().values = [trackedTable.trackedColumns];
 
 	trackedTable.rows.forEach((r) => {
-		let rowData = trackedTable.trackedColumns.map((c) => r[c]);
+		let rowData = trackedTable.trackedColumns.map((c) => r[c.name]);
 		tbl.rows.add(null /*add at the end*/, [rowData]);
 	});
 
 	// Auto fit new data. This is used by the gradient to determine colors.
-	table.getRange().format.autofitColumns();
-	table.getRange().format.autofitRows();
+	tbl.getRange().format.autofitColumns();
+	v.getRange().format.autofitRows();
 
 	/*
 		worksheet.getUsedRange().format.autofitColumns();
