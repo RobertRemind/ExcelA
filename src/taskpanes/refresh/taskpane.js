@@ -26,6 +26,9 @@ const azureFunctions = [
 ];
 
 
+/**
+ * Object to hold the user's visual identity settings.
+ */
 const visualStyle = {
 	colors: {
 		startColor: "#FFD700",
@@ -37,9 +40,18 @@ const visualStyle = {
 		
 }
 
+/**
+ * Status of refreshing data async process.
+ */
+const refreshStatus = {
+	completedFunctionsCount: 0,
+	errorOccurred: false, 
+	reset: function () {
+		this.completedFunctionsCount = 0;
+		this.errorOccurred = false;
+	}
+}
 
-let completedFunctionsCount = 0;
-let errorOccurred = false;
 
 
 /**
@@ -47,12 +59,12 @@ let errorOccurred = false;
  */
 Office.onReady((info) => {
     
-    if (info.host === Office.HostType.Excel) {        
-
+    if (info.host === Office.HostType.Excel) {        		this
         // Bind Refresh of source data
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
-            completedFunctionsCount = 0;
-            errorOccurred = false;
+			refreshStatus.reset();
+            refreshStatus.completedFunctionsCount = 0;
+            refreshStatus.errorOccurred = false;
 
             const finalStatus = document.getElementById('finalStatusIndicator')
             if(finalStatus) {
@@ -186,11 +198,15 @@ async function applyStyleToTable(tableName, styleName) {
 
 /* 
 ###########################################################################################
-	Styles - Generic
+	Styles
 ########################################################################################### 
 */
 
-
+/**
+ * 
+ * @param {*} styleName 
+ * @param {*} removeFirst 
+ */
 async function addNewStyle(styleName, removeFirst) {
 	await Excel.run(async (context) => {		
 				
@@ -216,7 +232,8 @@ async function addNewStyle(styleName, removeFirst) {
 		if(styleName == "Remind Table Body") {
 			newStyle.fill.clear();
 		} else {
-			newStyle.fill.clear();
+			//newStyle.fill.clear();
+			newStyle.fill.color = visualStyle.colors.startColor;
 			newStyle.font.bold = true;
 		}
 
@@ -551,7 +568,7 @@ function startAzureFunction(functionId) {
         })
         .catch((error) => {            
             updateStatus(functionId, 'Error: ' + error.message, 'error');
-            errorOccurred = true;
+            refreshStatus.errorOccurred = true;
         })
         .finally(() => {            
             checkAllFunctionsCompleted();
@@ -588,9 +605,9 @@ function updateStatus(functionId, message, status) {
  * We each Azure function promise returns check to see that overall status.
  */
 function checkAllFunctionsCompleted() {
-    completedFunctionsCount++;
-    if (completedFunctionsCount === azureFunctions.length) {
-        if (errorOccurred) {
+    refreshStatus.completedFunctionsCount++;
+    if (refreshStatus.completedFunctionsCount === azureFunctions.length) {
+        if (refreshStatus.errorOccurred) {
             showFinalStatus('Completed with Errors');
         } else {
             showFinalStatus('All Functions Completed Successfully');
