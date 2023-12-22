@@ -958,7 +958,7 @@ function makeProductEntity(productID, productName, product) {
 
 // Get products and product properties.
 function getProduct(id) {
-  return TrackedTables.product.rows.find((p) => p.primarySystemCode == id);
+  return TrackedTables.tables.product.rows.find((p) => p.primarySystemCode == id);
 }
 
 
@@ -1076,8 +1076,8 @@ async function getShopifyProducts() {
     if (data && data[0] && data[0].result) {
       const j = JSON.parse(data[0].result)
           
-      TrackedTables.product.rows.splice(0, TrackedTables.product.rows.length); // Remove all elements from the array
-      TrackedTables.product.rows.push(...j); // Merge arrays
+      TrackedTables.tables.product.rows.splice(0, TrackedTables.tables.product.rows.length); // Remove all elements from the array
+      TrackedTables.tables.product.rows.push(...j); // Merge arrays
     }
     
 
