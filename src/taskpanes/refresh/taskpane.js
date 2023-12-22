@@ -368,7 +368,7 @@ async function addNewStyle(styleName, removeFirst) {
 		
 		if(styleName == "Remind Table Body") {
 			//newStyle.fill.clear();
-			newStyle.fill.color = visualStyle.colors.startColor;
+			newStyle.fill.color = VisualStyle.colors.startColor;
 		} else {
 			newStyle.fill.clear();			
 			newStyle.font.bold = true;
