@@ -357,9 +357,9 @@ async function applyTableStyle(sheetName, tableName, headerStyleName, bodyStyleN
 		let table = sheet.tables.getItem(tableName);
 		
 		debugger;
-		const styles = workbook.tableStyles;
+		const styles = context.workbook.tableStyles;
 		await styles.load("items");
-				
+
 
 		table.load(["showTotals"]);	
 		await context.sync();
