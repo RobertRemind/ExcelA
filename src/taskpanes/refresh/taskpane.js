@@ -156,13 +156,12 @@ async function addNewStyle(styleName, removeFirst) {
 		// Add a new style to the style collection.
 	  	// Styles is in the Home tab ribbon.
 		debugger;
-
-		styles.add(styleName);
-  
-		let newStyle = styles.getItem(styleName);
+		
+		let newStyle = context.workbook.styles.add(styleName);  
+		//let newStyle = styles.getItem(styleName);
 	
 		// The "Diagonal Orientation Style" properties.
-		newStyle.textOrientation = 90;
+		newStyle.textOrientation = 20;
 		newStyle.autoIndent = true;
 		newStyle.includeProtection = true;
 		newStyle.shrinkToFit = true;
