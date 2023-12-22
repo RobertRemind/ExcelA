@@ -75,8 +75,23 @@ const TrackedStyles = {
 			borders: {}
 		}, 
 		defaultTableBody: {
-			name: "Remind Table Body"
-		}		 
+			name: "Remind Table Body",
+			format: { // Set the style as excluding border and fill information.
+				includeBorder: true, 						
+				formulaHidden: false,
+				locked:  false,
+				shrinkToFit:  false,
+				textOrientation:  0,
+				autoIndent: true,
+				includeProtection: false,
+				wrapText: true,
+			}, 
+			fill: {
+				color: "", 
+				isClear: true
+			}, 
+			borders: {}
+		}
 	}, 
 	defaults: {
 		format: { // Set the style as excluding border and fill information.
@@ -388,8 +403,26 @@ function syncStyleBorders(style, trackedStyle) {
 			style[key] = trackedStyle.borders[key];
 		});			
 	}
-	
 	return style;
+	
+	/*
+	if (style) {
+		// Removing all borders from the style
+		const borderProperties = {
+			style: "None",
+			color: "none"
+		};
+
+		style.borderTop = borderProperties;
+		style.borderLeft = borderProperties;
+		style.borderRight = borderProperties;
+		style.borderBottom = borderProperties;
+		style.borderDiagonal = borderProperties;
+		style.borderHorizontal = borderProperties;
+		style.borderVertical = borderProperties;
+	}
+	return style;
+	*/
 }
 
 
