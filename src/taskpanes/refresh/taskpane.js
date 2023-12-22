@@ -175,7 +175,6 @@ async function addNewStyle(styleName, removeFirst) {
 		newStyle.autoIndent = true;
 		newStyle.includeProtection = false;
 		newStyle.wrapText = true;
-
 		
 	
 		console.log("Successfully added a new style with diagonal orientation to the Home tab ribbon.");		
@@ -219,7 +218,7 @@ async function isStyleName(context, styleName) {
 async function removeStyleBorders(style) {
     
 	// Check if the style exists before trying to modify it
-	if (!style.isNullObject) {
+	if (style) {
 		// Removing all borders from the style
 		const borderProperties = {
 			style: "None",
