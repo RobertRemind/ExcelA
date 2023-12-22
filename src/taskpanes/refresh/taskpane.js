@@ -438,7 +438,7 @@ function syncStyleFormat(style, trackedStyle) {
 		// Assign the style settings from tracked styles is it has been defined. Otherwise use the defaults.
 		const defaultFormat = TrackedStyles.defaults.format;
 		Object.keys(trackedStyle.format).forEach(key => {
-			newStyle[key] = trackedStyle[key] === undefined ? trackedStyle[key] : defaultFormat[key];
+			style[key] = trackedStyle[key] === undefined ? trackedStyle[key] : defaultFormat[key];
 		});
 
 	}			
