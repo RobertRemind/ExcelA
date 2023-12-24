@@ -1194,11 +1194,16 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 		// Finding names in headers but not in trackedColumnNames
 		const uniqueInHeaders = headerValues.filter(name => !trackedColumnNames.includes(name));
 
-		// Combining the results for symmetric difference
-		const symmetricDifference = uniqueInTrackedColumns.concat(uniqueInHeaders);
-
-		console.log(symmetricDifference); // Output will be the symmetric difference
-
+		tableConfig.trackedColumns.forEach(trackedColumn => {
+			if (trackedColumn.name === uniqueInTrackedColumns[0]) {
+				trackedColumn.name = uniqueInHeaders[0];
+				if(!trackedColumn.nameHistory){
+					trackedColumn.nameHistory = [uniqueInTrackedColumns[0]];
+				} else {
+					trackedColumn.nameHistory.add(uniqueInTrackedColumns[0]);
+				}
+			}
+		})
 
 	} else {
 		console.log("Not a header change.")
