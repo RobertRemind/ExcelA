@@ -1066,7 +1066,7 @@ async function createTrackedTable(context, trackedTable) {
 
 	// Bind Table Change Event
 	tbl.onChanged.add((eventArgs) => {
-        onTrackedTableChange(eventArgs, table);
+        onTrackedTableChange(eventArgs, tbl);
     });
 	
 	
