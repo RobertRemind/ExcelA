@@ -137,14 +137,14 @@ const TrackedTables = {
 		products: {  // Dimension Name
 			name: "ProductsTable",
 			worksheet: "Product",
+			range: "A1:C1",
 			styles: {
 				header: "defaultTableHeader", 
-				tracked: "defaultTableBody",
 				body: "defaultTableBody"
 			}, 
 			trackedColumns: [
 				{
-					colname: "Product", // What is the name of the column in the data table. 
+					name: "Product", // What is the name of the column in the data table. 
 					source: null, // What is the Data source column name?
 					isDirty: false	 // Used to tag that the column has been changed and prompt the user to disable tracking. 
 				}, 
@@ -316,33 +316,6 @@ async function setTableStyle(tableName, styleName) {
     });
 }
 
-/**
- * Do two range strings intersect?
- * @param {string} range1 Excel range as string
- * @param {string} range2 Excel range as string
- * @returns boolean
- */
-async function isIntersectRange(range1, range2) {
-	Excel.run(async (context) => {
-		const sheet = context.workbook.worksheets.getActiveWorksheet();
-		const intersection = sheet.getRange(`=INTERSECT(${range1}, ${range2})`);
-		intersection.load('address');
-	
-		await context.sync();
-	
-		if (intersection.address) {
-			console.log(`Intersection found at: ${intersection.address}`);
-			return true;
-		} else {
-			console.log("No intersection found.");
-			return false;
-		}
-		
-	}).catch(error => {
-		console.error(error);
-		return false;
-	});
-} 
 
 
 
@@ -1061,10 +1034,11 @@ async function createTrackedTable(context, trackedTable) {
 	tbl.name = trackedTable.name;
 
 	// Bind Change Event
+	/*
 	tbl.onChanged.add((eventArgs) => {
         onTrackedTableChange(eventArgs, table);
     });
-
+	*/
 	
 	const headerValues = []
 	trackedTable.trackedColumns.map((c) => {
@@ -1096,56 +1070,9 @@ async function createTrackedTable(context, trackedTable) {
  * Event to watch user updates to Tracked Tables.
  * @param {Excel.TableChangedEventArgs} eventArg 
  */
-async function onTrackedTableChange(eventArg, table) {
+async function onTrackedTableChange(eventArg) {
 	console.log(eventArg);
 	debugger;
-
-	switch (eventArg.changeType) {
-		case "RangeEdited":
-			updateTrackedColumnHeaders(table, eventArg.address)
-
-
-			break;
-		case "RowInserted": 
-		case "RowDeleted":
-		case "ColumnInserted":
-		case "ColumnDeleted":
-		case "CellInserted":
-		case "CellDeleted":
-	}
-
-
-}
-
-/**
- * Updates the Tracked Table column definition in the event that a user change a Tracked Column name.
- * @param {Excel.Table} table A Tracked Table.
- * @param {string} range A string representing the cells address that has been changed 
- */
-async function updateTrackedColumnHeaders(table, range) {
-	if (isTrackedHeaderIntersect(table, range)) {
-		debugger;
-	} else {
-		console.log("Not a header change.")
-	}
-
-}
-
-
-async function isTrackedHeaderIntersect(table, range){
-	debugger;
-	const header = table.getHeaderRowRange()
-
-	const intersects = isIntersectRange(header.address, range)	
-
-	/*	await Excel.run(async (context) => {
-        
-
-		
-    }).catch(error => {
-        console.error(error);
-    });
-*/
 }
 
 
