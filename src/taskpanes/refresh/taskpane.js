@@ -1189,7 +1189,7 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 		const trackedColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 
 		// Finding names in trackedColumnNames but not in headers
-		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headers.includes(name));
+		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headerValues.includes(name));
 
 		// Finding names in headers but not in trackedColumnNames
 		const uniqueInHeaders = headerValues.filter(name => !trackedColumnNames.includes(name));
