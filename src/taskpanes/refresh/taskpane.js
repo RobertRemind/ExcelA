@@ -324,28 +324,6 @@ async function setTableStyle(tableName, styleName) {
  * @returns {boolean} - True if the ranges intersect, false otherwise.
  */
 function doRangesIntersect(range1, range2) {
-    // Helper function to parse a range string into row and column bounds
-    function parseRange(rangeString) {
-        const sheetRegex = /^'?(.+?)'?!(.+)$/;
-        const match = rangeString.match(sheetRegex);
-        const rangePart = match[2];
-
-        const cellRegex = /([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?/;
-        const cells = rangePart.match(cellRegex);
-
-        let startColumn = cells[1];
-        let startRow = parseInt(cells[2], 10);
-        let endColumn = cells[3] ? cells[3] : startColumn;
-        let endRow = cells[4] ? parseInt(cells[4], 10) : startRow;
-
-        return {
-            startRow: startRow,
-            endRow: endRow,
-            startColumn: startColumn,
-            endColumn: endColumn
-        };
-    }
-
     
     const range1Parsed = parseRange(range1);
     const range2Parsed = parseRange(range2);
@@ -364,7 +342,39 @@ function doRangesIntersect(range1, range2) {
 }
 
 
-// Convert a column letter (e.g., "AA") to a number (e.g., 27)
+/**
+ * Helper function to parse a range string into row and column bounds
+ * @param {string} rangeString Excel Range as string
+ * @returns 
+ */
+function parseRange(rangeString) {
+	const sheetRegex = /^'?(.+?)'?!(.+)$/;
+	const match = rangeString.match(sheetRegex);
+	const rangePart = match[2];
+
+	const cellRegex = /([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?/;
+	const cells = rangePart.match(cellRegex);
+
+	let startColumn = cells[1];
+	let startRow = parseInt(cells[2], 10);
+	let endColumn = cells[3] ? cells[3] : startColumn;
+	let endRow = cells[4] ? parseInt(cells[4], 10) : startRow;
+
+	return {
+		startRow: startRow,
+		endRow: endRow,
+		startColumn: startColumn,
+		endColumn: endColumn
+	};
+}
+
+
+
+/**
+ * Convert a column letter (e.g., "AA") to a number (e.g., 27)
+ * @param {string} column Excel column name to number
+ * @returns int
+ */
 function columnToNumber(column) {
 	let sum = 0;
 	for (let i = 0; i < column.length; i++) {
@@ -1131,9 +1141,7 @@ async function createTrackedTable(context, trackedTable) {
  */
 async function onTrackedTableChange(worksheet, table, eventArg) {
 
-	await isTrackedHeaderIntersect(worksheet, table, eventArg.address)
-	return
-
+	
 	console.log(eventArg);
 
 	switch (eventArg.changeType) {
@@ -1158,27 +1166,50 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
  * @param {Excel.Table} table A Tracked Table.
  * @param {string} range A string representing the cells address that has been changed 
  */
-async function updateTrackedColumnHeaders(table, range) {
-	return
-	i = await isTrackedHeaderIntersect(table, range)
-	
-	if (i) {
-		debugger;
+async function updateTrackedColumnHeaders(worksheet, table, range) {
+
+	const headerRange = table.getHeaderRowRange();
+    headerRange.load(["address"]); // Load the address property of the header range
+	worksheet.load(["name"]);
+	table.load(["name"]);
+    await table.context.sync();
+
+	// Now loop through the tracked columns and find the one that does not exist in the table header.
+	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
+
+		const headerValues = headerRange.values;		
+		const tableConfig = TrackedTables[table.name];
+				
+		// Extracting tracked column names
+		const trackedColumnNames = TrackedTables.tables.products.trackedColumns.map(tc => tc.name);
+
+		// Finding names in trackedColumnNames but not in headers
+		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headers.includes(name));
+
+		// Finding names in headers but not in trackedColumnNames
+		const uniqueInHeaders = headers.filter(name => !trackedColumnNames.includes(name));
+
+		// Combining the results for symmetric difference
+		const symmetricDifference = uniqueInTrackedColumns.concat(uniqueInHeaders);
+
+		console.log(symmetricDifference); // Output will be the symmetric difference
+
+
 	} else {
 		console.log("Not a header change.")
 	}
 
 }
 
-
+/**
+ * Does a range intersect the header of a Tracked Table.
+ * @param {Excel.Worksheet} worksheet Excel worksheet of table
+ * @param {Excel.Table} table Tracked Table
+ * @param {string} range Target Excel Range as string
+ * @returns 
+ */
 async function isTrackedHeaderIntersect(worksheet, table, range){
 
-	const headerRange = table.getHeaderRowRange();
-    headerRange.load(["address"]); // Load the address property of the header range
-	worksheet.load(["name"]);
-    await table.context.sync();
-
-	const intersect = doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`);
 
 	return intersect;
 }
