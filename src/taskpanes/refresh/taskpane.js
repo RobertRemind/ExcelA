@@ -325,26 +325,30 @@ async function setTableStyle(tableName, styleName) {
  * @returns boolean
  */
 async function isIntersectRange(range1, range2) {
-	Excel.run(async (context) => {
-		const sheet = context.workbook.worksheets.getActiveWorksheet();
-		const intersection = sheet.getRange(`=INTERSECT(${range1}, ${range2})`);
-		intersection.load('address');
-	
-		await context.sync();
-	
-		if (intersection.address) {
-			console.log(`Intersection found at: ${intersection.address}`);
-			return true;
-		} else {
-			console.log("No intersection found.");
-			return false;
-		}
-		
-	}).catch(error => {
-		console.error(error);
-		return false;
-	});
-} 
+    return Excel.run(async (context) => {
+        // Create Range objects from the range strings
+        const rangeObj1 = context.workbook.worksheets.getItemByRange(range1).getRange(range1);
+        const rangeObj2 = context.workbook.worksheets.getItemByRange(range2).getRange(range2);
+
+        // Use the Excel formula to find the intersection
+        const intersection = context.workbook.functions.intersect(rangeObj1, rangeObj2);
+        intersection.load('address');
+
+        await context.sync();
+
+        if (intersection.address) {
+            console.log(`Intersection found at: ${intersection.address}`);
+            return true;
+        } else {
+            console.log("No intersection found.");
+            return false;
+        }
+    }).catch(error => {
+        console.error(error);
+        return false;
+    });
+}
+
 
 
 
