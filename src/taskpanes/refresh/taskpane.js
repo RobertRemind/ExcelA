@@ -1178,13 +1178,13 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
 
 		const headerValues = headerRange.values;		
-		const tableConfig = TrackedTables.tables[table.name];
+		const tableConfig = TrackedTables.tables.filter(value => value.name == table.name);
 				
 		// Extracting tracked column names
 		const trackedColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 
 		// Finding names in trackedColumnNames but not in headers
-		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headerValues.includes(name));
+		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headers.includes(name));
 
 		// Finding names in headers but not in trackedColumnNames
 		const uniqueInHeaders = headerValues.filter(name => !trackedColumnNames.includes(name));
