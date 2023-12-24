@@ -1169,7 +1169,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 async function updateTrackedColumnHeaders(worksheet, table, range) {
 
 	const headerRange = table.getHeaderRowRange();
-    headerRange.load(["address"]); // Load the address property of the header range
+    headerRange.load(["address", "values"]); // Load the address property of the header range
 	worksheet.load(["name"]);
 	table.load(["name"]);
     await table.context.sync();
@@ -1178,16 +1178,16 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
 
 		const headerValues = headerRange.values;		
-		const tableConfig = TrackedTables[table.name];
+		const tableConfig = TrackedTables.tables[table.name];
 				
 		// Extracting tracked column names
-		const trackedColumnNames = TrackedTables.tables.products.trackedColumns.map(tc => tc.name);
+		const trackedColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 
 		// Finding names in trackedColumnNames but not in headers
-		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headers.includes(name));
+		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headerValues.includes(name));
 
 		// Finding names in headers but not in trackedColumnNames
-		const uniqueInHeaders = headers.filter(name => !trackedColumnNames.includes(name));
+		const uniqueInHeaders = headerValues.filter(name => !trackedColumnNames.includes(name));
 
 		// Combining the results for symmetric difference
 		const symmetricDifference = uniqueInTrackedColumns.concat(uniqueInHeaders);
