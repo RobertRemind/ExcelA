@@ -1104,7 +1104,7 @@ async function createTrackedTable(context, trackedTable) {
  */
 async function onTrackedTableChange(eventArg, table) {
 
-	await isTrackedHeaderIntersect(table, range)
+	await isTrackedHeaderIntersect(table, eventArg.address)
 	return
 
 	console.log(eventArg);
