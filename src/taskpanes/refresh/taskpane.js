@@ -1178,7 +1178,7 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 	// Now loop through the tracked columns and find the one that does not exist in the table header.
 	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
 
-		const headerValues = headerRange.values;		
+		const headerValues = headerRange.values[0];		
 		
 		// Find the member of Tracked tables that has the same table name. 
 		const tableConfig = TrackedTables.tables.find(tt => {
