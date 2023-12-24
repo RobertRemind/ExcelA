@@ -1104,7 +1104,6 @@ async function createTrackedTable(context, trackedTable) {
  */
 async function onTrackedTableChange(eventArg, table) {
 	console.log(eventArg);
-	debugger;
 
 	switch (eventArg.changeType) {
 		case "RangeEdited":
@@ -1152,7 +1151,7 @@ async function isTrackedHeaderIntersect(table, range){
         const intersects = isIntersectRange(header.address, rangeAddress);
         return intersects;
 
-    }
+    });
 
 }
 
