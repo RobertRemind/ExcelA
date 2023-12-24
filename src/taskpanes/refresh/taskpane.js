@@ -1178,7 +1178,9 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
 
 		const headerValues = headerRange.values;		
-		const tableConfig = TrackedTables.tables.filter(value => value.name == table.name);
+		const tableConfig = Object.keys(TrackedTables.tables).find(key => {
+			return TrackedTables.tables[key].name === table.name;
+		});
 				
 		// Extracting tracked column names
 		const trackedColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
