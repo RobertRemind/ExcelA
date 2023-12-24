@@ -1129,7 +1129,7 @@ async function onTrackedTableChange(eventArg, table) {
  * @param {string} range A string representing the cells address that has been changed 
  */
 async function updateTrackedColumnHeaders(table, range) {
-	if (isTrackedHeaderIntersect(table, range)) {
+	if (await isTrackedHeaderIntersect(table, range)) {
 		debugger;
 	} else {
 		console.log("Not a header change.")
@@ -1142,13 +1142,13 @@ async function isTrackedHeaderIntersect(table, range){
 
 
 	await Excel.run(async (context) => {
+        const header = table.getHeaderRowRange();
         
-		const header = table.getHeaderRowRange();
-		header.load("address");
-		await context.sync()
-		
+        header.load("address");
+        await context.sync();
 		debugger;
-		const intersects = isIntersectRange(header.address, range)	
+        const intersects = isIntersectRange(header.address, rangeAddress);
+        return intersects;
 
     }).catch(error => {
         console.error(error);
