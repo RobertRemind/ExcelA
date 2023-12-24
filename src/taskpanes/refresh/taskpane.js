@@ -1148,6 +1148,7 @@ async function isTrackedHeaderIntersect(worksheet, table, range){
 
 	const headerRange = table.getHeaderRowRange();
     headerRange.load(["address"]); // Load the address property of the header range
+	worksheet.load(["name"]);
     await table.context.sync();
 
 	const i = isIntersectRange(headerRange.address, `${worksheet.name}!${range}`);
