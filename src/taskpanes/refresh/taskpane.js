@@ -1015,11 +1015,14 @@ function getSupplier(supplierID) {
  * @param {TrackedTable} trackedTable Settings of the Tracked Table.
  * @returns 
  */
-async function createDataTable(context, trackedTable) {
+async function createTrackedTable(context, trackedTable) {
 	
 	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
 	const tbl = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
 	tbl.name = trackedTable.name;
+
+	// Bind Change Event
+	tbl.onChanged.add(onTrackedTableChange);
 
 	
 	const headerValues = []
@@ -1037,18 +1040,19 @@ async function createDataTable(context, trackedTable) {
 	tbl.getRange().format.autofitColumns();
 	tbl.getRange().format.autofitRows();
 
-	/*
-		worksheet.getUsedRange().format.autofitColumns();
-		worksheet.getUsedRange().format.autofitRows();
-	*/
-
 	await context.sync(); 	
 	
 	return tbl;
 }
 
-
-
+/**
+ * Event to watch user updates to Tracked Tables.
+ * @param {Excel.TableChangedEventArgs} eventArg 
+ */
+async function onTrackedTableChange(eventArg) {
+	console.log(eventArg);
+	debugger;
+}
 
 
 /** Set up Sample worksheet. */
@@ -1060,7 +1064,7 @@ async function setupProducts() {
 	await Excel.run(async (context) => {
 		
 		const sheet = await createWorksheet(context, productSettings.worksheet, true, true);		
-		await createDataTable(context, productSettings);  // Create the new table on the target range.				
+		await createTrackedTable(context, productSettings);  // Create the new table on the target range.				
 		
 		sheet.activate();
 
