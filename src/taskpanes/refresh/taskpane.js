@@ -145,7 +145,7 @@ const TrackedTables = {
 			trackedColumns: [
 				{
 					colname: "Product", // What is the name of the column in the data table. 
-					source: "Product", // What is the Data source column name?
+					source: null, // What is the Data source column name?
 					isDirty: false	 // Used to tag that the column has been changed and prompt the user to disable tracking. 
 				}, 
 				{
@@ -1074,7 +1074,12 @@ async function createTrackedTable(context, trackedTable) {
 	tbl.getHeaderRowRange().values = [headerValues];
 
 	trackedTable.rows.forEach((r) => {
-		let rowData = trackedTable.trackedColumns.map((c) => r[c.name]);
+		let rowData = trackedTable.trackedColumns.map((c) => {
+			if(c.source) {
+				return r[c.source]
+			} 
+			return null;
+		});
 		tbl.rows.add(null /*add at the end*/, [rowData]);
 	});
 
