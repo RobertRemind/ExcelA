@@ -326,16 +326,30 @@ async function setTableStyle(tableName, styleName) {
  */
 async function isIntersectRange(range1, range2) {
     return Excel.run(async (context) => {
-        // Create Range objects from the range strings
-        const rangeObj1 = context.workbook.worksheets.getItemByRange(range1).getRange(range1);
-        const rangeObj2 = context.workbook.worksheets.getItemByRange(range2).getRange(range2);
+        // Function to parse the worksheet name and range address
+        function parseRange(rangeString) {
+            const regex = /^'?(.+?)'?!(.+)$/;
+            const match = rangeString.match(regex);
+            return { worksheetName: match[1], rangeAddress: match[2] };
+        }
 
-        // Use the Excel formula to find the intersection
+        // Parse the worksheet name and range address
+        const parsedRange1 = parseRange(range1);
+        const parsedRange2 = parseRange(range2);
+
+        // Get the worksheet and range objects
+        const worksheet1 = context.workbook.worksheets.getItem(parsedRange1.worksheetName);
+        const rangeObj1 = worksheet1.getRange(parsedRange1.rangeAddress);
+        const worksheet2 = context.workbook.worksheets.getItem(parsedRange2.worksheetName);
+        const rangeObj2 = worksheet2.getRange(parsedRange2.rangeAddress);
+
+        // Try to get the intersection of the two ranges
         const intersection = context.workbook.functions.intersect(rangeObj1, rangeObj2);
         intersection.load('address');
 
         await context.sync();
 
+        // Check if there's an intersection
         if (intersection.address) {
             console.log(`Intersection found at: ${intersection.address}`);
             return true;
@@ -348,6 +362,7 @@ async function isIntersectRange(range1, range2) {
         return false;
     });
 }
+
 
 
 
