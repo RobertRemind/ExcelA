@@ -1197,10 +1197,12 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 		tableConfig.trackedColumns.forEach(trackedColumn => {
 			if (trackedColumn.name === uniqueInTrackedColumns[0]) {
 				trackedColumn.name = uniqueInHeaders[0];
+				
+				// Add new columns names to history array.
 				if(!trackedColumn.nameHistory){
 					trackedColumn.nameHistory = [uniqueInTrackedColumns[0]];
 				} else {
-					trackedColumn.nameHistory.add(uniqueInTrackedColumns[0]);
+					trackedColumn.nameHistory.push(uniqueInTrackedColumns[0]);
 				}
 			}
 		})
