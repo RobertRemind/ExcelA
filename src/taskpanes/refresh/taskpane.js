@@ -1139,19 +1139,21 @@ async function updateTrackedColumnHeaders(table, range) {
 
 
 async function isTrackedHeaderIntersect(table, range){
-	debugger;
-	const header = table.getHeaderRowRange()
 
-	const intersects = isIntersectRange(header.address, range)	
 
-	/*	await Excel.run(async (context) => {
+	await Excel.run(async (context) => {
         
-
+		const header = table.getHeaderRowRange();
+		header.load("address");
+		await context.sync()
 		
+		debugger;
+		const intersects = isIntersectRange(header.address, range)	
+
     }).catch(error => {
         console.error(error);
     });
-*/
+
 }
 
 
