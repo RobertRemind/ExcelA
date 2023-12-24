@@ -317,54 +317,62 @@ async function setTableStyle(tableName, styleName) {
 }
 
 
-
 /**
- * Do two range strings intersect?
- * @param {string} range1 Excel range as string
- * @param {string} range2 Excel range as string
- * @returns boolean
+ * Check if two Excel range strings intersect.
+ * @param {string} range1 - First range string (e.g., "'Sheet1'!A1:B2")
+ * @param {string} range2 - Second range string (e.g., "'Sheet1'!C3:D4")
+ * @returns {boolean} - True if the ranges intersect, false otherwise.
  */
-async function isIntersectRange(range1, range2) {
-    return Excel.run(async (context) => {
-        // Function to parse the worksheet name and range address
-        function parseRange(rangeString) {
-            const regex = /^'?(.+?)'?!(.+)$/;
-            const match = rangeString.match(regex);
-            return { worksheetName: match[1], rangeAddress: match[2] };
-        }
+function doRangesIntersect(range1, range2) {
+    // Helper function to parse a range string into row and column bounds
+    function parseRange(rangeString) {
+        const sheetRegex = /^'?(.+?)'?!(.+)$/;
+        const match = rangeString.match(sheetRegex);
+        const rangePart = match[2];
 
-        // Parse the worksheet name and range address
-        const parsedRange1 = parseRange(range1);
-        const parsedRange2 = parseRange(range2);
+        const cellRegex = /([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?/;
+        const cells = rangePart.match(cellRegex);
 
-        // Get the worksheet and range objects
-        const worksheet1 = context.workbook.worksheets.getItem(parsedRange1.worksheetName);
-        const rangeObj1 = worksheet1.getRange(parsedRange1.rangeAddress);
-        const worksheet2 = context.workbook.worksheets.getItem(parsedRange2.worksheetName);
-        const rangeObj2 = worksheet2.getRange(parsedRange2.rangeAddress);
+        let startColumn = cells[1];
+        let startRow = parseInt(cells[2], 10);
+        let endColumn = cells[3] ? cells[3] : startColumn;
+        let endRow = cells[4] ? parseInt(cells[4], 10) : startRow;
 
-        // Try to get the intersection of the two ranges
-        const intersection = context.workbook.functions.intersect(rangeObj1, rangeObj2);
-        intersection.load('address');
+        return {
+            startRow: startRow,
+            endRow: endRow,
+            startColumn: startColumn,
+            endColumn: endColumn
+        };
+    }
 
-        await context.sync();
+    
+    const range1Parsed = parseRange(range1);
+    const range2Parsed = parseRange(range2);
 
-        // Check if there's an intersection
-        if (intersection.address) {
-            console.log(`Intersection found at: ${intersection.address}`);
-            return true;
-        } else {
-            console.log("No intersection found.");
-            return false;
-        }
-    }).catch(error => {
-        console.error(error);
-        return false;
-    });
+    // Convert column letters to numbers
+    range1Parsed.startColumn = columnToNumber(range1Parsed.startColumn);
+    range1Parsed.endColumn = columnToNumber(range1Parsed.endColumn);
+    range2Parsed.startColumn = columnToNumber(range2Parsed.startColumn);
+    range2Parsed.endColumn = columnToNumber(range2Parsed.endColumn);
+
+    // Check for intersection
+    const rowsIntersect = range1Parsed.startRow <= range2Parsed.endRow && range1Parsed.endRow >= range2Parsed.startRow;
+    const colsIntersect = range1Parsed.startColumn <= range2Parsed.endColumn && range1Parsed.endColumn >= range2Parsed.startColumn;
+
+    return rowsIntersect && colsIntersect;
 }
 
 
-
+// Convert a column letter (e.g., "AA") to a number (e.g., 27)
+function columnToNumber(column) {
+	let sum = 0;
+	for (let i = 0; i < column.length; i++) {
+		sum *= 26;
+		sum += column.charCodeAt(i) - 'A'.charCodeAt(0) + 1;
+	}
+	return sum;
+}
 
 
 
@@ -1170,9 +1178,9 @@ async function isTrackedHeaderIntersect(worksheet, table, range){
 	worksheet.load(["name"]);
     await table.context.sync();
 
-	const i = isIntersectRange(headerRange.address, `${worksheet.name}!${range}`);
+	const intersect = doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`);
 
-	return i;
+	return intersect;
 }
 
 
