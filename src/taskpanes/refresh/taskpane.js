@@ -1146,7 +1146,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 	switch (eventArg.changeType) {
 		case "RangeEdited":
-			updateTrackedColumnHeaders(table, eventArg.address)
+			updateTrackedColumnHeaders(worksheet, table, eventArg.address)
 
 
 			break;
