@@ -1103,6 +1103,10 @@ async function createTrackedTable(context, trackedTable) {
  * @param {Excel.TableChangedEventArgs} eventArg 
  */
 async function onTrackedTableChange(eventArg, table) {
+
+	await isTrackedHeaderIntersect(table, range)
+	return
+
 	console.log(eventArg);
 
 	switch (eventArg.changeType) {
@@ -1128,7 +1132,8 @@ async function onTrackedTableChange(eventArg, table) {
  * @param {string} range A string representing the cells address that has been changed 
  */
 async function updateTrackedColumnHeaders(table, range) {
-	const i = await isTrackedHeaderIntersect(table, range)
+	return
+	i = await isTrackedHeaderIntersect(table, range)
 	
 	if (i) {
 		debugger;
@@ -1150,7 +1155,7 @@ async function isTrackedHeaderIntersect(table, range){
 	
 		console.log(`The address of the header row of 'Products' table is: ${headerRange.address}`);
 		debugger;
-		
+
 	}).catch(error => {
 		console.error("Error: " + error);
 		if (error instanceof OfficeExtension.Error) {
