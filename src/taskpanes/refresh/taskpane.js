@@ -133,10 +133,11 @@ const TrackedStyles = {
  * A list to tables that have been made by the add-in.
  */
 const TrackedTables = {
-	tables: {		
-		products: {  // Dimension Name
+	tables: [
+		{
 			name: "ProductsTable",
 			worksheet: "Product",
+			dimension: "products",
 			range: "A1:C1",
 			styles: {
 				header: "defaultTableHeader", 
@@ -161,7 +162,7 @@ const TrackedTables = {
 			], 
 			rows: []
 		}
-	}
+	]
 }
 
 
@@ -1072,7 +1073,7 @@ function makeProductEntity(productID, productName, product) {
 
 // Get products and product properties.
 function getProduct(id) {
-  return TrackedTables.tables.products.rows.find((p) => p.primarySystemCode == id);
+  return TrackedTables.tables[0].rows.find((p) => p.primarySystemCode == id);
 }
 
 
@@ -1178,10 +1179,12 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
 
 		const headerValues = headerRange.values;		
-		const tableConfig = Object.keys(TrackedTables.tables).find(key => {
-			return TrackedTables.tables[key].name === table.name;
+		
+		// Find the member of Tracked tables that has the same table name. 
+		const tableConfig = TrackedTables.tables.find(tt => {
+			return tt.name === table.name;
 		});
-				
+
 		// Extracting tracked column names
 		const trackedColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 
@@ -1222,7 +1225,7 @@ async function isTrackedHeaderIntersect(worksheet, table, range){
 /** Set up Sample worksheet. */
 async function setupProducts() {
 
-	const productSettings = TrackedTables.tables.products;
+	const productSettings = TrackedTables.tables[0];
 	await getShopifyProducts();
 
 	await Excel.run(async (context) => {
@@ -1275,8 +1278,8 @@ async function getShopifyProducts() {
     if (data && data[0] && data[0].result) {
       const j = JSON.parse(data[0].result)
           
-      TrackedTables.tables.products.rows.splice(0, TrackedTables.tables.products.rows.length); // Remove all elements from the array
-      TrackedTables.tables.products.rows.push(...j); // Merge arrays
+      TrackedTables.tables[0].rows.splice(0, TrackedTables.tables[0].rows.length); // Remove all elements from the array
+      TrackedTables.tables[0].rows.push(...j); // Merge arrays
     }
     
 
