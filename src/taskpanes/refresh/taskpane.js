@@ -1156,15 +1156,6 @@ async function isTrackedHeaderIntersect(table, range){
 
 
 
-/**
- * Event to watch user updates to Tracked Tables.
- * @param {Excel.TableChangedEventArgs} eventArg 
- */
-async function onTrackedTableChange(eventArg) {
-	console.log(eventArg);
-	debugger;
-}
-
 
 /** Set up Sample worksheet. */
 async function setupProducts() {
