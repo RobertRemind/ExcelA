@@ -1146,22 +1146,16 @@ async function updateTrackedColumnHeaders(table, range) {
 
 async function isTrackedHeaderIntersect(table, range){
 
-	Excel.run(async (context) => {
-		const headerRange = table.getHeaderRowRange();
-	
-		headerRange.load(["address","addressLocal"]); // Load the address property of the header range
-	
-		await context.sync();
-	
-		console.log(`The address of the header row of 'Products' table is: ${headerRange.address}`);
-		debugger;
+	const headerRange = table.getHeaderRowRange();
+    headerRange.load(["address", "addressLocal"]); // Load the address property of the header range
 
-	}).catch(error => {
-		console.error("Error: " + error);
-		if (error instanceof OfficeExtension.Error) {
-			console.log("Debug info: " + JSON.stringify(error.debugInfo));
-		}
-	});
+    await table.context.sync();
+
+	console.log(`The address of the header row of 'Products' table is: ${headerRange.address}`);
+	debugger;
+
+	const i = isIntersectRange(headerRange.address, range);
+	
 
 }
 
