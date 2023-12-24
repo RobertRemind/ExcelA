@@ -1149,7 +1149,7 @@ async function isTrackedHeaderIntersect(table, range){
 	Excel.run(async (context) => {
 		const headerRange = table.getHeaderRowRange();
 	
-		headerRange.load("address"); // Load the address property of the header range
+		headerRange.load(["address","addressLocal"]); // Load the address property of the header range
 	
 		await context.sync();
 	
