@@ -1066,7 +1066,7 @@ async function createTrackedTable(context, trackedTable) {
 
 	// Bind Table Change Event
 	tbl.onChanged.add((eventArgs) => {
-        onTrackedTableChange(eventArgs, tbl);
+        onTrackedTableChange(worksheet, tbl, eventArgs);
     });
 	
 	
@@ -1102,9 +1102,9 @@ async function createTrackedTable(context, trackedTable) {
  * Event to watch user updates to Tracked Tables.
  * @param {Excel.TableChangedEventArgs} eventArg 
  */
-async function onTrackedTableChange(eventArg, table) {
+async function onTrackedTableChange(worksheet, table, eventArg) {
 
-	await isTrackedHeaderIntersect(table, eventArg.address)
+	await isTrackedHeaderIntersect(worksheet, table, eventArg.address)
 	return
 
 	console.log(eventArg);
@@ -1144,19 +1144,15 @@ async function updateTrackedColumnHeaders(table, range) {
 }
 
 
-async function isTrackedHeaderIntersect(table, range){
+async function isTrackedHeaderIntersect(worksheet, table, range){
 
 	const headerRange = table.getHeaderRowRange();
-    headerRange.load(["address", "addressLocal"]); // Load the address property of the header range
-
+    headerRange.load(["address"]); // Load the address property of the header range
     await table.context.sync();
 
-	console.log(`The address of the header row of 'Products' table is: ${headerRange.address}`);
-	debugger;
+	const i = isIntersectRange(headerRange.address, `${worksheet.name}!${range}`);
 
-	const i = isIntersectRange(headerRange.address, range);
-	
-
+	return i;
 }
 
 
