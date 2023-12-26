@@ -1392,7 +1392,7 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 			break;
 	
 		case LogEvents.Table.DeleteColumn:
-
+			
 			ensurePathExists(trackedItem, "history.columns")
 			if(!trackedItem.history.columns.removed) {
 				trackedItem.history.columns.removed = [];
