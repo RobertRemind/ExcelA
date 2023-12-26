@@ -1383,38 +1383,15 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
         case LogEvents.Table.RenamedColumn:
 
 			if(trackedItem) {		
-				// Create history attributes.
-				/*if(!trackedItem.history){
-					trackedItem.history = {
-						name: []
-					}
-				}
-
-				if(!trackedItem.history.name){
-					trackedItem.history.name = []
-				}
-				*/
-
 				ensurePathExists(trackedItem, "history");
 				if(!trackedItem.history.name) {
 					trackedItem.history.name = [];
-				}
-				
-				trackedItem.nameHistory.push(historyItem);
-				
+				}				
+				trackedItem.history.name.push(historyItem);				
 			}
-
 			break;
+	
 		case LogEvents.Table.DeleteColumn:
-            // Add removed tracked columns to history array.
-			/*if(!trackedItem.history) {
-				tableConfig.history = {
-					columns: {
-						removed: []
-					}
-				};
-			}
-			*/
 
 			ensurePathExists(trackedItem, "history.columns")
 			if(!trackedItem.history.columns.removed) {
@@ -1424,7 +1401,8 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 			trackedItem.history.columns.removed.push(historyItem);
 			
             break;
-        default:
+        
+		default:
             console.log("handleLogTableChangeEvent(): Unknown event type");
     }
 
