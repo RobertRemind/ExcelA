@@ -143,6 +143,7 @@ const TrackedTables = {
 				header: "defaultTableHeader", 
 				body: "defaultTableBody"
 			}, 
+			columns: ["Product", "Primary System Code", "Member Caption"], // All the columns in the table
 			trackedColumns: [
 				{
 					name: "Product", // What is the name of the column in the data table. 
@@ -1142,7 +1143,19 @@ async function createTrackedTable(context, trackedTable) {
  */
 async function onTrackedTableChange(worksheet, table, eventArg) {
 
-	
+	const headerRange = table.getHeaderRowRange();
+    headerRange.load(["address", "values"]); // Load the address property of the header range
+	worksheet.load(["name"]);
+	table.load(["name"]);
+    await table.context.sync();
+
+	// Find the member of Tracked tables that has the same table name. 
+	const tableConfig = TrackedTables.tables.find(tt => {
+		return tt.name === table.name;
+	});
+
+	updateColumns(tableConfig, headerRange)
+
 	console.log(eventArg);
 
 	switch (eventArg.changeType) {
@@ -1161,6 +1174,53 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 
 }
+
+async function updateColumns(tableConfig, headerRange, ) {
+
+	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
+	const afterColumnNames = headerRange.values[0];
+	const changes = findColumnChanges(beforeColumnNames, afterColumnNames)
+	debugger;
+
+} 
+
+
+function findColumnChanges(before, after) {
+    const renamedColumns = [];
+    const reorderedColumns = [];
+
+    // Check for renamed columns
+    const beforeSet = new Set(before);
+    const afterSet = new Set(after);
+
+    // Identify removed and added columns
+    const removed = before.filter(col => !afterSet.has(col));
+    const added = after.filter(col => !beforeSet.has(col));
+
+    // Assuming each removed column corresponds to an added column
+    if (removed.length === added.length) {
+        for (let i = 0; i < removed.length; i++) {
+            renamedColumns.push({ before: removed[i], after: added[i] });
+        }
+    }
+
+    // Check for reordered columns (if no renamed columns are found)
+    if (renamedColumns.length === 0) {
+        before.forEach((col, index) => {
+            if (col !== after[index] && afterSet.has(col)) {
+                reorderedColumns.push(col);
+            }
+        });
+    }
+
+    return {
+        renamedColumns,
+        reorderedColumns,
+        hasChanges: renamedColumns.length > 0 || reorderedColumns.length > 0
+    };
+}
+
+
 
 /**
  * Updates the Tracked Table column definition in the event that a user change a Tracked Column name.
@@ -1194,6 +1254,7 @@ async function updateTrackedColumnHeaders(worksheet, table, range) {
 		// Finding names in headers but not in trackedColumnNames
 		const uniqueInHeaders = headerValues.filter(name => !trackedColumnNames.includes(name));
 
+		// An additional loop maybe required here if the user changes 2 columns at once.
 		tableConfig.trackedColumns.forEach(trackedColumn => {
 			if (trackedColumn.name === uniqueInTrackedColumns[0]) {
 				trackedColumn.name = uniqueInHeaders[0];
