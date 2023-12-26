@@ -1100,12 +1100,12 @@ function getSupplier(supplierID) {
 async function createTrackedTable(context, trackedTable) {
 	
 	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
-	const tbl = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
-	tbl.name = trackedTable.name;
+	const table = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
+	table.name = trackedTable.name;
 
 	// Bind Table Change Event
-	tbl.onChanged.add((eventArgs) => {
-        onTrackedTableChange(worksheet, tbl, eventArgs);
+	table.onChanged.add((eventArgs) => {
+        onTrackedTableChange(worksheet, table, eventArgs);
     });
 	
 	
@@ -1114,7 +1114,7 @@ async function createTrackedTable(context, trackedTable) {
 		headerValues.push(c.name);
 	});
 
-	tbl.getHeaderRowRange().values = [headerValues];
+	table.getHeaderRowRange().values = [headerValues];
 
 	trackedTable.rows.forEach((r) => {
 		let rowData = trackedTable.trackedColumns.map((c) => {
@@ -1123,16 +1123,16 @@ async function createTrackedTable(context, trackedTable) {
 			} 
 			return null;
 		});
-		tbl.rows.add(null /*add at the end*/, [rowData]);
+		table.rows.add(null /*add at the end*/, [rowData]);
 	});
 
 	// Auto fit new data. This is used by the gradient to determine colors.
-	tbl.getRange().format.autofitColumns();
-	tbl.getRange().format.autofitRows();
+	table.getRange().format.autofitColumns();
+	table.getRange().format.autofitRows();
 
 	await context.sync(); 	
 	
-	return tbl;
+	return table;
 }
 
 
@@ -1163,16 +1163,20 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 			if (intersectsHeader) {
 				updateColumns(tableConfig, headerRange);
 			}
-
 			break;
+
 		case "RowInserted": 
+			break;
+
 		case "RowDeleted":
+			break;
+
 		case "ColumnInserted":
 			updateColumns(tableConfig, headerRange);
 			break;
 
 		case "ColumnDeleted":
-			updateColumns(tableConfig, headerRange);
+			removeColumns(tableConfig, headerRange)
 			break;
 
 		case "CellInserted":
@@ -1180,7 +1184,10 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 				updateColumns(tableConfig, headerRange);
 			}
 			break;
-		case "CellDeleted":
+			
+		case "CellDeleted": 
+			// Deleteing a header rows just renames the column to "Column x" 
+			// This should not be called when the user deletes a value in the table header.  
 			if (intersectsHeader) {
 				updateColumns(tableConfig, headerRange);
 			}
@@ -1190,20 +1197,27 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 }
 
+
 function updateColumns(tableConfig, headerRange) {
 
 	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 	const afterColumnNames = headerRange.values[0];
 	const changes = findColumnChanges(beforeColumnNames, afterColumnNames);
 
-	renameTrackedColumns(tableConfig, changes.renamedColumns);
-	removeTrackedColumns(tableConfig, changes.deletedColumns)
-	
+	renameTrackedColumns(tableConfig, changes.renamedColumns);	
 	
 	tableConfig.columns = afterColumnNames;
-	
 
 } 
+
+function removeColumns(tableConfig, headerRange){
+	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
+	const afterColumnNames = headerRange.values[0];
+	const deleted = findColumnRemoved(beforeColumnNames, afterColumnNames);
+
+	removeTrackedColumns(tableConfig, deleted);
+
+}
 
 
 function renameTrackedColumns(tableConfig, renamedArray) {
@@ -1249,34 +1263,26 @@ function removeTrackedColumns(tableConfig, deletedArray) {
 
 
 
-
 function findColumnChanges(before, after) {
     const renamedColumns = [];
     const reorderedColumns = [];
-    const insertedColumns = [];
-    const deletedColumns = [];
 
-    // Detect inserted and deleted columns
+    // Check for renamed columns
     const beforeSet = new Set(before);
     const afterSet = new Set(after);
 
-    // Identify inserted (added) and deleted (removed) columns
-    insertedColumns.push(...after.filter(col => !beforeSet.has(col)));
-    deletedColumns.push(...before.filter(col => !afterSet.has(col)));
+    // Identify removed and added columns
+    const removed = before.filter(col => !afterSet.has(col));
+    const added = after.filter(col => !beforeSet.has(col));
 
-    // Check for renamed columns
     // Assuming each removed column corresponds to an added column
-    if (insertedColumns.length === deletedColumns.length) {
-        for (let i = 0; i < deletedColumns.length; i++) {
-            renamedColumns.push({ before: deletedColumns[i], after: insertedColumns[i] });
+    if (removed.length === added.length) {
+        for (let i = 0; i < removed.length; i++) {
+            renamedColumns.push({ before: removed[i], after: added[i] });
         }
-
-        // Empty the inserted and deleted arrays as they are considered renamed
-        insertedColumns.length = 0;
-        deletedColumns.length = 0;
     }
 
-    // Check for reordered columns (only if there are no renamed columns)
+    // Check for reordered columns (if no renamed columns are found)
     if (renamedColumns.length === 0) {
         before.forEach((col, index) => {
             if (col !== after[index] && afterSet.has(col)) {
@@ -1288,12 +1294,20 @@ function findColumnChanges(before, after) {
     return {
         renamedColumns,
         reorderedColumns,
-        insertedColumns,
-        deletedColumns,
-        hasChanges: renamedColumns.length > 0 || reorderedColumns.length > 0 || insertedColumns.length > 0 || deletedColumns.length > 0
+        hasChanges: renamedColumns.length > 0 || reorderedColumns.length > 0
     };
 }
 
+
+function findColumnRemoved (before, after) {
+	const deletedColumns = [];
+
+	// Detect inserted and deleted columns
+    const afterSet = new Set(after);
+	
+	deletedColumns.push(...before.filter(col => !afterSet.has(col)));
+	return deletedColumns;
+}
 
 
 
