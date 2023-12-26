@@ -1143,6 +1143,8 @@ async function createTrackedTable(context, trackedTable) {
  */
 async function onTrackedTableChange(worksheet, table, eventArg) {
 
+	let hasChanged = false;
+
 	const headerRange = table.getHeaderRowRange();
     headerRange.load(["address", "values"]); // Load the address property of the header range
 	worksheet.load(["name"]);
@@ -1163,7 +1165,8 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 	switch (eventArg.changeType) {
 		case "RangeEdited":
 			if (intersectsHeader) {
-				onHeaderChange(tableConfig, headerRange);
+				hasChange = hasChange && onHeaderChange(tableConfig, headerRange);
+				
 			}
 			break;
 
@@ -1175,15 +1178,17 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 		case "ColumnInserted":
 			onHeaderChange(tableConfig, headerRange);
+			hasChange = true;
 			break;
 
 		case "ColumnDeleted":
 			onRemoveColumns(tableConfig, headerRange)
+			hasChange = true;
 			break;
 
 		case "CellInserted":
 			if (intersectsHeader) {
-				onHeaderChange(tableConfig, headerRange);
+				hasChange = hasChange && onHeaderChange(tableConfig, headerRange);
 			}
 			break;
 			
@@ -1191,9 +1196,15 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 			// Deleteing a header rows just renames the column to "Column x" 
 			// This should not be called when the user deletes a value in the table header.  
 			if (intersectsHeader) {
-				onHeaderChange(tableConfig, headerRange);
+				hasChange = hasChange && onHeaderChange(tableConfig, headerRange);
 			}
 			break;
+	}
+
+	await table.context.sync();
+
+	if (hasChange) {
+		applyStyleToTable(tableConfig);
 	}
 
 
@@ -1212,7 +1223,7 @@ function onHeaderChange(tableConfig, headerRange) {
 	
 	renameTrackedColumns(tableConfig, changes.renamedColumns);	
 	tableConfig.columns = afterColumnNames; 
-
+	return changes.hasChanges
 } 
 
 
