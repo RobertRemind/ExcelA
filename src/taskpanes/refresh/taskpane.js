@@ -1165,7 +1165,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 	switch (eventArg.changeType) {
 		case "RangeEdited":
 			if (intersectsHeader) {
-				hasChange = hasChange && onHeaderChange(tableConfig, headerRange);
+				hasChange = onHeaderChange(tableConfig, headerRange) || hasChange;
 				
 			}
 			break;
@@ -1188,7 +1188,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 		case "CellInserted":
 			if (intersectsHeader) {
-				hasChange = hasChange && onHeaderChange(tableConfig, headerRange);
+				hasChange = onHeaderChange(tableConfig, headerRange)  || hasChange;
 			}
 			break;
 			
@@ -1196,7 +1196,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 			// Deleteing a header rows just renames the column to "Column x" 
 			// This should not be called when the user deletes a value in the table header.  
 			if (intersectsHeader) {
-				hasChange = hasChange && onHeaderChange(tableConfig, headerRange);
+				hasChange = onHeaderChange(tableConfig, headerRange) || hasChange;
 			}
 			break;
 	}
