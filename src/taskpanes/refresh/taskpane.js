@@ -1154,14 +1154,16 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 		return tt.name === table.name;
 	});
 
+	// Does this change intersect the header?
 	const intersectsHeader = doRangesIntersect(headerRange.address, `${worksheet.name}!${eventArg.address}`);
 
 	console.log(eventArg);
 
+	// Actions based on the change type.
 	switch (eventArg.changeType) {
 		case "RangeEdited":
 			if (intersectsHeader) {
-				updateColumns(tableConfig, headerRange);
+				onHeaderChange(tableConfig, headerRange);
 			}
 			break;
 
@@ -1172,16 +1174,16 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 			break;
 
 		case "ColumnInserted":
-			updateColumns(tableConfig, headerRange);
+			onHeaderChange(tableConfig, headerRange);
 			break;
 
 		case "ColumnDeleted":
-			removeColumns(tableConfig, headerRange)
+			onRemoveColumns(tableConfig, headerRange)
 			break;
 
 		case "CellInserted":
 			if (intersectsHeader) {
-				updateColumns(tableConfig, headerRange);
+				onHeaderChange(tableConfig, headerRange);
 			}
 			break;
 			
@@ -1189,7 +1191,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 			// Deleteing a header rows just renames the column to "Column x" 
 			// This should not be called when the user deletes a value in the table header.  
 			if (intersectsHeader) {
-				updateColumns(tableConfig, headerRange);
+				onHeaderChange(tableConfig, headerRange);
 			}
 			break;
 	}
@@ -1197,51 +1199,74 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 }
 
-
-function updateColumns(tableConfig, headerRange) {
+/**
+ * On header rename, update the Tracked Table Config with the current Table state.  
+ * @param {TrackedTable} tableConfig Tracked Table defintion of the table being changed.
+ * @param {Excel.range} headerRange The range of cells for the table header.
+ */
+function onHeaderChange(tableConfig, headerRange) {
 
 	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 	const afterColumnNames = headerRange.values[0];
 	const changes = findColumnChanges(beforeColumnNames, afterColumnNames);
-
-	renameTrackedColumns(tableConfig, changes.renamedColumns);	
 	
-	tableConfig.columns = afterColumnNames;
+	renameTrackedColumns(tableConfig, changes.renamedColumns);	
+	tableConfig.columns = afterColumnNames; 
 
 } 
 
-function removeColumns(tableConfig, headerRange){
+
+/**
+ * On column remove, update the Tracked Table Config with the current Table state.  
+ * @param {TrackedTable} tableConfig Tracked Table defintion of the table being changed.
+ * @param {Excel.range} headerRange The range of cells for the table header.
+ */
+function onRemoveColumns(tableConfig, headerRange){
 	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 	const afterColumnNames = headerRange.values[0];
 	const deleted = findColumnRemoved(beforeColumnNames, afterColumnNames);
 
 	removeTrackedColumns(tableConfig, deleted);
-
+	tableConfig.columns = afterColumnNames; 
 }
 
 
+/**
+ * Rename Tracked Columns to match the users label.
+ * @param {TrackedTable} tableConfig The Tracked Table being changed
+ * @param {BeforeAfter[]} renamedArray From/to change pairs {before: "aaa", after: "bbb"} 
+ */
 function renameTrackedColumns(tableConfig, renamedArray) {
 
+	// Loop through the renamed columns
 	renamedArray.map((r) =>{
+		// Find the renamed columns from the before name.
 		let trackedCol = tableConfig.trackedColumns.find((c) => {
 			return c.name == r.before;
 		});
 		
-		if(trackedCol) {
-		
+		if(trackedCol) {		
 			// Add new columns names to history array.
 			if(!trackedCol.nameHistory){
 				trackedCol.nameHistory = [trackedCol.name];
 			} else {
 				trackedCol.nameHistory.push(trackedCol.name);
 			}
+
+			// Rename the Tracked Column
 			trackedCol.name = r.after; 
 		}
 	});
 }
 
-
+/**
+ * Remove a column from the tracked array.
+ * @param {TrackedTable} tableConfig The Tracked Table being changed
+ * @param {string[]} deletedArray Array of column name strings to be removed from the table.
+ */
 function removeTrackedColumns(tableConfig, deletedArray) {
+	
+	// Loop through the deleted columns.
 	deletedArray.map((d) =>{
 		let index = tableConfig.trackedColumns.findIndex(obj => obj.name == d);
 
@@ -1254,15 +1279,19 @@ function removeTrackedColumns(tableConfig, deletedArray) {
 				trackedCol.removedTrackedColumns.push(tableConfig.trackedColumns[index]);
 			}
 
+			// remove the Tracked Column
 			tableConfig.trackedColumns.splice(index, 1);
 		}
 	});
 }
 
 
-
-
-
+/**
+ * Find the list of columns renamed or reordered in the table.
+ * @param {[string]} before Array of column names before the change.
+ * @param {[string]} after Array of column names after the change.
+ * @returns 
+ */
 function findColumnChanges(before, after) {
     const renamedColumns = [];
     const reorderedColumns = [];
@@ -1299,31 +1328,22 @@ function findColumnChanges(before, after) {
 }
 
 
+/**
+ * Find the list of columns removed from the table.
+ * @param {[string]} before Array of column names before the change.
+ * @param {[string]} after Array of column names after the change.
+ * @returns 
+ */
 function findColumnRemoved (before, after) {
 	const deletedColumns = [];
 
 	// Detect inserted and deleted columns
     const afterSet = new Set(after);
 	
+	// Identify columns absent from after state.
 	deletedColumns.push(...before.filter(col => !afterSet.has(col)));
 	return deletedColumns;
 }
-
-
-
-/**
- * Does a range intersect the header of a Tracked Table.
- * @param {Excel.Worksheet} worksheet Excel worksheet of table
- * @param {Excel.Table} table Tracked Table
- * @param {string} range Target Excel Range as string
- * @returns 
- */
-async function isTrackedHeaderIntersect(worksheet, table, range){
-
-
-	return intersect;
-}
-
 
 
 
