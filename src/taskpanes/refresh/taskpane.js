@@ -1250,7 +1250,7 @@ function onRemoveColumns(tableConfig, headerRange){
 function renameTrackedColumns(tableConfig, renamedArray) {
 
 	// Loop through the renamed columns
-	renamedArray.map((r) =>{
+	renamedArray.forEach((r) =>{
 		// Find the renamed columns from the before name.
 		let trackedCol = tableConfig.trackedColumns.find((c) => {
 			return c.name == r.before;
@@ -1272,7 +1272,7 @@ function renameTrackedColumns(tableConfig, renamedArray) {
 function removeTrackedColumns(tableConfig, deletedArray) {
 	
 	// Loop through the deleted columns.
-	deletedArray.map((d) =>{
+	deletedArray.forEach((d) =>{
 		let index = tableConfig.trackedColumns.findIndex(obj => obj.name == d);
 
 		if (index !== -1) {
@@ -1372,7 +1372,7 @@ function logEvent(event, trackedItem, historyItem ) {
 		handleLogStylingChangeEvent(event, trackedItem, historyItem);
 	
 	} else {
-		console.log("Unknown event type");
+		console.log("logEvent(): Unknown event type");
 	}
 
 }
@@ -1396,8 +1396,10 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 				*/
 
 				ensurePathExists(trackedItem, "history");
-				trackedItem.history.name = [];
-
+				if(!trackedItem.history.name) {
+					trackedItem.history.name = [];
+				}
+				
 				trackedItem.nameHistory.push(historyItem);
 				
 			}
