@@ -1154,13 +1154,15 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 		return tt.name === table.name;
 	});
 
-	updateColumns(tableConfig, headerRange)
+	
 
 	console.log(eventArg);
 
 	switch (eventArg.changeType) {
 		case "RangeEdited":
-			updateTrackedColumnHeaders(worksheet, table, eventArg.address)
+			if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
+				updateColumns(tableConfig, headerRange);
+			}
 
 
 			break;
@@ -1175,14 +1177,38 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 }
 
-async function updateColumns(tableConfig, headerRange, ) {
+function updateColumns(tableConfig, headerRange) {
 
 	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 	const afterColumnNames = headerRange.values[0];
-	const changes = findColumnChanges(beforeColumnNames, afterColumnNames)
+	const changes = findColumnChanges(beforeColumnNames, afterColumnNames);
 	debugger;
 
+	renameTrackedColumn(tableConfig, changes.renamedColumns);
+	tableConfig.columns = afterColumnNames;
+	
+
 } 
+
+
+function renameTrackedColumn(tableConfig, renamedArray) {
+
+	renamedArray.map((r) =>{
+		let trackedCol = tableConfig.trackedColumns.find((c) => {
+			c.name = r.before
+		});
+		
+		// Add new columns names to history array.
+		if(!trackedCol.nameHistory){
+			trackedCol.nameHistory = [trackedCol.name];
+		} else {
+			trackedCol.nameHistory.push(trackedCol.name);
+		}
+		trackedCol.name = r.after; 
+
+	})
+}
+
 
 
 function findColumnChanges(before, after) {
@@ -1222,57 +1248,6 @@ function findColumnChanges(before, after) {
 
 
 
-/**
- * Updates the Tracked Table column definition in the event that a user change a Tracked Column name.
- * @param {Excel.Table} table A Tracked Table.
- * @param {string} range A string representing the cells address that has been changed 
- */
-async function updateTrackedColumnHeaders(worksheet, table, range) {
-
-	const headerRange = table.getHeaderRowRange();
-    headerRange.load(["address", "values"]); // Load the address property of the header range
-	worksheet.load(["name"]);
-	table.load(["name"]);
-    await table.context.sync();
-
-	// Now loop through the tracked columns and find the one that does not exist in the table header.
-	if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
-
-		const headerValues = headerRange.values[0];		
-		
-		// Find the member of Tracked tables that has the same table name. 
-		const tableConfig = TrackedTables.tables.find(tt => {
-			return tt.name === table.name;
-		});
-
-		// Extracting tracked column names
-		const trackedColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
-
-		// Finding names in trackedColumnNames but not in headers
-		const uniqueInTrackedColumns = trackedColumnNames.filter(name => !headerValues.includes(name));
-
-		// Finding names in headers but not in trackedColumnNames
-		const uniqueInHeaders = headerValues.filter(name => !trackedColumnNames.includes(name));
-
-		// An additional loop maybe required here if the user changes 2 columns at once.
-		tableConfig.trackedColumns.forEach(trackedColumn => {
-			if (trackedColumn.name === uniqueInTrackedColumns[0]) {
-				trackedColumn.name = uniqueInHeaders[0];
-				
-				// Add new columns names to history array.
-				if(!trackedColumn.nameHistory){
-					trackedColumn.nameHistory = [uniqueInTrackedColumns[0]];
-				} else {
-					trackedColumn.nameHistory.push(uniqueInTrackedColumns[0]);
-				}
-			}
-		})
-
-	} else {
-		console.log("Not a header change.")
-	}
-
-}
 
 /**
  * Does a range intersect the header of a Tracked Table.
