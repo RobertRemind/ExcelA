@@ -1277,7 +1277,7 @@ function removeTrackedColumns(tableConfig, deletedArray) {
 
 		if (index !== -1) {
 			
-			logEvent(LogEvents.Table.DeleteColumn, trackedCol, tableConfig.trackedColumns[index]);	
+			logEvent(LogEvents.Table.DeleteColumn, tableConfig, tableConfig.trackedColumns[index]);	
 			// remove the Tracked Column
 			tableConfig.trackedColumns.splice(index, 1);
 		}
@@ -1392,7 +1392,7 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 			break;
 	
 		case LogEvents.Table.DeleteColumn:
-			
+
 			ensurePathExists(trackedItem, "history.columns")
 			if(!trackedItem.history.columns.removed) {
 				trackedItem.history.columns.removed = [];
