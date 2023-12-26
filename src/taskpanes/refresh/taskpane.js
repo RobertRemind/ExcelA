@@ -1108,6 +1108,9 @@ async function createTrackedTable(context, trackedTable) {
         onTrackedTableChange(worksheet, table, eventArgs);
     });
 	
+	table.onSelectionChanged.add((eventArgs) => {
+        debugger;
+    });
 	
 	const headerValues = []
 	trackedTable.trackedColumns.map((c) => {
