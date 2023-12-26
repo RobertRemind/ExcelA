@@ -1352,6 +1352,9 @@ function findColumnRemoved (before, after) {
 ########################################################################################### 
 */
 
+/**
+ * Enum for Logging Events
+ */
 const LogEvents = {
     Table: {
 		RenamedColumn: 'column_rename',
@@ -1363,6 +1366,13 @@ const LogEvents = {
 	}
 };
 
+
+/**
+ * Log a change event. HistoryItem is stored in for logging purposes and possibly rollback in the future. 
+ * @param {LogEvents} event Event type to log
+ * @param {*} trackedItem Object against which the history is stored.
+ * @param {*} historyItem Item stored in history
+ */
 function logEvent(event, trackedItem, historyItem ) {
 	debugger;
 	if (Object.values(LogEvents.Table).includes(event)) {
@@ -1377,6 +1387,12 @@ function logEvent(event, trackedItem, historyItem ) {
 
 }
 
+/**
+ * Log events related to Tracked Tables.
+ * @param {LogEvents} event Event type to log
+ * @param {*} trackedItem Object against which the history is stored.
+ * @param {*} historyItem Item stored in history
+ */
 function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 
 	switch (event) {
@@ -1398,7 +1414,7 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 				trackedItem.history.columns.removed = [];
 			}
 			
-			trackedItem.history.columns.removed.push(historyItem);
+			trackedItem.history.trackedColumns.removed.push(historyItem);
 			
             break;
         
@@ -1408,20 +1424,22 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 
 }
 
+
+/**
+ * Log events related to Styles.
+ * @param {LogEvents} event Event type to log
+ * @param {*} trackedItem Object against which the history is stored.
+ * @param {*} historyItem Item stored in history
+ */
 function handleLogStylingChangeEvent(event, trackedItem, historyItem) {
 	switch (event) {
-        case LogEvents.Table.RenamedColumn:
-        case LogEvents.Table.DeleteColumn:
-            // Handle Delete Column
-            handleDeleteColumn(trackedTable, historyItem);
-            break;
         case LogEvents.StylingChangeEvents.SetPrimaryColor:
             // Handle Set Primary Color
-            handleSetPrimaryColor(trackedTable, historyItem);
+            //handleSetPrimaryColor(trackedTable, historyItem);
             break;
         case LogEvents.StylingChangeEvents.SetSecondaryColor:
             // Handle Set Secondary Color
-            handleSetSecondaryColor(trackedTable, historyItem);
+            //handleSetSecondaryColor(trackedTable, historyItem);
             break;
         default:
             console.log("handleLogTableChangeEvent(): Unknown event type");
@@ -1429,6 +1447,11 @@ function handleLogStylingChangeEvent(event, trackedItem, historyItem) {
 }
 
 
+/**
+ * Check that an object path exists, if not, create it.
+ * @param {*} obj target Object
+ * @param {string} path Object path to create/check
+ */
 function ensurePathExists(obj, path) {
     const parts = path.split('.');
 
