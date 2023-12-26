@@ -1143,7 +1143,7 @@ async function createTrackedTable(context, trackedTable) {
  */
 async function onTrackedTableChange(worksheet, table, eventArg) {
 
-	let hasChanged = false;
+	let hasChange = false;
 
 	const headerRange = table.getHeaderRowRange();
     headerRange.load(["address", "values"]); // Load the address property of the header range
