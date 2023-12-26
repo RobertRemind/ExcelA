@@ -1374,7 +1374,7 @@ const LogEvents = {
  * @param {*} historyItem Item stored in history
  */
 function logEvent(event, trackedItem, historyItem ) {
-	debugger;
+	
 	if (Object.values(LogEvents.Table).includes(event)) {
 		handleLogTableChangeEvent(event, trackedItem, historyItem);
 	
