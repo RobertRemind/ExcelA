@@ -1160,7 +1160,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 
 	switch (eventArg.changeType) {
 		case "RangeEdited":
-			if (doRangesIntersect(headerRange.address, `${worksheet.name}!${range}`)) {
+			if (doRangesIntersect(headerRange.address, `${worksheet.name}!${eventArg.address}`)) {
 				updateColumns(tableConfig, headerRange);
 			}
 
