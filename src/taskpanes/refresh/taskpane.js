@@ -1257,14 +1257,8 @@ function renameTrackedColumns(tableConfig, renamedArray) {
 		});
 		
 		if(trackedCol) {		
-			// Add new columns names to history array.
-			if(!trackedCol.nameHistory){
-				trackedCol.nameHistory = [trackedCol.name];
-			} else {
-				trackedCol.nameHistory.push(trackedCol.name);
-			}
-
 			// Rename the Tracked Column
+			logEvent(LogEvents.Table.RenamedColumn, trackedCol, trackedCol.name);			
 			trackedCol.name = r.after; 
 		}
 	});
@@ -1283,13 +1277,7 @@ function removeTrackedColumns(tableConfig, deletedArray) {
 
 		if (index !== -1) {
 			
-			// Add removed tracked columns to history array.
-			if(!tableConfig.removedTrackedColumns){
-				trackedCol.removedTrackedColumns = [tableConfig.trackedColumns[index]];
-			} else {
-				trackedCol.removedTrackedColumns.push(tableConfig.trackedColumns[index]);
-			}
-
+			logEvent(LogEvents.Table.DeleteColumn, trackedCol, tableConfig.trackedColumns[index]);	
 			// remove the Tracked Column
 			tableConfig.trackedColumns.splice(index, 1);
 		}
@@ -1356,6 +1344,129 @@ function findColumnRemoved (before, after) {
 	return deletedColumns;
 }
 
+
+
+/* 
+###########################################################################################
+	Log Table Change
+########################################################################################### 
+*/
+
+const LogEvents = {
+    Table: {
+		RenamedColumn: 'column_rename',
+		DeleteColumn: 'column_delete'	
+	}, 
+	StylingChangeEvents: {  
+		SetPrimaryColor: 'style_setPrimary',
+		SetSecondaryColor: 'style_setSecondary',
+	}
+};
+
+function logEvent(event, trackedItem, historyItem ) {
+	debugger;
+	if (Object.values(LogEvents.Table).includes(event)) {
+		handleLogTableChangeEvent(event, trackedItem, historyItem);
+	
+	} else if (Object.values(LogEvents.StylingChangeEvents).includes(event)) {
+		handleLogStylingChangeEvent(event, trackedItem, historyItem);
+	
+	} else {
+		console.log("Unknown event type");
+	}
+
+}
+
+function handleLogTableChangeEvent(event, trackedItem, historyItem) {
+
+	switch (event) {
+        case LogEvents.Table.RenamedColumn:
+
+			if(trackedItem) {		
+				// Create history attributes.
+				/*if(!trackedItem.history){
+					trackedItem.history = {
+						name: []
+					}
+				}
+
+				if(!trackedItem.history.name){
+					trackedItem.history.name = []
+				}
+				*/
+
+				ensurePathExists(trackedItem, "history");
+				trackedItem.history.name = [];
+
+				trackedItem.nameHistory.push(historyItem);
+				
+			}
+
+			break;
+		case LogEvents.Table.DeleteColumn:
+            // Add removed tracked columns to history array.
+			/*if(!trackedItem.history) {
+				tableConfig.history = {
+					columns: {
+						removed: []
+					}
+				};
+			}
+			*/
+
+			ensurePathExists(trackedItem, "history.columns")
+			if(!trackedItem.history.columns.removed) {
+				trackedItem.history.columns.removed = [];
+			}
+			
+			trackedItem.history.columns.removed.push(historyItem);
+			
+            break;
+        default:
+            console.log("handleLogTableChangeEvent(): Unknown event type");
+    }
+
+}
+
+function handleLogStylingChangeEvent(event, trackedItem, historyItem) {
+	switch (event) {
+        case LogEvents.Table.RenamedColumn:
+        case LogEvents.Table.DeleteColumn:
+            // Handle Delete Column
+            handleDeleteColumn(trackedTable, historyItem);
+            break;
+        case LogEvents.StylingChangeEvents.SetPrimaryColor:
+            // Handle Set Primary Color
+            handleSetPrimaryColor(trackedTable, historyItem);
+            break;
+        case LogEvents.StylingChangeEvents.SetSecondaryColor:
+            // Handle Set Secondary Color
+            handleSetSecondaryColor(trackedTable, historyItem);
+            break;
+        default:
+            console.log("handleLogTableChangeEvent(): Unknown event type");
+    }
+}
+
+
+function ensurePathExists(obj, path) {
+    const parts = path.split('.');
+
+    let currentPart = obj;
+    for (let part of parts) {
+        if (!currentPart[part]) {
+            currentPart[part] = {}; // Create a new object if the part doesn't exist
+        }
+        currentPart = currentPart[part]; // Move to the next level
+    }
+}
+
+
+/* 
+###########################################################################################
+	Products testing
+########################################################################################### 
+*/
 
 
 /** Set up Sample worksheet. */
