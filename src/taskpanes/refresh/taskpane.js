@@ -1195,17 +1195,19 @@ function renameTrackedColumn(tableConfig, renamedArray) {
 
 	renamedArray.map((r) =>{
 		let trackedCol = tableConfig.trackedColumns.find((c) => {
-			c.name = r.before
+			return c.name == r.before
 		});
 		
-		// Add new columns names to history array.
-		if(!trackedCol.nameHistory){
-			trackedCol.nameHistory = [trackedCol.name];
-		} else {
-			trackedCol.nameHistory.push(trackedCol.name);
+		if(trackedCol) {
+		
+			// Add new columns names to history array.
+			if(!trackedCol.nameHistory){
+				trackedCol.nameHistory = [trackedCol.name];
+			} else {
+				trackedCol.nameHistory.push(trackedCol.name);
+			}
+			trackedCol.name = r.after; 
 		}
-		trackedCol.name = r.after; 
-
 	})
 }
 
