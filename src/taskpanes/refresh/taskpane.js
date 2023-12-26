@@ -1154,24 +1154,37 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 		return tt.name === table.name;
 	});
 
-	
+	const intersectsHeader = doRangesIntersect(headerRange.address, `${worksheet.name}!${eventArg.address}`);
 
 	console.log(eventArg);
 
 	switch (eventArg.changeType) {
 		case "RangeEdited":
-			if (doRangesIntersect(headerRange.address, `${worksheet.name}!${eventArg.address}`)) {
+			if (intersectsHeader) {
 				updateColumns(tableConfig, headerRange);
 			}
-
 
 			break;
 		case "RowInserted": 
 		case "RowDeleted":
 		case "ColumnInserted":
+			updateColumns(tableConfig, headerRange);
+			break;
+
 		case "ColumnDeleted":
+			updateColumns(tableConfig, headerRange);
+			break;
+
 		case "CellInserted":
+			if (intersectsHeader) {
+				updateColumns(tableConfig, headerRange);
+			}
+			break;
 		case "CellDeleted":
+			if (intersectsHeader) {
+				updateColumns(tableConfig, headerRange);
+			}
+			break;
 	}
 
 
@@ -1182,20 +1195,22 @@ function updateColumns(tableConfig, headerRange) {
 	const beforeColumnNames = tableConfig.trackedColumns.map(tc => tc.name);
 	const afterColumnNames = headerRange.values[0];
 	const changes = findColumnChanges(beforeColumnNames, afterColumnNames);
-	debugger;
 
-	renameTrackedColumn(tableConfig, changes.renamedColumns);
+	renameTrackedColumns(tableConfig, changes.renamedColumns);
+	removeTrackedColumns(tableConfig, changes.deletedColumns)
+	
+	
 	tableConfig.columns = afterColumnNames;
 	
 
 } 
 
 
-function renameTrackedColumn(tableConfig, renamedArray) {
+function renameTrackedColumns(tableConfig, renamedArray) {
 
 	renamedArray.map((r) =>{
 		let trackedCol = tableConfig.trackedColumns.find((c) => {
-			return c.name == r.before
+			return c.name == r.before;
 		});
 		
 		if(trackedCol) {
@@ -1208,31 +1223,60 @@ function renameTrackedColumn(tableConfig, renamedArray) {
 			}
 			trackedCol.name = r.after; 
 		}
-	})
+	});
 }
+
+
+function removeTrackedColumns(tableConfig, deletedArray) {
+	deletedArray.map((d) =>{
+		let index = tableConfig.trackedColumns.findIndex(obj => obj.name == d);
+
+		if (index !== -1) {
+			
+			// Add removed tracked columns to history array.
+			if(!tableConfig.removedTrackedColumns){
+				trackedCol.removedTrackedColumns = [tableConfig.trackedColumns[index]];
+			} else {
+				trackedCol.removedTrackedColumns.push(tableConfig.trackedColumns[index]);
+			}
+
+			tableConfig.trackedColumns.splice(index, 1);
+		}
+	});
+}
+
+
+
 
 
 
 function findColumnChanges(before, after) {
     const renamedColumns = [];
     const reorderedColumns = [];
+    const insertedColumns = [];
+    const deletedColumns = [];
 
-    // Check for renamed columns
+    // Detect inserted and deleted columns
     const beforeSet = new Set(before);
     const afterSet = new Set(after);
 
-    // Identify removed and added columns
-    const removed = before.filter(col => !afterSet.has(col));
-    const added = after.filter(col => !beforeSet.has(col));
+    // Identify inserted (added) and deleted (removed) columns
+    insertedColumns.push(...after.filter(col => !beforeSet.has(col)));
+    deletedColumns.push(...before.filter(col => !afterSet.has(col)));
 
+    // Check for renamed columns
     // Assuming each removed column corresponds to an added column
-    if (removed.length === added.length) {
-        for (let i = 0; i < removed.length; i++) {
-            renamedColumns.push({ before: removed[i], after: added[i] });
+    if (insertedColumns.length === deletedColumns.length) {
+        for (let i = 0; i < deletedColumns.length; i++) {
+            renamedColumns.push({ before: deletedColumns[i], after: insertedColumns[i] });
         }
+
+        // Empty the inserted and deleted arrays as they are considered renamed
+        insertedColumns.length = 0;
+        deletedColumns.length = 0;
     }
 
-    // Check for reordered columns (if no renamed columns are found)
+    // Check for reordered columns (only if there are no renamed columns)
     if (renamedColumns.length === 0) {
         before.forEach((col, index) => {
             if (col !== after[index] && afterSet.has(col)) {
@@ -1244,7 +1288,9 @@ function findColumnChanges(before, after) {
     return {
         renamedColumns,
         reorderedColumns,
-        hasChanges: renamedColumns.length > 0 || reorderedColumns.length > 0
+        insertedColumns,
+        deletedColumns,
+        hasChanges: renamedColumns.length > 0 || reorderedColumns.length > 0 || insertedColumns.length > 0 || deletedColumns.length > 0
     };
 }
 
