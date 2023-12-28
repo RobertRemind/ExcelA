@@ -1146,6 +1146,9 @@ async function createTrackedTable(context, trackedTable) {
 }
 
 
+/**
+ * Loop through Tracked Tables and bind the events.
+ */
 async function bindAllTrackedTableEvents() {
 	await Excel.run(async (context) => {
 		TrackedTables.tables.forEach((tbl) => {
@@ -1154,12 +1157,21 @@ async function bindAllTrackedTableEvents() {
 	});
 }
 
+/**
+ * Bind change events to a Tracked Table.
+ * @param {TrackedTable} trackedTable Table to bind events
+ */
 async function bindTrackedTableEvents(trackedTable) {
 	await Excel.run(async (context) => {
 		handleBindTrackedTableEvents(context, trackedTable);
 	});
 }
 
+/**
+ * Implements Tracked Table bindings 
+ * @param {*} context 
+ * @param {TrackedTable} trackedTable 
+ */
 async function handleBindTrackedTableEvents(context, trackedTable) {
 	debugger;
 	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
