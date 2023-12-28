@@ -226,6 +226,11 @@ Office.onReady((info) => {
 		document.getElementById('btnListState').addEventListener('click', async function() {
 			await listStates();
 		});
+
+		document.getElementById('btnClearState').addEventListener('click', async function() {
+			await clearState("all");
+		});
+		
 		
 		getAllStates();
     }
@@ -1119,6 +1124,7 @@ async function createTrackedTable(context, trackedTable) {
         onTrackedTableChange(worksheet, table, eventArgs);
     });
 	/*
+	// seems to be causing the onChange event to not fire.
 	table.onSelectionChanged.add((eventArgs) => {
         debugger;
     });
@@ -1514,21 +1520,31 @@ async function saveState(stateType) {
  */
 async function getState(stateType) {
 	await Excel.run(async (context) => {
-		await handleGetState(context, stateType);
-	});
+		
+		if (stateType == States.TrackedTables || stateType == "all" ) {
+			const tt = await handleGetState(context, stateType);
+			TrackedTables.tables = tt.tables ? tt.tables : TrackedTables.tables
+		}
+	});	
 }
 
 
+async function clearState(stateType) {
+	await Excel.run(async (context) => {
+		if(stateType == "all") {
+			return promises = Object.values(States).map(stateType => handleClearState(context, stateType));
+		} else {
+			await handleClearState(context, stateType);
+		}
+	});	
+}
 
 /**
  * Load all state types from the workbook's XML custom parts
  * @returns 
  */
 async function getAllStates() {
-    return await Excel.run(async (context) => {
-        const promises = Object.values(States).map(stateType => handleGetState(context, stateType));
-        return Promise.all(promises);
-    });
+	await handleGetState("all");		
 }
 
 
@@ -1542,7 +1558,7 @@ async function handleSaveState(context, stateType, stateObject) {
 	const existingId = await getStateId(context, stateType);
 	const xmlContent = createStateXml(stateObject)
 	let customXmlPart;
-	debugger;
+	
 	if(!existingId.value) {
 		customXmlPart = context.workbook.customXmlParts.add(xmlContent);
 		customXmlPart.load("id");
@@ -1585,6 +1601,27 @@ async function handleGetState(context, stateType) {
 
 }
 
+
+async function handleClearState(context, stateType) {
+	  const settings = context.workbook.settings;
+	  const xmlPartIDSetting = settings.getItemOrNullObject(stateType).load("value");
+	  await context.sync();
+  
+	  if (xmlPartIDSetting.value) {
+		let customXmlPart = context.workbook.customXmlParts.getItem(xmlPartIDSetting.value);
+		const xmlBlob = customXmlPart.getXml();
+		customXmlPart.delete();
+		customXmlPart = context.workbook.customXmlParts.getItemOrNullObject(xmlPartIDSetting.value);
+  
+		await context.sync();
+  
+		if (customXmlPart.isNullObject) {
+		  // Delete the unneeded setting too.
+		  xmlPartIDSetting.delete();
+		} 
+		await context.sync();
+	  }
+  }
 
 
 /**
