@@ -1187,6 +1187,7 @@ async function createTrackedTable(context, libraryTable) {
 	
 	// Make the excel table.
 	createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
+	return TrackedTables.tables[indexOfNewElement];
 }
 
 
@@ -1852,7 +1853,7 @@ async function setupProducts() {
 	await Excel.run(async (context) => {
 		
 		const sheet = await createWorksheet(context, productSettings.worksheet, true, true);		
-		await createTrackedTable(context, productSettings);  // Create the new table on the target range.				
+		const trackedTable = await createTrackedTable(context, productSettings);  // Create the new table on the target range.				
 		
 		sheet.activate();
 
@@ -1860,7 +1861,7 @@ async function setupProducts() {
 
 	});
 
-	applyStyleToTable(productSettings)	
+	applyStyleToTable(trackedTable);	
 	
 }
 
