@@ -270,7 +270,7 @@ Office.onReady((info) => {
 
 		// Make the Library controls and bind events table
 		populateLibraryDropDown();
-        document.getElementById('btnCreateDimensionTable').addEventListener('click', function() {
+        document.getElementById('btnCreateLibraryTable').addEventListener('click', function() {
 			debugger;
 			/* 
 			!!!! Change this 
