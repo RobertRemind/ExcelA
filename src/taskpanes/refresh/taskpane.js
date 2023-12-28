@@ -1522,7 +1522,7 @@ async function getState(stateType) {
 	await Excel.run(async (context) => {
 		
 		if (stateType == States.TrackedTables || stateType == "all" ) {
-			const tt = await handleGetState(context, stateType);
+			const tt = await handleGetState(context, States.TrackedTables);
 			if(tt && tt.tables)  {
 				TrackedTables.tables = tt.tables;
 			}
