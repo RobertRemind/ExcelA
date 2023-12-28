@@ -1485,21 +1485,15 @@ function ensurePathExists(obj, path) {
 
 async function saveState(stateName, stateObject) {
 	await Excel.run(async (context) => {
-		debugger;
-		// You must have the xmlns attribute to populate the
-		// CustomXml.namespaceUri property.
-		
 
-		const customXmlPart = context.workbook.customXmlParts.add(stateObject);
+		const xmlContent = createStateXml(stateObject)
+		const customXmlPart = context.workbook.customXmlParts.add(xmlContent);
 		customXmlPart.load("id");
-		const xmlBlob = customXmlPart.getXml();
-
 		await context.sync();
 
 		// Store the XML part's ID in a setting.
 		const settings = context.workbook.settings;
 		settings.add(stateName, customXmlPart.id);
-
 		await context.sync();
 	});
 }
@@ -1518,14 +1512,36 @@ async function getState(stateName) {
 			const xml = customXmlPart.getXml()
 			await context.sync();
 
-			const xmlContent = xml.value;
-            console.log(xmlContent);
-
+			const obj =  parseStateXml(xml.value);
+            debugger;
 			
 		}
 	});
   }
 
+
+/**
+ * Convert the JSON object to a string
+ * @param {*} stateObject 
+ * @returns 
+ */
+function createStateXml(stateObject) {
+	const jsonString = JSON.stringify(stateObject);
+	return `<root>${jsonString}</root>`;
+}
+
+/**
+ * Convert XML from state to an object. Only works for XML created by createStateXml()
+ * @param {string} xml XML created by createStateXml()
+ * @returns 
+ */
+function parseStateXml(xml) {
+	// May need to be changed to a DOM parser. But as createStateXml() is so simple this is more efficient.
+	const start = "<root>".length;
+	const end = xml.length - "</root>".length;
+	return xml.substring(start, end);
+
+}
 
 
 /* 
