@@ -132,7 +132,7 @@ const TrackedStyles = {
 /**
  * A list to tables that have been made by the add-in.
  */
-var TrackedTables = {
+const TrackedTables = {
 	tables: [
 		{
 			name: "ProductsTable",
