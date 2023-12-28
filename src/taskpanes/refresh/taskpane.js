@@ -1121,11 +1121,41 @@ async function createTrackedTable(context, trackedTable) {
 	const table = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
 	table.name = trackedTable.name;
 
+	// Populate table from Tracked Settings.
+	setTrackedTableHeader(table, trackedTable);
+	setTrackedTableRows(table, trackedTable);
+
 	// Bind Table Change Event
 	handleBindTrackedTableEvents(context, trackedTable);
 
-	table.getHeaderRowRange().values = [headerValues];
+	// Auto fit new data. This is used by the gradient to determine colors.
+	table.getRange().format.autofitColumns();
+	table.getRange().format.autofitRows();
 
+	await context.sync(); 	
+	
+	return table;
+}
+
+/**
+ * Update an Excel table header with the settings of a Tracked Table
+ * @param {Excel.Table} table Excel Table to be updated
+ * @param {TrackedTable} trackedTable Tracked Table definition to match
+ */
+function setTrackedTableHeader(table, trackedTable) {
+	trackedTable.trackedColumns.map((c) => {
+		headerValues.push(c.name);
+	});
+	table.getHeaderRowRange().values = [headerValues];
+}
+
+
+/**
+ * Update an Excel table body with the settings of a Tracked Table
+ * @param {Excel.Table} table Excel Table to be updated
+ * @param {TrackedTable} trackedTable Tracked Table definition to match
+ */
+function setTrackedTableRows(table, trackedTable) {
 	trackedTable.rows.forEach((r) => {
 		let rowData = trackedTable.trackedColumns.map((c) => {
 			if(c.source) {
@@ -1135,14 +1165,6 @@ async function createTrackedTable(context, trackedTable) {
 		});
 		table.rows.add(null /*add at the end*/, [rowData]);
 	});
-
-	// Auto fit new data. This is used by the gradient to determine colors.
-	table.getRange().format.autofitColumns();
-	table.getRange().format.autofitRows();
-
-	await context.sync(); 	
-	
-	return table;
 }
 
 
@@ -1154,6 +1176,7 @@ async function bindAllTrackedTableEvents() {
 		TrackedTables.tables.forEach((tbl) => {
 			handleBindTrackedTableEvents(context, tbl);
 		});
+		await context.sync();
 	});
 }
 
@@ -1164,6 +1187,7 @@ async function bindAllTrackedTableEvents() {
 async function bindTrackedTableEvents(trackedTable) {
 	await Excel.run(async (context) => {
 		handleBindTrackedTableEvents(context, trackedTable);
+		await context.sync()
 	});
 }
 
