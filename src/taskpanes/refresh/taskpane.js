@@ -213,8 +213,16 @@ Office.onReady((info) => {
 
         document.getElementById('btnGradient').addEventListener('click', async function() {
           await applyGradientToRange();
-      });
+      	});
 
+		document.getElementById('btnSaveState').addEventListener('click', async function() {
+			await saveState();
+		});
+
+		document.getElementById('btnGetState').addEventListener('click', async function() {
+			await getState();
+		});
+		
 
     }
 });
@@ -1466,6 +1474,56 @@ function ensurePathExists(obj, path) {
         currentPart = currentPart[part]; // Move to the next level
     }
 }
+
+
+/* 
+###########################################################################################
+	Custom XML Part
+########################################################################################### 
+*/
+
+
+async function saveState(stateName, stateObject) {
+	await Excel.run(async (context) => {
+		debugger;
+		// You must have the xmlns attribute to populate the
+		// CustomXml.namespaceUri property.
+		const originalXml =
+		"<Reviewers xmlns='http://schemas.contoso.com/review/1.0'><Reviewer>Juan</Reviewer><Reviewer>Hong</Reviewer><Reviewer>Sally</Reviewer></Reviewers>";
+
+		stateObject = originalXml;
+
+		const customXmlPart = context.workbook.customXmlParts.add(originalXml);
+		customXmlPart.load("id");
+		const xmlBlob = customXmlPart.getXml();
+
+		await context.sync();
+
+		// Store the XML part's ID in a setting.
+		const settings = context.workbook.settings;
+		settings.add(stateName, customXmlPart.id);
+
+		await context.sync();
+	});
+}
+
+
+async function getState() {
+	
+	await Excel.run(async (context) => {
+		debugger;
+		const settings = context.workbook.settings;
+		const xmlPartIDSetting = settings.getItemOrNullObject("ContosoReviewXmlPartId").load("value");
+		await context.sync();
+
+		if (xmlPartIDSetting.value) {
+			const customXmlPart = context.workbook.customXmlParts.getItem(xmlPartIDSetting.value);
+			debugger;
+			
+		}
+	});
+  }
+
 
 
 /* 
