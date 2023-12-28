@@ -132,7 +132,7 @@ const TrackedStyles = {
 /**
  * A list to tables that have been made by the add-in.
  */
-const TrackedTables = {
+var TrackedTables = {
 	tables: [
 		{
 			name: "ProductsTable",
@@ -216,51 +216,20 @@ Office.onReady((info) => {
       	});
 
 		document.getElementById('btnSaveState').addEventListener('click', async function() {
-			await saveState("Remind_TrackedTables", TrackedTables);
+			await saveState(States.TrackedTables);
 		});
 
 		document.getElementById('btnGetState').addEventListener('click', async function() {
-			await getState("Remind_TrackedTables");
+			await getState(States.TrackedTables);
 		});
 
 		document.getElementById('btnListState').addEventListener('click', async function() {
 			await listStates();
 		});
 		
-		
-		const handler = () => onChange();
-		TrackedTables = createDeepProxy(TrackedTables, handler);
-
+		getAllStates();
     }
 });
-
-/**
- * Create a proxy object to call a function when the TrackedTables is changed.
- * @param {*} obj 
- * @param {*} handler 
- * @returns 
- */
-function createDeepProxy(obj, handler) {
-    return new Proxy(obj, {
-        get(target, property) {
-            const value = Reflect.get(target, property);
-            if (value && typeof value === 'object') {
-                return createDeepProxy(value, handler);
-            }
-            return value;
-        },
-        set(target, property, value) {
-            const result = Reflect.set(target, property, value);
-            handler();
-            return result;
-        }
-    });
-}
-
-function onChange() {
-	debugger;
-}
-
 
 /* 
 ###########################################################################################
@@ -1249,6 +1218,7 @@ async function onTrackedTableChange(worksheet, table, eventArg) {
 	await table.context.sync();
 
 	if (hasChange) {
+		saveState(States.TrackedTables);
 		applyStyleToTable(tableConfig);
 	}
 
@@ -1516,34 +1486,87 @@ function ensurePathExists(obj, path) {
 ########################################################################################### 
 */
 
+/**
+ * A list of session states stored in the workbook.
+ */
+const States = {
+    TrackedTables: "Remind_TrackedTables"
+};
 
-async function saveState(stateName, stateObject) {
+/**
+ * Store a session state object to the workbook custom XML part.
+ * @param {States} stateType Target state type 
+ */
+async function saveState(stateType) {
 	await Excel.run(async (context) => {
-
-		const existingId = await getStateId(context, stateName);
-		const xmlContent = createStateXml(stateObject)
-		let customXmlPart;
-		debugger;
-		if(!existingId.value) {
-			customXmlPart = context.workbook.customXmlParts.add(xmlContent);
-			customXmlPart.load("id");
-
-		} else {
-			customXmlPart = context.workbook.customXmlParts.getItem(existingId.value);
-			customXmlPart.setXml(xmlContent);
-			customXmlPart.load("id");
+		switch (stateType) {
+			case States.TrackedTables:
+				handleSaveState(context, stateType, TrackedTables)
+			break;
 		}
-		await context.sync();
-
-		// Store the XML part's ID in a setting.
-		const settings = context.workbook.settings;
-		settings.add(stateName, customXmlPart.id);
-		await context.sync();
 	});
 }
 
 
-async function getState(stateName) {
+/**
+ * Load a state object from the workbook's XML custom parts.
+ * @param {States} stateName State type to load from the XML Custom Part
+ */
+async function getState(stateType) {
+	await Excel.run(async (context) => {
+		await handleGetState(context, stateType);
+	});
+}
+
+
+
+/**
+ * Load all state types from the workbook's XML custom parts
+ * @returns 
+ */
+async function getAllStates() {
+    return await Excel.run(async (context) => {
+        const promises = Object.values(States).map(stateName => handleGetState(context, stateName));
+        return Promise.all(promises);
+    });
+}
+
+
+/**
+ * Handler for saveState.
+ * @param {States} stateName Target state type
+ * @param {*} stateObject Object to be stored
+ */
+async function handleSaveState(context, stateName, stateObject) {
+	
+	const existingId = await getStateId(context, stateType);
+	const xmlContent = createStateXml(stateObject)
+	let customXmlPart;
+	debugger;
+	if(!existingId.value) {
+		customXmlPart = context.workbook.customXmlParts.add(xmlContent);
+		customXmlPart.load("id");
+
+	} else {
+		customXmlPart = context.workbook.customXmlParts.getItem(existingId.value);
+		customXmlPart.setXml(xmlContent);
+		customXmlPart.load("id");
+	}
+	await context.sync();
+
+	// Store the XML part's ID in a setting.
+	const settings = context.workbook.settings;
+	settings.add(stateName, customXmlPart.id);
+	await context.sync();
+}
+
+
+
+/**
+ * Load a state object from the workbooks XML custom parts.
+ * @param {States} stateName State type to load from the XML Custom Part
+ */
+async function handleGetState(context, stateName) {
 	
 	await Excel.run(async (context) => {
 		debugger;
@@ -1557,22 +1580,27 @@ async function getState(stateName) {
 			await context.sync();
 
 			const obj =  parseStateXml(xml.value);
-            debugger;
+			debugger;
 			return obj
 			
 		}
 	});
-  }
+}
 
 
+
+/**
+ * Get the Id of the custom XML part from the settings.
+ * @param {Excel.context} context 
+ * @param {States} stateName Target stateful object
+ * @returns 
+ */
 async function getStateId(context, stateName) {
-	
 	const settings = context.workbook.settings;
-	const xmlPartIDSetting = settings.getItemOrNullObject("ContosoReviewXmlPartId").load("value");
+	const xmlPartIDSetting = settings.getItemOrNullObject(stateName).load("value");
 	await context.sync();
 
 	return xmlPartIDSetting;
-
 }
 
 
