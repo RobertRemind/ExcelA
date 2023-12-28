@@ -246,9 +246,8 @@ Office.onReady((info) => {
 			!!!! Change this 
 				- Add info to load data for table.
 				- That info should be in the Tracked Table
-				- A check for table exists if it does update TrackedTable.table[0].Name 
 				- Remove TrackedTable.Table[0].rows[] from the state.
-
+				- On Libray option changed search and add a label for existing instances from Tracked Tables.
 			*/
 			setupProducts();
 		});
@@ -1846,25 +1845,22 @@ function parseStateXml(xml) {
 
 /** Set up Sample worksheet. */
 async function setupProducts() {
-
 	const productSettings = TablesLibrary.tables[0];
 	await getShopifyProducts();
 
+	// Make the new Excel table.
 	await Excel.run(async (context) => {
 		
 		const sheet = await createWorksheet(context, productSettings.worksheet, true, true);		
-		const trackedTable = await createTrackedTable(context, productSettings);  // Create the new table on the target range.				
-		
+		const trackedTable = await createTrackedTable(context, productSettings);  // Create the new table on the target range.						
 		sheet.activate();
 
 		await context.sync();
 
-	});
-
-	applyStyleToTable(trackedTable);	
-	
+		// Apply format.	
+		applyStyleToTable(trackedTable);
+	});	
 }
-
 
 
 
