@@ -1203,8 +1203,8 @@ async function generateTableName(context, tableName) {
 	let newTableName = tableName;
 
 	while (await doesTableExist(context, newTableName)) {
-		newTableName = `${newTableName}${suffex}`
-		suffex = suffex + 1;  
+		newTableName = `${newTableName}${suffix}`
+		suffix = suffix + 1;  
 	}
 	return newTableName;
 }
