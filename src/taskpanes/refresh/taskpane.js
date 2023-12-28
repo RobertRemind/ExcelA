@@ -216,11 +216,11 @@ Office.onReady((info) => {
       	});
 
 		document.getElementById('btnSaveState').addEventListener('click', async function() {
-			await saveState();
+			await saveState("Remind_testing", "<Reviewers xmlns='http://schemas.contoso.com/review/1.0'><Reviewer>Juan</Reviewer><Reviewer>Hong</Reviewer><Reviewer>Sally</Reviewer></Reviewers>");
 		});
 
 		document.getElementById('btnGetState').addEventListener('click', async function() {
-			await getState();
+			await getState("Remind_testing");
 		});
 		
 
@@ -1488,12 +1488,9 @@ async function saveState(stateName, stateObject) {
 		debugger;
 		// You must have the xmlns attribute to populate the
 		// CustomXml.namespaceUri property.
-		const originalXml =
-		"<Reviewers xmlns='http://schemas.contoso.com/review/1.0'><Reviewer>Juan</Reviewer><Reviewer>Hong</Reviewer><Reviewer>Sally</Reviewer></Reviewers>";
+		
 
-		stateObject = originalXml;
-
-		const customXmlPart = context.workbook.customXmlParts.add(originalXml);
+		const customXmlPart = context.workbook.customXmlParts.add(stateObject);
 		customXmlPart.load("id");
 		const xmlBlob = customXmlPart.getXml();
 
@@ -1508,12 +1505,12 @@ async function saveState(stateName, stateObject) {
 }
 
 
-async function getState() {
+async function getState(stateName) {
 	
 	await Excel.run(async (context) => {
 		debugger;
 		const settings = context.workbook.settings;
-		const xmlPartIDSetting = settings.getItemOrNullObject("ContosoReviewXmlPartId").load("value");
+		const xmlPartIDSetting = settings.getItemOrNullObject(stateName).load("value");
 		await context.sync();
 
 		if (xmlPartIDSetting.value) {
