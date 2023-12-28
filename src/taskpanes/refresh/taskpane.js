@@ -1510,7 +1510,7 @@ async function saveState(stateType) {
 
 /**
  * Load a state object from the workbook's XML custom parts.
- * @param {States} stateName State type to load from the XML Custom Part
+ * @param {States} stateType State type to load from the XML Custom Part
  */
 async function getState(stateType) {
 	await Excel.run(async (context) => {
@@ -1526,7 +1526,7 @@ async function getState(stateType) {
  */
 async function getAllStates() {
     return await Excel.run(async (context) => {
-        const promises = Object.values(States).map(stateName => handleGetState(context, stateName));
+        const promises = Object.values(States).map(stateType => handleGetState(context, stateType));
         return Promise.all(promises);
     });
 }
@@ -1534,10 +1534,10 @@ async function getAllStates() {
 
 /**
  * Handler for saveState.
- * @param {States} stateName Target state type
+ * @param {States} stateType Target state type
  * @param {*} stateObject Object to be stored
  */
-async function handleSaveState(context, stateName, stateObject) {
+async function handleSaveState(context, stateType, stateObject) {
 	
 	const existingId = await getStateId(context, stateType);
 	const xmlContent = createStateXml(stateObject)
@@ -1556,7 +1556,7 @@ async function handleSaveState(context, stateName, stateObject) {
 
 	// Store the XML part's ID in a setting.
 	const settings = context.workbook.settings;
-	settings.add(stateName, customXmlPart.id);
+	settings.add(stateType, customXmlPart.id);
 	await context.sync();
 }
 
@@ -1564,27 +1564,25 @@ async function handleSaveState(context, stateName, stateObject) {
 
 /**
  * Load a state object from the workbooks XML custom parts.
- * @param {States} stateName State type to load from the XML Custom Part
+ * @param {States} stateType State type to load from the XML Custom Part
  */
-async function handleGetState(context, stateName) {
+async function handleGetState(context, stateType) {
 	
-	await Excel.run(async (context) => {
-		debugger;
-		const settings = context.workbook.settings;
-		const xmlPartIDSetting = settings.getItemOrNullObject(stateName).load("value");
+	const settings = context.workbook.settings;
+	const xmlPartIDSetting = settings.getItemOrNullObject(stateType).load("value");
+	await context.sync();
+
+	if (xmlPartIDSetting.value) {
+		const customXmlPart = context.workbook.customXmlParts.getItem(xmlPartIDSetting.value);
+		const xml = customXmlPart.getXml()
 		await context.sync();
 
-		if (xmlPartIDSetting.value) {
-			const customXmlPart = context.workbook.customXmlParts.getItem(xmlPartIDSetting.value);
-			const xml = customXmlPart.getXml()
-			await context.sync();
+		const obj =  parseStateXml(xml.value);
+		debugger;
+		return obj
+		
+	}
 
-			const obj =  parseStateXml(xml.value);
-			debugger;
-			return obj
-			
-		}
-	});
 }
 
 
@@ -1592,12 +1590,12 @@ async function handleGetState(context, stateName) {
 /**
  * Get the Id of the custom XML part from the settings.
  * @param {Excel.context} context 
- * @param {States} stateName Target stateful object
+ * @param {States} stateType Target stateful object
  * @returns 
  */
-async function getStateId(context, stateName) {
+async function getStateId(context, stateType) {
 	const settings = context.workbook.settings;
-	const xmlPartIDSetting = settings.getItemOrNullObject(stateName).load("value");
+	const xmlPartIDSetting = settings.getItemOrNullObject(stateType).load("value");
 	await context.sync();
 
 	return xmlPartIDSetting;
