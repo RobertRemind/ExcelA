@@ -232,7 +232,9 @@ Office.onReady((info) => {
 		});
 		
 		
-		getAllStates();
+		getAllStates().then(() => {
+			bindAllTrackedTableEvents();
+		});
     }
 });
 
@@ -1120,19 +1122,7 @@ async function createTrackedTable(context, trackedTable) {
 	table.name = trackedTable.name;
 
 	// Bind Table Change Event
-	table.onChanged.add((eventArgs) => {
-        onTrackedTableChange(worksheet, table, eventArgs);
-    });
-	/*
-	// seems to be causing the onChange event to not fire.
-	table.onSelectionChanged.add((eventArgs) => {
-        debugger;
-    });
-	*/
-	const headerValues = []
-	trackedTable.trackedColumns.map((c) => {
-		headerValues.push(c.name);
-	});
+	handleBindTrackedTableEvents(context, trackedTable);
 
 	table.getHeaderRowRange().values = [headerValues];
 
@@ -1155,6 +1145,40 @@ async function createTrackedTable(context, trackedTable) {
 	return table;
 }
 
+
+async function bindAllTrackedTableEvents() {
+	await Excel.run(async (context) => {
+		TrackedTables.tables.forEach((tbl) => {
+			handleBindTrackedTableEvents(context, tbl);
+		});
+	});
+}
+
+async function bindTrackedTableEvents(trackedTable) {
+	await Excel.run(async (context) => {
+		handleBindTrackedTableEvents(context, trackedTable);
+	});
+}
+
+async function handleBindTrackedTableEvents(context, trackedTable) {
+	debugger;
+	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
+	const table = worksheet.tables.getItemOrNullObject(trackedTable.name);
+	
+	if (table) {
+		// Bind Table Change Event
+		table.onChanged.add((eventArgs) => {
+			onTrackedTableChange(worksheet, table, eventArgs);
+		});
+		
+		/*
+		// seems to be causing the onChange event to not fire.
+		table.onSelectionChanged.add((eventArgs) => {
+			debugger;
+		});
+		*/
+	}
+}
 
 
 /**
