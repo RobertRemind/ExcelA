@@ -133,37 +133,7 @@ const TrackedStyles = {
  * A list to tables that have been made by the add-in.
  */
 const TrackedTables = {
-	tables: [
-		{
-			name: "ProductsTable",
-			worksheet: "Product",
-			dimension: "products",
-			range: "A1:C1",
-			styles: {
-				header: "defaultTableHeader", 
-				body: "defaultTableBody"
-			}, 
-			columns: ["Product", "Primary System Code", "Member Caption"], // All the columns in the table
-			trackedColumns: [
-				{
-					name: "Product", // What is the name of the column in the data table. 
-					source: null, // What is the Data source column name?
-					isDirty: false	 // Used to tag that the column has been changed and prompt the user to disable tracking. 
-				}, 
-				{
-					name: "Primary System Code",
-					source: "primarySystemCode", 
-					isDirty: false	
-				}, 
-				{
-					name: "Member Caption",
-					source: "memberCaption", 
-					isDirty: false	
-				}
-			], 
-			rows: []
-		}
-	]
+	tables: [ ]
 }
 
 
@@ -171,7 +141,7 @@ const TablesLibrary = {
 	tables: [
 		{
 			name: "ProductsTable",
-			worksheet: "Product",
+			worksheet: "Product2", //!!! Testing
 			dimension: "products",
 			range: "A1:C1",
 			styles: {
@@ -276,7 +246,9 @@ Office.onReady((info) => {
 			!!!! Change this 
 				- Add info to load data for table.
 				- That info should be in the Tracked Table
+				- A check for table exists if it does update TrackedTable.table[0].Name 
 				- Remove TrackedTable.Table[0].rows[] from the state.
+
 			*/
 			setupProducts();
 		});
@@ -471,6 +443,27 @@ function columnToNumber(column) {
 	return sum;
 }
 
+
+
+async function doesTableExist(context, tableName) {
+	const worksheets = context.workbook.worksheets;
+	worksheets.load("items"); // Load the collection of worksheets
+	await context.sync();
+
+	for (let i = 0; i < worksheets.items.length; i++) {
+		const worksheet = worksheets.items[i];
+		const tables = worksheet.tables;
+		tables.load("items/name"); // Load the names of tables
+		await context.sync();
+
+		const tableExists = tables.items.some(table => table.name === tableName);
+		if (tableExists) {
+			return true; // Table found
+		}
+	}
+
+	return false; // Table not found in any worksheet
+}
 
 
 
@@ -1179,10 +1172,52 @@ function getSupplier(supplierID) {
 /**
  * Create and populate a new data table
  * @param {Excel.RequestContext} context Context of the Excel request
+ * @param {LibraryTable} libraryTable Settings of the Library Table to create.
+ * @returns 
+ */
+async function createTrackedTable(context, libraryTable) {
+	
+	// Clone the library data and push to Tracked Tables. 
+	const clone = JSON.parse(JSON.stringify(libraryTable));
+	const i = TrackedTables.tables.push(clone);
+	let indexOfNewElement = i - 1;
+	
+	// Generate a new table name if the default table name is in use.
+	TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);
+	
+	// Make the excel table.
+	createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
+}
+
+
+
+/**
+ * Creates a new table name generated from a string. 
+ * If a table existed with the proposed name N+1 is added as a suffix.  
+ * @param {*} context 
+ * @param {string} tableName Proposed table name
+ * @returns 
+ */
+async function generateTableName(context, tableName) {
+	let suffix = 1;
+	let newTableName = tableName;
+
+	while (await doesTableExist(context, newTableName)) {
+		newTableName = `${newTableName}${suffex}`
+		suffex = suffex + 1;  
+	}
+	return newTableName;
+}
+
+
+
+/**
+ * Create and populate a new data table on the passed worksheet
+ * @param {Excel.RequestContext} context Context of the Excel request
  * @param {TrackedTable} trackedTable Settings of the Tracked Table.
  * @returns 
  */
-async function createTrackedTable(context, trackedTable) {
+async function createWorksheetTable(context, trackedTable) {
 	
 	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
 	const table = worksheet.tables.add(trackedTable.range, true /*hasHeaders*/);	
@@ -1811,7 +1846,7 @@ function parseStateXml(xml) {
 /** Set up Sample worksheet. */
 async function setupProducts() {
 
-	const productSettings = TrackedTables.tables[0];
+	const productSettings = TablesLibrary.tables[0];
 	await getShopifyProducts();
 
 	await Excel.run(async (context) => {
