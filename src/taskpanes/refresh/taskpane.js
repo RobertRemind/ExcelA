@@ -1523,7 +1523,9 @@ async function getState(stateType) {
 		
 		if (stateType == States.TrackedTables || stateType == "all" ) {
 			const tt = await handleGetState(context, stateType);
-			TrackedTables.tables = tt.tables ? tt.tables : TrackedTables.tables
+			if(tt && tt.tables)  {
+				TrackedTables.tables = tt.tables;
+			}
 		}
 	});	
 }
