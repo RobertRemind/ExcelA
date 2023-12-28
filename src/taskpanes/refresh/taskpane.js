@@ -1495,7 +1495,7 @@ function ensurePathExists(obj, path) {
 async function saveState(stateName, stateObject) {
 	await Excel.run(async (context) => {
 
-		const existingId = getStateId(context, stateName);
+		const existingId = await getStateId(context, stateName);
 		const xmlContent = createStateXml(stateObject)
 		let customXmlPart;
 		debugger;
