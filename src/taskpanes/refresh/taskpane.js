@@ -1544,7 +1544,7 @@ async function clearState(stateType) {
  * @returns 
  */
 async function getAllStates() {
-	await handleGetState("all");		
+	await getState("all");		
 }
 
 
