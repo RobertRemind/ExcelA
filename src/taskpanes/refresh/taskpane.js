@@ -223,11 +223,6 @@ Office.onReady((info) => {
 			await getState("Remind_testing");
 		});
 
-		document.getElementById('btnGetState').addEventListener('click', async function() {
-			await getState("Remind_testing");
-		});
-
-
 		document.getElementById('btnListState').addEventListener('click', async function() {
 			await listStates();
 		});
@@ -1533,7 +1528,7 @@ async function getState(stateName) {
 
 			const obj =  parseStateXml(xml.value);
             debugger;
-			return obj;
+			return obj
 			
 		}
 	});
@@ -1580,7 +1575,8 @@ function parseStateXml(xml) {
 	// May need to be changed to a DOM parser. But as createStateXml() is so simple this is more efficient.
 	const start = "<RemindState xmlns='http://schemas.remindbi.com/review/1.0'>".length;
 	const end = xml.length - "</RemindState>".length;
-	return xml.substring(start, end);
+	const jsonString = xml.substring(start, end);
+	return JSON.parse(jsonString);	
 
 }
 
