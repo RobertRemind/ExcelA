@@ -216,20 +216,50 @@ Office.onReady((info) => {
       	});
 
 		document.getElementById('btnSaveState').addEventListener('click', async function() {
-			await saveState("Remind_testing", TrackedTables);
+			await saveState("Remind_TrackedTables", TrackedTables);
 		});
 
 		document.getElementById('btnGetState').addEventListener('click', async function() {
-			await getState("Remind_testing");
+			await getState("Remind_TrackedTables");
 		});
 
 		document.getElementById('btnListState').addEventListener('click', async function() {
 			await listStates();
 		});
 		
+		
+		const handler = () => onChange();
+		TrackedTables = createDeepProxy(TrackedTables, handler);
 
     }
 });
+
+/**
+ * Create a proxy object to call a function when the TrackedTables is changed.
+ * @param {*} obj 
+ * @param {*} handler 
+ * @returns 
+ */
+function createDeepProxy(obj, handler) {
+    return new Proxy(obj, {
+        get(target, property) {
+            const value = Reflect.get(target, property);
+            if (value && typeof value === 'object') {
+                return createDeepProxy(value, handler);
+            }
+            return value;
+        },
+        set(target, property, value) {
+            const result = Reflect.set(target, property, value);
+            handler();
+            return result;
+        }
+    });
+}
+
+function onChange() {
+	debugger;
+}
 
 
 /* 
