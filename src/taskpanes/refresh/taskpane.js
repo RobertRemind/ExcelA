@@ -222,6 +222,15 @@ Office.onReady((info) => {
 		document.getElementById('btnGetState').addEventListener('click', async function() {
 			await getState("Remind_testing");
 		});
+
+		document.getElementById('btnGetState').addEventListener('click', async function() {
+			await getState("Remind_testing");
+		});
+
+
+		document.getElementById('btnListState').addEventListener('click', async function() {
+			await listStates();
+		});
 		
 
     }
@@ -1486,9 +1495,19 @@ function ensurePathExists(obj, path) {
 async function saveState(stateName, stateObject) {
 	await Excel.run(async (context) => {
 
+		const existingId = getStateId(context, stateName);
 		const xmlContent = createStateXml(stateObject)
-		const customXmlPart = context.workbook.customXmlParts.add(xmlContent);
-		customXmlPart.load("id");
+		let customXmlPart;
+		debugger;
+		if(!existingId.value) {
+			customXmlPart = context.workbook.customXmlParts.add(xmlContent);
+			customXmlPart.load("id");
+
+		} else {
+			customXmlPart = context.workbook.customXmlParts.getItem(existingId.value);
+			customXmlPart.setXml(xmlContent);
+			customXmlPart.load("id");
+		}
 		await context.sync();
 
 		// Store the XML part's ID in a setting.
@@ -1520,6 +1539,27 @@ async function getState(stateName) {
   }
 
 
+async function getStateId(context, stateName) {
+	
+	const settings = context.workbook.settings;
+	const xmlPartIDSetting = settings.getItemOrNullObject("ContosoReviewXmlPartId").load("value");
+	await context.sync();
+
+	return xmlPartIDSetting;
+
+}
+
+
+async function listStates() {
+	await Excel.run(async (context) => {
+		debugger;
+		const customXmlParts = context.workbook.customXmlParts;
+		customXmlParts.getCount();
+		customXmlParts.load("items")
+		await context.sync();
+	});
+}
+  
 /**
  * Convert the JSON object to a string
  * @param {*} stateObject 
