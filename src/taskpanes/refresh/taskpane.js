@@ -1515,7 +1515,12 @@ async function getState(stateName) {
 
 		if (xmlPartIDSetting.value) {
 			const customXmlPart = context.workbook.customXmlParts.getItem(xmlPartIDSetting.value);
-			debugger;
+			const xml = customXmlPart.getXML()
+			await context.sync();
+
+			const xmlContent = xml.value;
+            console.log(xmlContent);
+
 			
 		}
 	});
