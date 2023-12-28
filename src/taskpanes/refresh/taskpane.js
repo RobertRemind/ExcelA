@@ -167,6 +167,41 @@ const TrackedTables = {
 }
 
 
+const TablesLibrary = {
+	tables: [
+		{
+			name: "ProductsTable",
+			worksheet: "Product",
+			dimension: "products",
+			range: "A1:C1",
+			styles: {
+				header: "defaultTableHeader", 
+				body: "defaultTableBody"
+			}, 
+			columns: ["Product", "Primary System Code", "Member Caption"], // All the columns in the table
+			trackedColumns: [
+				{
+					name: "Product", // What is the name of the column in the data table. 
+					source: null, // What is the Data source column name?
+					isDirty: false	 // Used to tag that the column has been changed and prompt the user to disable tracking. 
+				}, 
+				{
+					name: "Primary System Code",
+					source: "primarySystemCode", 
+					isDirty: false	
+				}, 
+				{
+					name: "Member Caption",
+					source: "memberCaption", 
+					isDirty: false	
+				}
+			], 
+			rows: []
+		}
+	]
+}
+
+
 
 
 /* 
@@ -201,11 +236,7 @@ Office.onReady((info) => {
             });
         });
 
-        // Bind make table
-        document.getElementById('btnCreateDimensionTable').addEventListener('click', function() {
-          setupProducts();
-        });
-
+        
         document.getElementById('btnAddEntity').addEventListener('click', function() {
             addEntitiesToTable();
         });
@@ -231,12 +262,48 @@ Office.onReady((info) => {
 			await clearState("all");
 		});
 		
-		
+		// Get the states from the workbook Custom XML Parts
 		getAllStates().then(() => {
+			// Then bind events to the tracked tables
 			bindAllTrackedTableEvents();
+		});
+
+		// Make the Library controls and bind events table
+		populateLibraryDropDown();
+        document.getElementById('btnCreateDimensionTable').addEventListener('click', function() {
+			debugger;
+			/* 
+			!!!! Change this 
+				- Add info to load data for table.
+				- That info should be in the Tracked Table
+				- Remove TrackedTable.Table[0].rows[] from the state.
+			*/
+			setupProducts();
 		});
     }
 });
+
+
+
+/* 
+###########################################################################################
+	UI 
+########################################################################################### 
+*/
+
+function populateLibraryDropDown() {
+	// Try to get an existing select element with the ID 'slTableList'
+	let dropdown = document.querySelector('#tableLibrarySelect');
+
+	// Adding options to the dropdown
+	TablesLibrary.tables.forEach(table => {
+		const option = document.createElement('option');
+		option.value = table.name;
+		option.text = table.name;
+		dropdown.appendChild(option);
+	});
+}
+
 
 /* 
 ###########################################################################################
@@ -1198,7 +1265,6 @@ async function bindTrackedTableEvents(trackedTable) {
  * @param {TrackedTable} trackedTable 
  */
 async function handleBindTrackedTableEvents(context, trackedTable) {
-	debugger;
 	const worksheet = context.workbook.worksheets.getItemOrNullObject(trackedTable.worksheet);	
 	const table = worksheet.tables.getItemOrNullObject(trackedTable.name);
 	
@@ -1657,7 +1723,6 @@ async function handleGetState(context, stateType) {
 		await context.sync();
 
 		const obj =  parseStateXml(xml.value);
-		debugger;
 		return obj
 		
 	}
@@ -1704,7 +1769,6 @@ async function getStateId(context, stateType) {
 
 async function listStates() {
 	await Excel.run(async (context) => {
-		debugger;
 		const customXmlParts = context.workbook.customXmlParts;
 		customXmlParts.getCount();
 		customXmlParts.load("items")
