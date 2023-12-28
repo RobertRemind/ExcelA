@@ -216,7 +216,7 @@ Office.onReady((info) => {
       	});
 
 		document.getElementById('btnSaveState').addEventListener('click', async function() {
-			await saveState("Remind_testing", "<Reviewers xmlns='http://schemas.contoso.com/review/1.0'><Reviewer>Juan</Reviewer><Reviewer>Hong</Reviewer><Reviewer>Sally</Reviewer></Reviewers>");
+			await saveState("Remind_testing", TrackedTables);
 		});
 
 		document.getElementById('btnGetState').addEventListener('click', async function() {
@@ -1533,6 +1533,7 @@ async function getState(stateName) {
 
 			const obj =  parseStateXml(xml.value);
             debugger;
+			return obj;
 			
 		}
 	});
@@ -1567,7 +1568,7 @@ async function listStates() {
  */
 function createStateXml(stateObject) {
 	const jsonString = JSON.stringify(stateObject);
-	return `<root>${jsonString}</root>`;
+	return `<RemindState xmlns='http://schemas.remindbi.com/review/1.0'>${jsonString}</RemindState>`;
 }
 
 /**
@@ -1577,8 +1578,8 @@ function createStateXml(stateObject) {
  */
 function parseStateXml(xml) {
 	// May need to be changed to a DOM parser. But as createStateXml() is so simple this is more efficient.
-	const start = "<root>".length;
-	const end = xml.length - "</root>".length;
+	const start = "<RemindState xmlns='http://schemas.remindbi.com/review/1.0'>".length;
+	const end = xml.length - "</RemindState>".length;
 	return xml.substring(start, end);
 
 }
