@@ -1143,6 +1143,7 @@ async function createTrackedTable(context, trackedTable) {
  * @param {TrackedTable} trackedTable Tracked Table definition to match
  */
 function setTrackedTableHeader(table, trackedTable) {
+	const headerValues = [];
 	trackedTable.trackedColumns.map((c) => {
 		headerValues.push(c.name);
 	});
