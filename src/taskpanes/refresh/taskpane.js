@@ -141,7 +141,7 @@ const TablesLibrary = {
 	tables: [
 		{
 			name: "ProductsTable",
-			worksheet: "Product2", //!!! Testing
+			worksheet: "Product", //!!! Testing
 			dimension: "products",
 			range: "A1:C1",
 			styles: {
@@ -1170,26 +1170,22 @@ function getSupplier(supplierID) {
 }
 
 
+
+
 /**
- * Calculate a range from the top-left of another range.
- * @param {Excel.range} fromRange Starting point for the range. Typcially the selected cell.
- * @param {number} width Number of columns to include
- * @param {number} height Number of rows to include
- * @returns 
+ * Create and populate a new Tracked Table
+ * @param {string} libraryTableName Name of the new library table to create.
+ * @param {boolean} newWorksheet Create on a new worksheet
  */
-function calculateTargetRange(fromRange, width, height) {			
-	var topLeftCell = fromRange.getCell(0, 0);			
-	return topLeftCell.getResizedRange(height - 1, width - 1);	
-	
-}
-
-
-/** Set up Sample worksheet. */
 async function createTrackedTable(libraryTableName, newWorksheet) {
 	
-	let sheet, overrideRange;
+	let sheet;
 	const tableSettings = TablesLibrary.tables.find((lib) => {return lib.name === libraryTableName});
 	
+	const clone = JSON.parse(JSON.stringify(tableSettings));
+	const i = TrackedTables.tables.push(clone);
+	let indexOfNewElement = i - 1;
+
 	await getShopifyProducts();
 
 	// Make the new Excel table.
@@ -1198,48 +1194,53 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		if(newWorksheet) {
 			sheet = await createWorksheet(context, tableSettings.worksheet, true, true);		
 			sheet.activate();
-		} else {
-			sheet = context.workbook.worksheets.getActiveWorksheet();
-			const selectedCell = context.workbook.getSelectedRange();
-			
-			overrideRange = calculateTargetRange(selectedCell, tableSettings.columns.length, 1)
-			await context.sync();
+		} else {			
+			// If inserting at the selected cell, calc the range that at the table header will require.
+			TrackedTables.tables[indexOfNewElement] = calculateTableTargetRange(context, TrackedTables.tables[indexOfNewElement])			
 		}
 		
-		const trackedTable = await handleCreateTrackedTable(context, tableSettings, overrideRange);  // Create the new table on the target range.						
+		// Generate a new table name if the default table name is in use.
+		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);					
+
+		// Create the table on worksheet
+		createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
 		
-		await context.sync();
+		await context.sync();		
 
 		// Apply format.	
 		applyStyleToTable(trackedTable);
-	});	
-}
 
+		return TrackedTables.tables[indexOfNewElement];
+	});	
+	
+	
 
 /**
- * Create and populate a new data table
- * @param {Excel.RequestContext} context Context of the Excel request
- * @param {LibraryTable} libraryTable Settings of the Library Table to create.
+ * Get the selected cells and calculate a range wide enough to hold the new table.
+ * @param {*} context 
+ * @param {TrackedTable} TrackedTable Table to update
  * @returns 
  */
-async function handleCreateTrackedTable(context, libraryTable, overrideRange) {
+async function calculateTableTargetRange(context, TrackedTable) {	
 	
-	// Clone the library data and push to Tracked Tables. 
-	const clone = JSON.parse(JSON.stringify(libraryTable));
-	const i = TrackedTables.tables.push(clone);
-	let indexOfNewElement = i - 1;
-
-	if (overrideRange) {
-		TrackedTables.tables[indexOfNewElement].range = overrideRange;	
-	}
+	// From the top left selected cell, define a range wide enough for the column array.
+	const selectedCells = context.workbook.getSelectedRange();
+	const topLeftCell = selectedCells.getCell(0, 0);				
+	const overrideRange = topLeftCell.getResizedRange(0, TrackedTable.columns.length - 1);		
+	const sheet = context.workbook.worksheets.getActiveWorksheet();
 	
-	// Generate a new table name if the default table name is in use.
-	TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);	
+	overrideRange.load(["address"]);
+	sheet.load(["name"]);
 
-	// Make the excel table.
-	createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
-	return TrackedTables.tables[indexOfNewElement];
+	await context.sync();
+
+	// Update the Tracked Table definition with the new range. 
+	TrackedTable.range = overrideRange.address;				
+	TrackedTable.worksheet = sheet.name
+
+	return TrackedTable;		
 }
+
 
 
 
