@@ -1170,11 +1170,24 @@ function getSupplier(supplierID) {
 }
 
 
+/**
+ * Calculate a range from the top-left of another range.
+ * @param {Excel.range} fromRange Starting point for the range. Typcially the selected cell.
+ * @param {number} width Number of columns to include
+ * @param {number} height Number of rows to include
+ * @returns 
+ */
+function calculateTargetRange(fromRange, width, height) {			
+	var topLeftCell = fromRange.getCell(0, 0);			
+	return topLeftCell.getResizedRange(height - 1, width - 1);	
+	
+}
+
 
 /** Set up Sample worksheet. */
 async function createTrackedTable(libraryTableName, newWorksheet) {
 	
-	let sheet, selectedCell;
+	let sheet, overrideRange;
 	const tableSettings = TablesLibrary.tables.find((lib) => {return lib.name === libraryTableName});
 	
 	await getShopifyProducts();
@@ -1187,13 +1200,13 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 			sheet.activate();
 		} else {
 			sheet = context.workbook.worksheets.getActiveWorksheet();
-			selectedCell = context.workbook.getSelectedRange();
+			const selectedCell = context.workbook.getSelectedRange();
 			
-			selectedCell.load('address');
+			overrideRange = calculateTargetRange(selectedCell, tableSettings.columns.length + 1, 1)
 			await context.sync();
 		}
 		
-		const trackedTable = await handleCreateTrackedTable(context, tableSettings, selectedCell.address);  // Create the new table on the target range.						
+		const trackedTable = await handleCreateTrackedTable(context, tableSettings, overrideRange);  // Create the new table on the target range.						
 		
 		await context.sync();
 
