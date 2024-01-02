@@ -1202,7 +1202,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 			sheet = context.workbook.worksheets.getActiveWorksheet();
 			const selectedCell = context.workbook.getSelectedRange();
 			
-			overrideRange = calculateTargetRange(selectedCell, tableSettings.columns.length + 1, 1)
+			overrideRange = calculateTargetRange(selectedCell, tableSettings.columns.length, 1)
 			await context.sync();
 		}
 		
