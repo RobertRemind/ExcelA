@@ -1274,7 +1274,7 @@ async function generateTableName(context, tableName) {
 	let newTableName = tableName;
 
 	while (await doesTableExist(context, newTableName)) {
-		newTableName = `${newTableName}${suffix}`
+		newTableName = `${tableName}${suffix}`
 		suffix = suffix + 1;  
 	}
 	return newTableName;
