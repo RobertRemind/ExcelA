@@ -166,6 +166,25 @@ const TablesLibrary = {
 					isDirty: false	
 				}
 			], 
+			query: {
+				url: "http://localhost:7071/api/DimensionQuery", 
+				ajax: {
+					method: 'POST',
+					mode: 'cors',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: `{
+							"query": [
+								{
+									"dimension": "Product"
+									"filters": []
+								}
+							]
+						}
+						`
+					}
+			},
 			rows: []
 		}
 	]
@@ -1186,7 +1205,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 	const i = TrackedTables.tables.push(clone);
 	let indexOfNewElement = i - 1;
 
-	await getShopifyProducts();
+	await getTrackedTableData();
 
 	// Make the new Excel table.
 	await Excel.run(async (context) => {
@@ -1951,8 +1970,8 @@ function parseStateXml(xml) {
  * Start an Azure function for Dimension Query
  * @returns promise
  */
-async function getShopifyProducts() {  
-    
+async function getTrackedTableData(trackedTable) {  
+    /*
     const response = await fetch("http://localhost:7071/api/DimensionQuery", {        
         method: 'POST',
         mode: 'cors',
@@ -1969,6 +1988,9 @@ async function getShopifyProducts() {
         }
         `
     });
+	*/
+
+	const response = await fetch(trackedTable.query.url, trackedTable.query.ajax);
 
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1978,9 +2000,9 @@ async function getShopifyProducts() {
 
     if (data && data[0] && data[0].result) {
       const j = JSON.parse(data[0].result)
-          
-      TrackedTables.tables[0].rows.splice(0, TrackedTables.tables[0].rows.length); // Remove all elements from the array
-      TrackedTables.tables[0].rows.push(...j); // Merge arrays
+
+      trackedTable.rows.splice(0, TrackedTables.tables[0].rows.length); // Remove all elements from the array
+      trackedTable.rows.push(...j); // Merge arrays
     }
     
 
