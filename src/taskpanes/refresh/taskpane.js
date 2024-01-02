@@ -1175,7 +1175,7 @@ function getSupplier(supplierID) {
 async function createTrackedTable(libraryTableName, newWorksheet) {
 	
 	let sheet, selectedCell;
-	const tableSettings = TablesLibrary.tables.find((lib) => {lib.name === libraryTableName});
+	const tableSettings = TablesLibrary.tables.find((lib) => {return lib.name === libraryTableName});
 	
 	await getShopifyProducts();
 
