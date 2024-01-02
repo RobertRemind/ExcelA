@@ -235,10 +235,7 @@ Office.onReady((info) => {
 		// Get the states from the workbook Custom XML Parts
 		getAllStates().then(() => {
 			// Then bind events to the tracked tables
-			bindAllTrackedTableEvents();
-			
-			populateDropdown();
-    		updateInfoPanel(); // Update on initial load
+			bindAllTrackedTableEvents();					
 		});
 
 		// Make the Library controls and bind events table
@@ -260,35 +257,6 @@ Office.onReady((info) => {
     }
 });
 
-
-function populateDropdown() {
-    const dropdown = document.getElementById('tablesDropdown');
-    TrackedTables.tables.forEach(table => {
-        let option = document.createElement('option');
-        option.value = table.name;
-        option.textContent = table.name;
-        dropdown.appendChild(option);
-    });
-}
-
-
-function updateInfoPanel() {
-    const selectedTableName = document.getElementById('tablesDropdown').value;
-    const selectedTable = TrackedTables.tables.find(table => table.name === selectedTableName);
-    const infoPanel = document.getElementById('infoPanel');
-
-    // Clear the current info
-    infoPanel.innerHTML = '';
-
-    // Add new info
-    if (selectedTable) {
-        for (let key in selectedTable) {
-            let p = document.createElement('p');
-            p.textContent = `${key}: ${JSON.stringify(selectedTable[key], null, 2)}`;
-            infoPanel.appendChild(p);
-        }
-    }
-}
 
 /* 
 ###########################################################################################
@@ -1346,14 +1314,35 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 			onTrackedTableChange(worksheet, table, eventArgs);
 		});
 		
-		/*
+		
 		// seems to be causing the onChange event to not fire.
 		table.onSelectionChanged.add((eventArgs) => {
-			debugger;
+			debugger;			
+    		updateInfoPanel(trackedTable.name); // Update on initial load
 		});
-		*/
+		
 	}
 }
+
+
+
+function updateInfoPanel(tableName) {    
+    const selectedTable = TrackedTables.tables.find(table => table.name === tableName);
+    const infoPanel = document.getElementById('infoPanel');
+
+    // Clear the current info
+    infoPanel.innerHTML = '';
+
+    // Add new info
+    if (selectedTable) {
+        for (let key in selectedTable) {
+            let p = document.createElement('p');
+            p.textContent = `${key}: ${JSON.stringify(selectedTable[key], null, 2)}`;
+            infoPanel.appendChild(p);
+        }
+    }
+}
+
 
 
 /**
