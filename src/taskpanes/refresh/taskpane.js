@@ -183,7 +183,7 @@ const TablesLibrary = {
 							]
 						}
 						`
-					}
+				}				
 			},
 			rows: []
 		}
@@ -1232,7 +1232,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		return TrackedTables.tables[indexOfNewElement];
 	});	
 	
-	
+}
 
 /**
  * Get the selected cells and calculate a range wide enough to hold the new table.
