@@ -245,19 +245,15 @@ Office.onReady((info) => {
 
 		// Make the Library controls and bind events table
 		populateLibraryDropDown();
-        document.getElementById('btnCreateLibraryTable').addEventListener('click', function() {
-			debugger;
-			/* 
-			!!!! Change this 
-				- Add info to load data for table.
-				- That info should be in the Tracked Table
-				- Remove TrackedTable.Table[0].rows[] from the state.
-				- On Libray option changed search and add a label for existing instances from Tracked Tables.
-			*/
-			setupProducts();
+        document.getElementById('btnLibTableWorksheet').addEventListener('click', function() {						
+			createTrackedTable(document.getElementById('tableLibrarySelect').value, true);
 			
 		});
 
+		document.getElementById('btnLibTableSelectedCell').addEventListener('click', function() {
+			createTrackedTable(document.getElementById('tableLibrarySelect').value, false);			
+		});
+		
 		
     }
 });
@@ -1175,24 +1171,54 @@ function getSupplier(supplierID) {
 
 
 
+/** Set up Sample worksheet. */
+async function createTrackedTable(libraryTableName, newWorksheet) {
+	
+	let sheet, selectedCell;
+	const tableSettings = TablesLibrary.tables.find((lib) => {lib.name === libraryTableName});
+	
+	await getShopifyProducts();
+
+	// Make the new Excel table.
+	await Excel.run(async (context) => {
+		
+		if(newWorksheet) {
+			sheet = await createWorksheet(context, tableSettings.worksheet, true, true);		
+			sheet.activate();
+		} else {
+			sheet = context.workbook.worksheets.getActiveWorksheet();
+			selectedCell = context.workbook.getSelectedRange();
+		}
+		
+		const trackedTable = await handleCreateTrackedTable(context, tableSettings, selectedCell);  // Create the new table on the target range.						
+		
+		await context.sync();
+
+		// Apply format.	
+		applyStyleToTable(trackedTable);
+	});	
+}
+
+
 /**
  * Create and populate a new data table
  * @param {Excel.RequestContext} context Context of the Excel request
  * @param {LibraryTable} libraryTable Settings of the Library Table to create.
  * @returns 
  */
-async function createTrackedTable(context, libraryTable) {
+async function handleCreateTrackedTable(context, libraryTable, overrideRange) {
 	
 	// Clone the library data and push to Tracked Tables. 
 	const clone = JSON.parse(JSON.stringify(libraryTable));
 	const i = TrackedTables.tables.push(clone);
 	let indexOfNewElement = i - 1;
+
+	if (overrideRange) {
+		TrackedTables.tables[indexOfNewElement].range = overrideRange;	
+	}
 	
 	// Generate a new table name if the default table name is in use.
-	TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);
-	
-	debugger; // !!! add a function to set the inital create location 
-	//and managed the tracking of the location on save state.
+	TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);	
 
 	// Make the excel table.
 	createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
@@ -1329,7 +1355,11 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 }
 
 
-
+/**
+ * Show an info panel describing the selected Data Table.
+ * @param {string} tableName The name of the Tracked Table to display
+ * @param {*} eventArgs Excel Event information
+ */
 function updateInfoPanel(tableName, eventArgs) {
 
 	const infoPanel = document.getElementById('infoPanel');
@@ -1897,24 +1927,6 @@ function parseStateXml(xml) {
 */
 
 
-/** Set up Sample worksheet. */
-async function setupProducts() {
-	const productSettings = TablesLibrary.tables[0];
-	await getShopifyProducts();
-
-	// Make the new Excel table.
-	await Excel.run(async (context) => {
-		
-		const sheet = await createWorksheet(context, productSettings.worksheet, true, true);		
-		const trackedTable = await createTrackedTable(context, productSettings);  // Create the new table on the target range.						
-		sheet.activate();
-
-		await context.sync();
-
-		// Apply format.	
-		applyStyleToTable(trackedTable);
-	});	
-}
 
 
 
