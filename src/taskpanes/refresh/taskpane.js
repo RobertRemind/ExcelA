@@ -1223,6 +1223,8 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		// Create the table on worksheet
 		createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
 		
+		saveState(States.TrackedTables);
+
 		await context.sync();		
 
 		// Apply format.	
