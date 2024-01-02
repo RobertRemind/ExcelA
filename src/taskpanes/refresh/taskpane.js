@@ -1205,7 +1205,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 	const i = TrackedTables.tables.push(clone);
 	let indexOfNewElement = i - 1;
 
-	await getTrackedTableData();
+	await getTrackedTableData(TrackedTables.tables[indexOfNewElement]);
 
 	// Make the new Excel table.
 	await Excel.run(async (context) => {
@@ -1990,21 +1990,24 @@ async function getTrackedTableData(trackedTable) {
     });
 	*/
 
-	const response = await fetch(trackedTable.query.url, trackedTable.query.ajax);
+	if (trackedTable && trackedTable.query) {
+		// Make an Ajax call to the Azure functions for the table query data
+		const response = await fetch(trackedTable.query.url, trackedTable.query.ajax);
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
 
-    const data = await response.json();
+		const data = await response.json();
 
-    if (data && data[0] && data[0].result) {
-      const j = JSON.parse(data[0].result)
-
-      trackedTable.rows.splice(0, TrackedTables.tables[0].rows.length); // Remove all elements from the array
-      trackedTable.rows.push(...j); // Merge arrays
-    }
-    
+		// If the response is valid add the data to the table rows.
+		if (data && data[0] && data[0].result) {
+			const j = JSON.parse(data[0].result)
+			trackedTable.rows.splice(0, TrackedTables.tables[0].rows.length); // Remove all elements from the array
+			trackedTable.rows.push(...j); // Merge arrays
+		}
+	}
+		
 
 }
 
