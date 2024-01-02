@@ -6,8 +6,10 @@
     <script type="text/javascript" src="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpanes/refresh/taskpane.js"></script>
     <script type="text/javascript" src="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/functions.js"></script>    
     <link rel="stylesheet" type="text/css" href="https://kind-hill-08927eb00.4.azurestaticapps.net/taskpanes/refresh/taskpane.css">
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css">
+
 </head>
-<body>
+<body class="ms-Fabric">
     <div class="top-gradient"></div>
     <div class="banner-menu">
         <div class="menu-left">
@@ -56,6 +58,29 @@
         <h2>Utils</h2>
         <button class="styledButton" id="btnGradient">Gradient</button>
     </p>
+
+    
+    
+    <div class="ms-Grid" dir="ltr">
+        <div class="ms-Grid-row">
+            <div class="ms-Grid-col ms-sm6 ms-md4 ms-lg2">
+                <label class="ms-Label">Choose a Table:</label>
+            </div>
+            <div class="ms-Grid-col ms-sm6 ms-md8 ms-lg4">
+                <select id="tablesDropdown" class="ms-Dropdown" onchange="updateInfoPanel()">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+        </div>
+        <div class="ms-Grid-row">
+            <div class="ms-Grid-col ms-sm12">
+                <div id="infoPanel" class="ms-Panel">
+                    <!-- Info will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </body>
 </html>

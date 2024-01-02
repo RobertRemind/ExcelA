@@ -251,10 +251,41 @@ Office.onReady((info) => {
 			*/
 			setupProducts();
 		});
+
+		populateDropdown();
+    	updateInfoPanel(); // Update on initial load
     }
 });
 
 
+function populateDropdown() {
+    const dropdown = document.getElementById('tablesDropdown');
+    TrackedTables.tables.forEach(table => {
+        let option = document.createElement('option');
+        option.value = table.name;
+        option.textContent = table.name;
+        dropdown.appendChild(option);
+    });
+}
+
+
+function updateInfoPanel() {
+    const selectedTableName = document.getElementById('tablesDropdown').value;
+    const selectedTable = TrackedTables.tables.find(table => table.name === selectedTableName);
+    const infoPanel = document.getElementById('infoPanel');
+
+    // Clear the current info
+    infoPanel.innerHTML = '';
+
+    // Add new info
+    if (selectedTable) {
+        for (let key in selectedTable) {
+            let p = document.createElement('p');
+            p.textContent = `${key}: ${JSON.stringify(selectedTable[key], null, 2)}`;
+            infoPanel.appendChild(p);
+        }
+    }
+}
 
 /* 
 ###########################################################################################
@@ -1184,6 +1215,9 @@ async function createTrackedTable(context, libraryTable) {
 	// Generate a new table name if the default table name is in use.
 	TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);
 	
+	debugger; // !!! add a function to set the inital create location 
+	//and managed the tracking of the location on save state.
+
 	// Make the excel table.
 	createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
 	return TrackedTables.tables[indexOfNewElement];
