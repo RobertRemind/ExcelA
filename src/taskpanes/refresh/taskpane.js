@@ -1188,9 +1188,12 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		} else {
 			sheet = context.workbook.worksheets.getActiveWorksheet();
 			selectedCell = context.workbook.getSelectedRange();
+			
+			selectedCell.load('address');
+			await context.sync();
 		}
 		
-		const trackedTable = await handleCreateTrackedTable(context, tableSettings, selectedCell);  // Create the new table on the target range.						
+		const trackedTable = await handleCreateTrackedTable(context, tableSettings, selectedCell.address);  // Create the new table on the target range.						
 		
 		await context.sync();
 
