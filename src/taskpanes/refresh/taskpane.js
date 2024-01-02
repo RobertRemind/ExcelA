@@ -1214,11 +1214,9 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 			sheet.activate();
 		} else {			
 			// If inserting at the selected cell, calc the range that at the table header will require.
-			TrackedTables.tables[indexOfNewElement] = calculateTableTargetRange(context, TrackedTables.tables[indexOfNewElement])			
-		}
-		
-		await context.sync();	
-		
+			TrackedTables.tables[indexOfNewElement] = await calculateTableTargetRange(context, TrackedTables.tables[indexOfNewElement])			
+		}				
+
 		// Generate a new table name if the default table name is in use.
 		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, TrackedTables.tables[indexOfNewElement].name);					
 
