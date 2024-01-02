@@ -236,6 +236,9 @@ Office.onReady((info) => {
 		getAllStates().then(() => {
 			// Then bind events to the tracked tables
 			bindAllTrackedTableEvents();
+			
+			populateDropdown();
+    		updateInfoPanel(); // Update on initial load
 		});
 
 		// Make the Library controls and bind events table
@@ -250,10 +253,10 @@ Office.onReady((info) => {
 				- On Libray option changed search and add a label for existing instances from Tracked Tables.
 			*/
 			setupProducts();
+			
 		});
 
-		populateDropdown();
-    	updateInfoPanel(); // Update on initial load
+		
     }
 });
 
