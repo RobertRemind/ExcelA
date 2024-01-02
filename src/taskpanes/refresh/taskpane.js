@@ -468,7 +468,7 @@ function columnToNumber(column) {
 
 async function doesTableExist(context, tableName) {
 	const worksheets = context.workbook.worksheets;
-	worksheets.load("items"); // Load the collection of worksheets
+	worksheets.load(["items"]); // Load the collection of worksheets
 	await context.sync();
 
 	for (let i = 0; i < worksheets.items.length; i++) {
@@ -1197,8 +1197,7 @@ function getSupplier(supplierID) {
  * @param {boolean} newWorksheet Create on a new worksheet
  */
 async function createTrackedTable(libraryTableName, newWorksheet) {
-	
-	let sheet;
+		
 	const tableSettings = TablesLibrary.tables.find((lib) => {return lib.name === libraryTableName});
 	
 	const clone = JSON.parse(JSON.stringify(tableSettings));
@@ -1211,7 +1210,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 	await Excel.run(async (context) => {
 		
 		if(newWorksheet) {
-			sheet = await createWorksheet(context, tableSettings.worksheet, true, true);		
+			const sheet = await createWorksheet(context, TrackedTables.tables[indexOfNewElement].worksheet, true, true);		
 			sheet.activate();
 		} else {			
 			// If inserting at the selected cell, calc the range that at the table header will require.
@@ -1219,7 +1218,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		}
 		
 		// Generate a new table name if the default table name is in use.
-		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, clone.name);					
+		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, TrackedTables.tables[indexOfNewElement].name);					
 
 		// Create the table on worksheet
 		createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
@@ -1227,7 +1226,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		await context.sync();		
 
 		// Apply format.	
-		applyStyleToTable(trackedTable);
+		applyStyleToTable(TrackedTables.tables[indexOfNewElement]);
 
 		return TrackedTables.tables[indexOfNewElement];
 	});	
