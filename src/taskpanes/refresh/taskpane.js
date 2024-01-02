@@ -274,6 +274,13 @@ Office.onReady((info) => {
 		});
 		
 		
+		debugger;
+		/*
+			-- It is easy to update a tables name. Change Tracked Tables to key off the ID.
+			-- Write a funciton to sync the tracked table settings like range, worksheet name and existance.
+		*/
+
+
     }
 });
 
@@ -1221,8 +1228,11 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, TrackedTables.tables[indexOfNewElement].name);					
 
 		// Create the table on worksheet
-		createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
-		
+		const wsTable = createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
+
+		debugger;
+		TrackedTables.tables[indexOfNewElement].id = wsTable.id;
+
 		saveState(States.TrackedTables);
 
 		await context.sync();		
@@ -1384,7 +1394,7 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 		
 		
 		// seems to be causing the onChange event to not fire.
-		table.onSelectionChanged.add((eventArgs) => {			
+		table.onSelectionChanged.add((eventArgs) => {						
     		updateInfoPanel(trackedTable.name, eventArgs); // Update on initial load
 		});
 		
