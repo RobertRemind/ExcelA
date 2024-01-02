@@ -172,6 +172,11 @@ const TablesLibrary = {
 }
 
 
+const UIState = {
+	infoPanel: {
+		trackedTableName: ""
+	}
+}
 
 
 /* 
@@ -1316,9 +1321,8 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 		
 		
 		// seems to be causing the onChange event to not fire.
-		table.onSelectionChanged.add((eventArgs) => {
-			debugger;			
-    		updateInfoPanel(trackedTable.name); // Update on initial load
+		table.onSelectionChanged.add((eventArgs) => {			
+    		updateInfoPanel(trackedTable.name, eventArgs); // Update on initial load
 		});
 		
 	}
@@ -1326,38 +1330,46 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 
 
 
-function updateInfoPanel(tableName) {
-    const selectedTable = TablesLibrary.tables.find(table => table.name === tableName);
-    const infoPanel = document.getElementById('infoPanel');
+function updateInfoPanel(tableName, eventArgs) {
 
-    // Clear the current info
-    infoPanel.innerHTML = '';
+	const infoPanel = document.getElementById('infoPanel');
 
-    // Add new info
-    if (selectedTable) {
-        // Add table name as a header
-        let header = document.createElement('h3');
-        header.textContent = selectedTable.name;
-        infoPanel.appendChild(header);
+	if (eventArgs && eventArgs.isInsideTable && UIState.infoPanel.trackedTableName != tableName)  {
+		const selectedTable = TrackedTables.tables.find(table => table.name === tableName);
+    	
+		// Clear the current info
+		infoPanel.innerHTML = '';
 
-        // Add columns as list items
-        let list = document.createElement('ul');
-        selectedTable.columns.forEach(column => {
-            let listItem = document.createElement('li');
-            listItem.textContent = column;
-            // Check if column is in trackedColumns and add input if necessary
-            let trackedColumn = selectedTable.trackedColumns.find(tc => tc.name === column);
-            if (trackedColumn) {
-                // For simplicity, using text input; this can be extended for different data types
-                let input = document.createElement('input');
-                input.type = 'text';
-                input.value = trackedColumn.source || '';
-                listItem.appendChild(input);
-            }
-            list.appendChild(listItem);
-        });
-        infoPanel.appendChild(list);
-    }
+		// Add new info
+		if (selectedTable) {
+			// Add table name as a header
+			let header = document.createElement('h3');
+			header.textContent = selectedTable.name;
+			infoPanel.appendChild(header);
+
+			// Add columns as list items
+			let list = document.createElement('ul');
+			selectedTable.columns.forEach(column => {
+				let listItem = document.createElement('li');
+				listItem.textContent = column;
+				// Check if column is in trackedColumns and add input if necessary
+				let trackedColumn = selectedTable.trackedColumns.find(tc => tc.name === column);
+				if (trackedColumn) {
+					// For simplicity, using text input; this can be extended for different data types
+					let input = document.createElement('input');
+					input.type = 'text';
+					input.value = trackedColumn.source || '';
+					listItem.appendChild(input);
+				}
+				list.appendChild(listItem);
+			});
+			infoPanel.appendChild(list);
+		}
+		UIState.infoPanel.trackedTableName = tableName
+	} else {
+		infoPanel.innerHTML = '';
+		UIState.infoPanel.trackedTableName = '';
+	} 
 }
 
 
