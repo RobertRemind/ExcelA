@@ -1326,8 +1326,8 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 
 
 
-function updateInfoPanel(tableName) {    
-    const selectedTable = TrackedTables.tables.find(table => table.name === tableName);
+function updateInfoPanel(tableName) {
+    const selectedTable = TablesLibrary.tables.find(table => table.name === tableName);
     const infoPanel = document.getElementById('infoPanel');
 
     // Clear the current info
@@ -1335,14 +1335,30 @@ function updateInfoPanel(tableName) {
 
     // Add new info
     if (selectedTable) {
-        for (let key in selectedTable) {
-            let p = document.createElement('p');
-            p.textContent = `${key}: ${JSON.stringify(selectedTable[key], null, 2)}`;
-            infoPanel.appendChild(p);
-        }
+        // Add table name as a header
+        let header = document.createElement('h3');
+        header.textContent = selectedTable.name;
+        infoPanel.appendChild(header);
+
+        // Add columns as list items
+        let list = document.createElement('ul');
+        selectedTable.columns.forEach(column => {
+            let listItem = document.createElement('li');
+            listItem.textContent = column;
+            // Check if column is in trackedColumns and add input if necessary
+            let trackedColumn = selectedTable.trackedColumns.find(tc => tc.name === column);
+            if (trackedColumn) {
+                // For simplicity, using text input; this can be extended for different data types
+                let input = document.createElement('input');
+                input.type = 'text';
+                input.value = trackedColumn.source || '';
+                listItem.appendChild(input);
+            }
+            list.appendChild(listItem);
+        });
+        infoPanel.appendChild(list);
     }
 }
-
 
 
 /**
