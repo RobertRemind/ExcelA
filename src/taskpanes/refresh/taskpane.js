@@ -1207,6 +1207,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		
 	const tableSettings = TablesLibrary.tables.find((lib) => {return lib.name === libraryTableName});
 	
+	// Deep copy the Library object to theTtracked Tables. 
 	const clone = JSON.parse(JSON.stringify(tableSettings));
 	const i = TrackedTables.tables.push(clone);
 	let indexOfNewElement = i - 1;
@@ -1229,10 +1230,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 
 		// Create the table on worksheet
 		const wsTable = createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
-
-		debugger;
 		TrackedTables.tables[indexOfNewElement].id = wsTable.id;
-
 		saveState(States.TrackedTables);
 
 		await context.sync();		
