@@ -468,7 +468,7 @@ function columnToNumber(column) {
 
 async function doesTableExist(context, tableName) {
 	const worksheets = context.workbook.worksheets;
-	worksheets.load(["items"]); // Load the collection of worksheets
+	worksheets.load("items/name"); // Load the collection of worksheets
 	await context.sync();
 
 	for (let i = 0; i < worksheets.items.length; i++) {
@@ -1216,6 +1216,8 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 			// If inserting at the selected cell, calc the range that at the table header will require.
 			TrackedTables.tables[indexOfNewElement] = calculateTableTargetRange(context, TrackedTables.tables[indexOfNewElement])			
 		}
+		
+		await context.sync();	
 		
 		// Generate a new table name if the default table name is in use.
 		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, TrackedTables.tables[indexOfNewElement].name);					
