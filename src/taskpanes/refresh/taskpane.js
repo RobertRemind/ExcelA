@@ -1234,7 +1234,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 		TrackedTables.tables[indexOfNewElement].name = await generateTableName(context, TrackedTables.tables[indexOfNewElement].name);					
 
 		// Create the table on worksheet
-		const wsTable = createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
+		const wsTable = await createWorksheetTable(context, TrackedTables.tables[indexOfNewElement]);
 		TrackedTables.tables[indexOfNewElement].id = wsTable.id;
 		saveState(States.TrackedTables);
 
