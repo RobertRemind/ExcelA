@@ -1669,6 +1669,7 @@ function findColumnRemoved (before, after) {
  */
 async function syncTrackedTableInfo() {
     await Excel.run(async (context) => {
+		const foundTables = [];
         const worksheets = context.workbook.worksheets;
         worksheets.load("items/name"); // Load the name property of worksheets
         await context.sync();
@@ -1677,20 +1678,47 @@ async function syncTrackedTableInfo() {
             sheet.tables.load("items/name/address"); // Load name and address properties of tables
 
             await context.sync(); // Sync after loading properties for each worksheet
-
-            console.log(sheet.name);
-            console.log(sheet.tables);
-			debugger;
+			
             for (const wsTable of sheet.tables.items) {
                 let table = TrackedTables.tables.find((t) => t.id === wsTable.id);
                 if (table) {
-                    table.name = wsTable.name;
-                    table.worksheet = sheet.name;
-                    table.range = wsTable.address;
+					// Update the Tracked Table settings.
+					if(table.name != wsTable.name) {						
+						logEvent(LogEvents.Table.RenamedTable, table, table.name);			
+						table.name = wsTable.name;
+					}
+
+					if(table.worksheet != sheet.name) {						
+						logEvent(LogEvents.Table.MovedRange, table, table.worksheet);			
+						table.worksheet = sheet.name;					
+					}
+
+					if(table.range != wsTable.address) {						
+						logEvent(LogEvents.Table.MovedRange, table, table.range);									
+						table.range = wsTable.address;	
+					}
+					                    
+					foundTables.push(wsTable.id);					
+
+					
                 }
             }
         }
+		
     });
+	
+	// Remove absent tables from tracked tables.
+	TrackedTables.tables = TrackedTables.tables.filter(table => {		
+		let exists = foundTables.find(ft => ft.id === table.id);
+		if(!exists) {
+			logEvent(LogEvents.Table.DeleteTable, TrackedTables, table);	
+			return false
+		}
+		return true;
+	});
+
+	saveState(States.TrackedTables);
+
 }
 
 
@@ -1706,7 +1734,10 @@ async function syncTrackedTableInfo() {
 const LogEvents = {
     Table: {
 		RenamedColumn: 'column_rename',
-		DeleteColumn: 'column_delete'	
+		DeleteColumn: 'column_delete',
+		RenamedTable: 'table_rename',
+		MovedRange: 'table_address',		
+		DeleteTable: 'table_delete'
 	}, 
 	StylingChangeEvents: {  
 		SetPrimaryColor: 'style_setPrimary',
@@ -1765,6 +1796,40 @@ function handleLogTableChangeEvent(event, trackedItem, historyItem) {
 			trackedItem.history.trackedColumns.removed.push(historyItem);
 			
             break;
+
+		case LogEvents.Table.RenamedTable:
+
+			ensurePathExists(trackedItem, "history")
+			if(!trackedItem.history.name) {
+				trackedItem.history.name = [];
+			}
+			
+			trackedItem.history.name.push(historyItem);
+			
+            break;
+
+		case LogEvents.Table.MovedRange:
+
+			ensurePathExists(trackedItem, "history")
+			if(!trackedItem.history.range) {
+				trackedItem.history.range = [];
+			}
+			
+			trackedItem.history.range.push(historyItem);
+			
+            break;
+
+		case LogEvents.Table.DeleteTable:
+
+			ensurePathExists(trackedItem, "history")
+			if(!trackedItem.history.deleted) {
+				trackedItem.history.deleted = [];
+			}
+			
+			trackedItem.history.deleted.push(historyItem);
+			
+            break;
+					
         
 		default:
             console.log("handleLogTableChangeEvent(): Unknown event type");
