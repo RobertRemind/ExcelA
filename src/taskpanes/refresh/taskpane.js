@@ -1670,8 +1670,13 @@ function findColumnRemoved (before, after) {
 async function syncTrackedTableInfo() {
     
 	await Excel.run(async (context) => {
-						
-		context.workbook.worksheets.forEach(async (sheet) =>{
+		
+		debugger;			
+		const worksheets = context.workbook.worksheets;
+		worksheets.load(["items"]);
+		await context.sync();
+				
+		worksheets.items.forEach(async (sheet) =>{
 			
 			sheet.tables.load(['items/id', "name", "address"]); // Load only the id property of all tables
 			sheet.load(["name"]);
