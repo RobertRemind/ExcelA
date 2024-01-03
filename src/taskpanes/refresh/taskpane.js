@@ -256,6 +256,11 @@ Office.onReady((info) => {
 			await clearState("all");
 		});
 		
+		document.getElementById('btnSyncTables').addEventListener('click', async function() {
+			syncTrackedTableInfo();
+		});
+		
+
 		// Get the states from the workbook Custom XML Parts
 		getAllStates().then(() => {
 			// Then bind events to the tracked tables
@@ -1654,6 +1659,60 @@ function findColumnRemoved (before, after) {
 	// Identify columns absent from after state.
 	deletedColumns.push(...before.filter(col => !afterSet.has(col)));
 	return deletedColumns;
+}
+
+/**
+ * Loop through tables in the workbook and update the Tracked Tables object with the current state. 
+ * There are limited events in the API for tables so user actions such as cut and paste of tables can 
+ * only be managed in this way. 
+ * @returns 
+ */
+async function syncTrackedTableInfo() {
+    
+	await Excel.run(async (context) => {
+						
+		context.workbook.worksheets.forEach(async (sheet) =>{
+			
+			sheet.tables.load(['items/id', "name", "address"]); // Load only the id property of all tables
+			sheet.load(["name"]);
+			await context.sync();
+			debugger;
+			sheet.tables.items.forEach((wsTable) =>{
+				let table = TrackedTables.tables.find((t) =>{ return t.id = wsTable.id});
+				debugger;
+				table.name = wsTable.name;
+				table.worksheet = sheet.name;
+				table.range = wsTable.address;
+			})
+
+			
+
+
+		});
+		
+
+		
+
+		let tableToFind = null;
+		sheet.tables.items.forEach(table => {
+			if (table.id === tableId) {
+				tableToFind = table;
+			}
+		});
+
+		if (tableToFind) {
+			// Table with the specified id is found
+			console.log('Table found');
+			return tableToFind;
+		} else {
+			// Table with the specified id is not found
+			console.log('Table not found');
+			return null;
+		}
+
+	});
+
+	
 }
 
 
