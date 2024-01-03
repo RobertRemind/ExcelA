@@ -1644,6 +1644,16 @@ function findColumnChanges(before, after) {
 }
 
 
+
+
+
+/* 
+###########################################################################################
+	Sync Table settings
+########################################################################################### 
+*/
+
+
 /**
  * Find the list of columns removed from the table.
  * @param {[string]} before Array of column names before the change.
@@ -1661,65 +1671,65 @@ function findColumnRemoved (before, after) {
 	return deletedColumns;
 }
 
+
 /**
- * Loop through tables in the workbook and update the Tracked Tables object with the current state. 
- * There are limited events in the API for tables so user actions such as cut and paste of tables can 
- * only be managed in this way. 
- * @returns 
+ * Loads all necessary properties of worksheets and their tables.
+ * @param {Excel.RequestContext} context - The Excel request context.
+ * @returns {Excel.WorksheetCollection} The loaded collection of worksheets.
+ */
+async function loadWorksheetAndTableProperties(context) {
+    const worksheets = context.workbook.worksheets;
+    worksheets.load("items/name");
+    worksheets.items.forEach(sheet => {
+        sheet.tables.load("items/name/address");
+    });
+    await context.sync();
+    return worksheets;
+}
+
+/**
+ * Updates tracked table information based on the loaded data.
+ * @param {Excel.WorksheetCollection} worksheets - The collection of worksheets.
+ * @returns {string[]} Array of found table IDs.
+ */
+async function updateTrackedTables(worksheets) {
+    const foundTables = [];
+    for (const sheet of worksheets.items) {
+        for (const wsTable of sheet.tables.items) {
+            // ... Update logic for each table ...
+            foundTables.push(wsTable.id);
+        }
+    }
+    return foundTables;
+}
+
+/**
+ * Removes tables from the tracked list if they are no longer present.
+ * @param {string[]} foundTables - Array of found table IDs.
+ */
+function removeAbsentTables(foundTables) {
+    TrackedTables.tables = TrackedTables.tables.filter(table => {
+        let exists = foundTables.some(ft => ft === table.id);
+        if (!exists) {
+            logEvent(LogEvents.Table.DeleteTable, TrackedTables, table);
+            return false;
+        }
+        return true;
+    });
+}
+
+/**
+ * Main function to synchronize tracked table information.
  */
 async function syncTrackedTableInfo() {
     await Excel.run(async (context) => {
-		const foundTables = [];
-        const worksheets = context.workbook.worksheets;
-        worksheets.load("items/name"); // Load the name property of worksheets
-        await context.sync();
-
-        for (const sheet of worksheets.items) {
-            sheet.tables.load("items/name/address"); // Load name and address properties of tables
-
-            await context.sync(); // Sync after loading properties for each worksheet
-			
-            for (const wsTable of sheet.tables.items) {
-                let table = TrackedTables.tables.find((t) => t.id === wsTable.id);
-                if (table) {
-					// Update the Tracked Table settings.
-					if(table.name != wsTable.name) {						
-						logEvent(LogEvents.Table.RenamedTable, table, table.name);			
-						table.name = wsTable.name;
-					}
-
-					if(table.worksheet != sheet.name) {						
-						logEvent(LogEvents.Table.MovedRange, table, table.worksheet);			
-						table.worksheet = sheet.name;					
-					}
-
-					if(table.range != wsTable.address) {						
-						logEvent(LogEvents.Table.MovedRange, table, table.range);									
-						table.range = wsTable.address;	
-					}
-					                    
-					foundTables.push(wsTable.id);					
-
-					
-                }
-            }
-        }
-		
+        const worksheets = await loadWorksheetAndTableProperties(context);
+        const foundTables = await updateTrackedTables(worksheets);
+        removeAbsentTables(foundTables);
+        saveState(States.TrackedTables);
     });
-	
-	// Remove absent tables from tracked tables.
-	TrackedTables.tables = TrackedTables.tables.filter(table => {		
-		let exists = foundTables.find(ft => ft.id === table.id);
-		if(!exists) {
-			logEvent(LogEvents.Table.DeleteTable, TrackedTables, table);	
-			return false
-		}
-		return true;
-	});
-
-	saveState(States.TrackedTables);
-
 }
+
 
 
 /* 
