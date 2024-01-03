@@ -277,14 +277,6 @@ Office.onReady((info) => {
 		document.getElementById('btnLibTableSelectedCell').addEventListener('click', function() {
 			createTrackedTable(document.getElementById('tableLibrarySelect').value, false);			
 		});
-		
-		
-		debugger;
-		/*
-			-- It is easy to update a tables name. Change Tracked Tables to key off the ID.
-			-- Write a funciton to sync the tracked table settings like range, worksheet name and existance.
-		*/
-
 
     }
 });
