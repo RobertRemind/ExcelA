@@ -1685,6 +1685,7 @@ async function loadWorksheetAndTableProperties(context) {
     // Now that the worksheets are loaded, load the properties of their tables
     worksheets.items.forEach(sheet => {
         sheet.tables.load("items/address"); // Load name and address properties of tables
+		sheet.tables.load("items/name"); // Load name and address properties of tables
     });
 
     await context.sync(); // Perform another sync to load the tables
