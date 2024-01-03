@@ -477,6 +477,22 @@ function columnToNumber(column) {
 }
 
 
+/**
+ * Splits an Excel address into its worksheet and range parts.
+ * If the worksheet name is not included in the address, the function returns only the range part.
+ * @param {string} address - The full Excel address (e.g., "Product!D22:F23" or "D22:F23").
+ * @returns {Object} An object with 'worksheet' and 'range' properties. 'worksheet' may be undefined if not included.
+ */
+function splitExcelAddress(address) {
+    if (address.includes('!')) {
+        const [worksheet, range] = address.split('!');
+        return { worksheet, range };
+    } else {
+        return { worksheet: undefined, range: address };
+    }
+}
+
+
 
 async function doesTableExist(context, tableName) {
 	const worksheets = context.workbook.worksheets;
@@ -1683,8 +1699,7 @@ async function loadWorksheetAndTableProperties(context) {
     await context.sync();
 
     // Now that the worksheets are loaded, load the properties of their tables
-    worksheets.items.forEach(sheet => {
-        sheet.tables.load("items/name/address"); // Load name and address properties of tables
+    worksheets.items.forEach(sheet => {        
 		sheet.tables.load("items/name"); // Load name and address properties of tables
     });
 
@@ -1716,13 +1731,13 @@ async function onSyncUpdateTrackedTables(context, worksheets) {
 					table.worksheet = sheet.name;
 				}
 
-				const tableRange = wsTable.getRange(); 
-				tableRange.load("address")
-				await context.sync();
+				const address = await getTableRange(context, wsTable);
+				const split = splitExcelAddress(address)
+				const range = split.range;
 
-				if (table.range !== tableRange.address) {
+				if (table.range !== range) {
 					logEvent(LogEvents.Table.MovedRange, table, table.range);
-					table.range = tableRange.address;
+					table.range = range;
 				}
 				
 			}
@@ -1731,6 +1746,18 @@ async function onSyncUpdateTrackedTables(context, worksheets) {
         }
     }
     return foundTables;
+}
+
+/**
+ * Get the range an Excel Table occupies 
+ * @param {Excel.Table} table 
+ * @returns 
+ */
+async function getTableRange (context, table) {
+	const tableRange = table.getRange(); 
+	tableRange.load("address")
+	await context.sync();
+	return tableRange.address;
 }
 
 /**
