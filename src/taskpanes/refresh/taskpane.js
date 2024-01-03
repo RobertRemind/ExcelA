@@ -1697,11 +1697,31 @@ async function loadWorksheetAndTableProperties(context) {
  * @param {Excel.WorksheetCollection} worksheets - The collection of worksheets.
  * @returns {string[]} Array of found table IDs.
  */
-async function updateTrackedTables(worksheets) {
+async function onSyncUpdateTrackedTables(worksheets) {
     const foundTables = [];
     for (const sheet of worksheets.items) {
         for (const wsTable of sheet.tables.items) {
-            // ... Update logic for each table ...
+            
+			let table = TrackedTables.tables.find((t) => t.id === wsTable.id);
+			if (table) {
+				// Update the Tracked Table settings.
+				if (table.name !== wsTable.name) {
+					logEvent(LogEvents.Table.RenamedTable, table, table.name);
+					table.name = wsTable.name;
+				}
+
+				if (table.worksheet !== sheet.name) {
+					logEvent(LogEvents.Table.MovedRange, table, table.worksheet);
+					table.worksheet = sheet.name;
+				}
+
+				if (table.range !== wsTable.address) {
+					logEvent(LogEvents.Table.MovedRange, table, table.range);
+					table.range = wsTable.address;
+				}
+				
+			}
+
             foundTables.push(wsTable.id);
         }
     }
@@ -1729,7 +1749,7 @@ function removeAbsentTables(foundTables) {
 async function syncTrackedTableInfo() {
     await Excel.run(async (context) => {
         const worksheets = await loadWorksheetAndTableProperties(context);
-        const foundTables = await updateTrackedTables(worksheets);
+        const foundTables = await onSyncUpdateTrackedTables(worksheets);
         removeAbsentTables(foundTables);
         saveState(States.TrackedTables);
     });
