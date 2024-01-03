@@ -1668,58 +1668,30 @@ function findColumnRemoved (before, after) {
  * @returns 
  */
 async function syncTrackedTableInfo() {
-    
-	await Excel.run(async (context) => {
-				
-		const worksheets = context.workbook.worksheets;
-		worksheets.load(["items"]);
-		await context.sync();
-				
-		worksheets.items.forEach(async (sheet) =>{
-			
-			sheet.tables.load(["items", "name", "address"]); // Load only the id property of all tables
-			sheet.load(["name"]);
-			await context.sync();
-			
-			console.log(sheet.name);
-			console.log(sheet.tables);
+    await Excel.run(async (context) => {
+        const worksheets = context.workbook.worksheets;
+        worksheets.load("items/name"); // Load the name property of worksheets
+        await context.sync();
+
+        for (const sheet of worksheets.items) {
+            sheet.tables.load("items/name/address"); // Load name and address properties of tables
+
+            await context.sync(); // Sync after loading properties for each worksheet
+
+            console.log(sheet.name);
+            console.log(sheet.tables);
 			debugger;
-
-			sheet.tables.items.forEach((wsTable) =>{
-				let table = TrackedTables.tables.find((t) =>{ return t.id = wsTable.id});
-				debugger;
-				table.name = wsTable.name;
-				table.worksheet = sheet.name;
-				table.range = wsTable.address;
-			});
-
-		});
-		
-
-		
-
-		let tableToFind = null;
-		sheet.tables.items.forEach(table => {
-			if (table.id === tableId) {
-				tableToFind = table;
-			}
-		});
-
-		if (tableToFind) {
-			// Table with the specified id is found
-			console.log('Table found');
-			return tableToFind;
-		} else {
-			// Table with the specified id is not found
-			console.log('Table not found');
-			return null;
-		}
-
-	});
-
-	
+            for (const wsTable of sheet.tables.items) {
+                let table = TrackedTables.tables.find((t) => t.id === wsTable.id);
+                if (table) {
+                    table.name = wsTable.name;
+                    table.worksheet = sheet.name;
+                    table.range = wsTable.address;
+                }
+            }
+        }
+    });
 }
-
 
 
 /* 
