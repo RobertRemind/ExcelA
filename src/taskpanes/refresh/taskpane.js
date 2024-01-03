@@ -1723,13 +1723,11 @@ async function onSyncUpdateTrackedTables(context, worksheets) {
 					table.worksheet = sheet.name;
 				}
 
-				const address = await getTableRange(context, wsTable);
-				const split = splitExcelAddress(address)
-				const range = split.range;
+				const address = await getTableRange(context, wsTable);								
 
-				if (table.range !== range) {
+				if (table.range !== address.range) {
 					logEvent(LogEvents.Table.MovedRange, table, table.range);
-					table.range = range;
+					table.range = address.range;
 				}
 				
 			}
@@ -1749,7 +1747,7 @@ async function getTableRange (context, table) {
 	const tableRange = table.getRange(); 
 	tableRange.load("address")
 	await context.sync();
-	return tableRange.address;
+	return splitExcelAddress(tableRange.address);
 }
 
 /**
