@@ -1679,13 +1679,18 @@ function findColumnRemoved (before, after) {
  */
 async function loadWorksheetAndTableProperties(context) {
     const worksheets = context.workbook.worksheets;
-    worksheets.load("items/name");
-    worksheets.items.forEach(sheet => {
-        sheet.tables.load("items/name/address");
-    });
+    worksheets.load("items/name"); // Load the name property of worksheets
     await context.sync();
+
+    // Now that the worksheets are loaded, load the properties of their tables
+    worksheets.items.forEach(sheet => {
+        sheet.tables.load("items/name/address"); // Load name and address properties of tables
+    });
+
+    await context.sync(); // Perform another sync to load the tables
     return worksheets;
 }
+
 
 /**
  * Updates tracked table information based on the loaded data.
