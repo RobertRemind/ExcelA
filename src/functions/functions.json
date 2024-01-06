@@ -1,17 +1,6 @@
 {
     "functions": [
-        {
-            "id": "MAKESQL",
-            "name": "MAKESQL",
-            "parameters": [
-                {
-                    "description": "The name of the table to be created.",
-                    "name": "tableName",
-                    "type": "any"
-                }                
-            ],
-            "result": {}
-        },
+        
         {
             "id": "ADD",
             "name": "ADD",
