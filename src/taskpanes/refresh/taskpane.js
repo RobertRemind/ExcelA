@@ -2551,6 +2551,12 @@ async function  displayMappingObject () {
 	});			
 }
 
+function removeQuotes(str) {
+    if (typeof str === 'string' && str.startsWith('"') && str.endsWith('"')) {
+        return str.substring(1, str.length - 1);
+    }
+    return str;
+}
 
 // Function to recursively traverse the JSON object
 function traverseObject(obj, path = '') {
@@ -2562,41 +2568,40 @@ function traverseObject(obj, path = '') {
         let isArray = Array.isArray(value);
 
         if (isArray) {
-            // Check if the array contains primitive types
             if (value.length > 0 && (typeof value[0] !== 'object' || value[0] === null)) {
-                // Array of primitives: add a single row for the array
+                // Array of primitives
                 let row = [
                     'L',                // Leaf column
                     newPath + '[]',     // Path with array indicator
                     key,                // Attribute name
-                    '',                 // Value (blank for array of primitives)
-                    '',                 // User input column
-                    ''                  // SQL type (blank for array of primitives)
+                    value[0] ? value[0] : '',   // Value (blank for array of primitives)                    
+                    value[0] ? guessSqlType(value[0]) : '', // SQL type 
+					''
                 ];
                 result.push(row);
             } else {
-                // Array of objects: consider only the first element
+                // Array of objects
                 result = result.concat(traverseObject(value[0], `${newPath}[]`));
             }
         } else if (!isLeaf) {
-            // Non-leaf object: recursively traverse further
+            // Non-leaf object
             result = result.concat(traverseObject(value, newPath));
         } else {
-            // Leaf node: add row
+            // Leaf node
+            let formattedValue = typeof value === 'string' ? value : JSON.stringify(value);
             let row = [
                 'L',                     // Leaf column
                 newPath,                // Path
                 key,                    // Attribute name
-                JSON.stringify(value),  // Value
-                '',                     // User input column
-                guessSqlType(value)     // SQL type
+                removeQuotes(formattedValue), // Value with quotes removed
+                guessSqlType(value),     // SQL type
+				''						// Blank column	
             ];
             result.push(row);
         }
     }
     return result;
 }
-
 
 
 // Function to guess SQL type
