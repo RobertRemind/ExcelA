@@ -35,7 +35,14 @@ function GetValue(key) {
   return OfficeRuntime.storage.getItem(key);
 }
 
-
+/**
+ * @customfunction
+ * @description Generates an SQL create table statement
+ * @param {any} tableName The name of the table to be created.
+ */
+function MakeSQL (tableName){
+  return `CREATE TABLE ${tableName}`;
+}
 
 
 
