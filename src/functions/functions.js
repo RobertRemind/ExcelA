@@ -1,5 +1,14 @@
-﻿﻿﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+﻿﻿
+
+/**
+ * @customfunction
+ * @description Generates an SQL create table statement
+ * @param {any} tableName The name of the table to be created.
+ */
+function makeSQL (tableName){
+  debugger;
+  return `CREATE TABLE ${tableName}`;
+}
 
 /**
  * @customfunction
@@ -35,17 +44,10 @@ function GetValue(key) {
   return OfficeRuntime.storage.getItem(key);
 }
 
-/**
- * @customfunction
- * @description Generates an SQL create table statement
- * @param {any} tableName The name of the table to be created.
- */
-function MakeSQL (tableName){
-  return `CREATE TABLE ${tableName}`;
-}
 
 
 
+CustomFunctions.associate("MAKESQL", makeSQL);
 CustomFunctions.associate("ADD", add);
 CustomFunctions.associate("STOREVALUE",StoreValue);
 CustomFunctions.associate("GETVALUE",GetValue);
