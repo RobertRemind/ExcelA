@@ -2554,27 +2554,35 @@ async function  displayMappingObject () {
 
 // Function to recursively traverse the JSON object
 function traverseObject(obj, path = '') {
-	let result = [];
-	for (const key in obj) {
-		let newPath = path ? `${path}.${key}` : key;
-		let isLeaf = !(typeof obj[key] === 'object' && obj[key] !== null);
-		let row = [
-			isLeaf ? 'L' : '', // Leaf column
-			newPath,           // Path
-			key,               // Attribute name
-			isLeaf ? JSON.stringify(obj[key]) : '', // Value (blank if not a leaf)
-			'',                // User input column
-			isLeaf ? guessSqlType(obj[key]) : '' // SQL type (blank if not a leaf)
-		];
-		result.push(row);
+    let result = [];
+    for (const key in obj) {
+        let newPath = path ? `${path}.${key}` : key;
+        let value = obj[key];
+        let isLeaf = !(value instanceof Object);
+        let isArray = Array.isArray(value);
 
-		if (!isLeaf) {
-			// If not a leaf, recursively traverse further
-			result = result.concat(traverseObject(obj[key], newPath));
-		}
-	}
-	return result;
+        if (isArray && value.length > 0) {
+            // Handle array: consider only the first element
+            result = result.concat(traverseObject(value[0], `${newPath}[]`));
+        } else if (!isLeaf) {
+            // Non-leaf object: recursively traverse further
+            result = result.concat(traverseObject(value, newPath));
+        } else {
+            // Leaf node: add row
+            let row = [
+                'L',                     // Leaf column
+                newPath,                // Path
+                key,                    // Attribute name
+                JSON.stringify(value),  // Value
+                '',                     // User input column
+                guessSqlType(value)     // SQL type
+            ];
+            result.push(row);
+        }
+    }
+    return result;
 }
+
 
 
 
