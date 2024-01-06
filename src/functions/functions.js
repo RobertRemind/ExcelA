@@ -2,6 +2,18 @@
 
 /**
  * @customfunction
+ * @description Generates an SQL create table statement
+ * @param {any} tableName The name of the table to be created.
+ * @param {any} columnNames The name of the table columns.
+ */
+function makeSQL (tableName, columnNames){
+  debugger;
+  let columns = [];
+  return `CREATE TABLE ${tableName}`;
+}
+
+/**
+ * @customfunction
  * @description Adds two numbers together. 
  * @param {number} first First number to be added.
  * @param {number} second Second number to be added.
