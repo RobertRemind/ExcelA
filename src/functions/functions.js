@@ -15,8 +15,8 @@ function makeSQL (tableName, columnNames){
         let columnName = columnNames[i][0];
         //let dataType = dataTypes[i][0];
         //let precisionValue = precision[i][0];
-
-        let columnDef = `${columnName} ${dataType}`;
+        let columnDef = `${columnName}`;
+        //let columnDef = `${columnName} ${dataType}`;
         //if (precisionValue) {
         //    columnDef += `(${precisionValue})`;
         //}
