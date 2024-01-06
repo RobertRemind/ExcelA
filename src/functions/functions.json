@@ -8,14 +8,19 @@
                     "description": "The name of the table to be created.",
                     "name": "tableName",
                     "type": "any"
-                },
+                },                            
                 {
-                    "description": "The name of the table columns.",
                     "name": "columnNames",
-                    "type": "matrix"
-                }                
+                    "description": "The range of cells to get the name from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                  }
             ],
-            "result": {}
+            "result": {
+                "type": "string",
+                "description": "The name of the first cell in the range.",
+                "dimensionality": "scalar"
+              }
         },
         {
             "id": "ADD",
