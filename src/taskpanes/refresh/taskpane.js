@@ -259,6 +259,13 @@ Office.onReady((info) => {
 		document.getElementById('btnSyncTables').addEventListener('click', async function() {
 			syncTrackedTableInfo();
 		});
+
+
+		document.getElementById('btnDisplayMappingObject').addEventListener('click', async function() {
+			displayMappingObject();
+		});
+		
+
 		
 
 		// Get the states from the workbook Custom XML Parts
@@ -2497,3 +2504,86 @@ const suppliers = [
     contactTitle: "Sales Representative"
   }
 ];
+
+
+/* 
+###########################################################################################
+	JSON - SQL Mapping
+########################################################################################### 
+*/
+
+async function  displayMappingObject () {
+	
+	Excel.run(async (context) => {
+		const sheet = context.workbook.worksheets.getActiveWorksheet();
+
+		// Example JSON object
+		const jsonObject = {
+			"id": "gid://shopify/Order/6002828705854",
+			"name": "#1002",  
+			"subtotalPriceSet": {
+				"shopMoney": {
+					"amount": "2620.0",
+					"currencyCode": "AUD"
+				},
+				"presentmentMoney": {
+					"amount": "2620.0",
+					"currencyCode": "AUD"
+				}
+			}, 
+			"tags": [ "a", "b","c" ], 
+			"altTag": [ 
+				{"label": {"text": "A", "colour": "blue"}, "shape": "rounded"}, 
+				{"label": {"text": "B", "colour": "red"}, "shape": "square"}
+			]
+		
+		}
+
+		// Generate the data to be written to Excel
+		const data = traverseObject(jsonObject);
+
+		// Write the data to Excel
+		const range = sheet.getRange(`A1:F${data.length}`);
+		range.values = data;
+		range.format.autofitColumns();
+
+		await context.sync();
+	});			
+}
+
+
+// Function to recursively traverse the JSON object
+function traverseObject(obj, path = '') {
+	let result = [];
+	for (const key in obj) {
+		let newPath = path ? `${path}.${key}` : key;
+		let isLeaf = !(typeof obj[key] === 'object' && obj[key] !== null);
+		let row = [
+			isLeaf ? 'L' : '', // Leaf column
+			newPath,           // Path
+			key,               // Attribute name
+			isLeaf ? JSON.stringify(obj[key]) : '', // Value (blank if not a leaf)
+			'',                // User input column
+			isLeaf ? guessSqlType(obj[key]) : '' // SQL type (blank if not a leaf)
+		];
+		result.push(row);
+
+		if (!isLeaf) {
+			// If not a leaf, recursively traverse further
+			result = result.concat(traverseObject(obj[key], newPath));
+		}
+	}
+	return result;
+}
+
+
+
+// Function to guess SQL type
+function guessSqlType(value) {
+	const valueType = typeof value;
+	switch (valueType) {
+		case 'number': return 'INT';
+		case 'boolean': return 'BOOLEAN';
+		case 'string': default: return 'VARCHAR';
+	}
+}
