@@ -12,7 +12,7 @@
                 {
                     "description": "The name of the table columns.",
                     "name": "columnNames",
-                    "type": "any"
+                    "type": "matrix"
                 }                
             ],
             "result": {}
