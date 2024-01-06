@@ -1,20 +1,5 @@
 ﻿﻿
 
-/**
- * Add two numbers
- * @customfunction
- * @param key The key
- * @returns The value for the key.
- */
-function add(a, b) {
-  
-  return a + b;
-}
-
-function dim(dimension, filters) {
-  
-  return dimension
-}
 
 /**
  * Creates an SQL CREATE TABLE statement.
@@ -45,6 +30,5 @@ function makeSQL(tableName, columnNames, dataTypes, precision) {
   return sqlStatement;
 }
 
-CustomFunctions.associate("ADD",add);
-CustomFunctions.associate("DIM",dim);
-CustomFunctions.associate("MAKE_SQL",makeSQL);
+
+CustomFunctions.associate("MAKESQL",makeSQL);

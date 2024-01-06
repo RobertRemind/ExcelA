@@ -1,44 +1,8 @@
 {
-  "functions": [     
-      {
-        "description": "Add two numbers",
-        "id": "ADD",
-        "name": "ADD",
-        "parameters": [
-            {
-                "description": "1st value",
-                "name": "a",
-                "type": "any"
-            },
-            {
-              "description": "2nd Valve",
-              "name": "b",
-              "type": "any"
-          }
-        ],
-        "result": {}
-    }, 
+  "functions": [           
     {
-        "description": "Get filtered Dimension data",
-        "id": "DIM",
-        "name": "DIM",
-        "parameters": [
-            {
-                "description": "Dimension Name",
-                "name": "dimension",
-                "type": "any"
-            },
-            {
-              "description": "Filter string",
-              "name": "filter",
-              "type": "any"
-          }
-        ],
-        "result": {}
-    }, 
-    {
-        "id": "MAKE_SQL",
-        "name": "MAKE_SQL",
+        "id": "MAKESQL",
+        "name": "MAKESQL",
         "description": "Creates an SQL CREATE TABLE statement",
         "parameters": [
           {
