@@ -14,7 +14,19 @@
                     "description": "The range of cells to get the name from.",
                     "type": "any",
                     "dimensionality": "matrix"
-                  }
+                },                            
+                {
+                    "name": "dataTypes",
+                    "description": "The range of cells to get the name from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                },                            
+                {
+                    "name": "precision",
+                    "description": "The range of cells to get the name from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                }
             ],
             "result": {
                 "type": "string",

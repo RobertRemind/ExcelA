@@ -5,8 +5,10 @@
  * @description Generates an SQL create table statement
  * @param {any} tableName The name of the table to be created.
  * @param {any} columnNames The name of the table columns.
+ * @param {any} dataTypes The name of the table columns.
+ * @param {any} precision The name of the table columns.
  */
-function makeSQL (tableName, columnNames){
+function makeSQL (tableName, columnNames, dataTypes, precision){
   debugger;
   let sqlStatement = `CREATE TABLE ${tableName} (`;
     let columns = [];
