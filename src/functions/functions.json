@@ -45,38 +45,6 @@
                 }
             ],
             "result": {}
-        }, 
-        {
-            "id": "MAKESQL",
-            "name": "MAKESQL",
-            "description": "Creates an SQL CREATE TABLE statement",
-            "parameters": [
-              {
-                "name": "tableName",
-                "description": "Name of the table",
-                "type": "string",
-                "dimensionality": "scalar"
-              },
-              {
-                "name": "columnNames",
-                "description": "Range of column names",
-                "type": "matrix"
-              },
-              {
-                "name": "dataTypes",
-                "description": "Range of data types",
-                "type": "matrix"
-              },
-              {
-                "name": "precision",
-                "description": "Range of precision for each data type",
-                "type": "matrix"
-              }
-            ],
-            "result": {
-              "type": "string",
-              "dimensionality": "scalar"
-            }
-          }
+        }
     ]
 }
