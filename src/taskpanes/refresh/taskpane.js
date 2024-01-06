@@ -2561,9 +2561,23 @@ function traverseObject(obj, path = '') {
         let isLeaf = !(value instanceof Object);
         let isArray = Array.isArray(value);
 
-        if (isArray && value.length > 0) {
-            // Handle array: consider only the first element
-            result = result.concat(traverseObject(value[0], `${newPath}[]`));
+        if (isArray) {
+            // Check if the array contains primitive types
+            if (value.length > 0 && (typeof value[0] !== 'object' || value[0] === null)) {
+                // Array of primitives: add a single row for the array
+                let row = [
+                    'L',                // Leaf column
+                    newPath + '[]',     // Path with array indicator
+                    key,                // Attribute name
+                    '',                 // Value (blank for array of primitives)
+                    '',                 // User input column
+                    ''                  // SQL type (blank for array of primitives)
+                ];
+                result.push(row);
+            } else {
+                // Array of objects: consider only the first element
+                result = result.concat(traverseObject(value[0], `${newPath}[]`));
+            }
         } else if (!isLeaf) {
             // Non-leaf object: recursively traverse further
             result = result.concat(traverseObject(value, newPath));
@@ -2582,7 +2596,6 @@ function traverseObject(obj, path = '') {
     }
     return result;
 }
-
 
 
 
