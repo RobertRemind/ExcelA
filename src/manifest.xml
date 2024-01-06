@@ -103,7 +103,7 @@
         <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="V4"/>
+        <bt:String id="GetStarted.Description" DefaultValue="V0.1"/>
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Changed this"/>
       </bt:LongStrings>
     </Resources>
