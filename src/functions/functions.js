@@ -8,8 +8,23 @@
  */
 function makeSQL (tableName, columnNames){
   debugger;
-  let columns = [];
-  return `CREATE TABLE ${tableName}`;
+  let sqlStatement = `CREATE TABLE ${tableName} (`;
+    let columns = [];
+
+    for (let i = 0; i < columnNames.length; i++) {
+        let columnName = columnNames[i][0];
+        let dataType = dataTypes[i][0];
+        let precisionValue = precision[i][0];
+
+        let columnDef = `${columnName} ${dataType}`;
+        if (precisionValue) {
+            columnDef += `(${precisionValue})`;
+        }
+        columns.push(columnDef);
+    }
+
+    sqlStatement += columns.join(', ') + ');';
+    return sqlStatement;
 }
 
 /**
