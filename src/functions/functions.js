@@ -5,21 +5,23 @@
  * @description Generates an SQL create table statement
  * @param {any} tableName The name of the table to be created.
  * @param {any} columnNames The name of the table columns.
+ * @param {any} dataTypes The type of the table columns.
+ * @param {any} precision The precision of the table columns.
  */
-function makeSQL (tableName, columnNames){
+function makeSQL (tableName, columnNames, dataTypes, precision){
   debugger;
   let sqlStatement = `CREATE TABLE ${tableName} (`;
     let columns = [];
 
     for (let i = 0; i < columnNames.length; i++) {
         let columnName = columnNames[i][0];
-        //let dataType = dataTypes[i][0];
-        //let precisionValue = precision[i][0];
-        let columnDef = `${columnName}`;
-        //let columnDef = `${columnName} ${dataType}`;
-        //if (precisionValue) {
-        //    columnDef += `(${precisionValue})`;
-        //}
+        let dataType = dataTypes[i][0];
+        let precisionValue = precision[i][0];
+
+        let columnDef = `${columnName} ${dataType}`;
+        if (precisionValue) {
+            columnDef += `(${precisionValue})`;
+        }
         columns.push(columnDef);
     }
 
