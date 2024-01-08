@@ -10,7 +10,7 @@
  */
 function makeSQL (tableName, columnNames, dataTypes, precision){
   debugger;
-  let sqlStatement = `CREATE TABLE ${tableName} (`;
+  let sqlStatement = `CREATE TABLE ${tableName} (\n`;
     let columns = [];
 
     for (let i = 0; i < columnNames.length; i++) {
@@ -25,7 +25,7 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
         columns.push(columnDef);
     }
 
-    sqlStatement += columns.join(', ') + ');';
+    sqlStatement += columns.join(',\n\t') + '\n);';
     return sqlStatement;
 }
 
