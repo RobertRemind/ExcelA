@@ -81,13 +81,12 @@ function generateJsonMap(tableName, columnNames, paths, dataTypes, precision) {
  * Creates an SQL INSERT statement for each mapping entry.
  * @customfunction
  * @description Generates an SQL INSERT statement for Spotify mapping.
- * @param {string} sourceFileName The name of the source file.
+ * @param {any} sourceFileName The name of the source file.
  * @param {any} tableName Name of the SQL table for every element.
  * @param {any} columnNames Range of cells for the "sqlColumn" attribute.
  * @param {any} paths Range of cells for the "path" attribute.
  * @param {any} dataTypes Range of cells for the "type" attribute.
- * @param {any} precision Range of cells for the "precision" attribute.
- * @returns {string} The SQL INSERT statements as a string.
+ * @param {any} precision Range of cells for the "precision" attribute. 
  */
 function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dataTypes, precision) {
   // Begin the SQL INSERT statement for a temp table
