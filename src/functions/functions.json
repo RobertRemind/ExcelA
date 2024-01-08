@@ -54,7 +54,7 @@
                     "name": "paths",
                     "description": "The range of cells to get the path from.",
                     "type": "any",
-                    "dimensionalit y": "matrix"
+                    "dimensionality": "matrix"
                 },                                                                       
                 {
                     "name": "dataTypes",
