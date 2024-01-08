@@ -77,6 +77,52 @@
               }
         },
         {
+            "id": "INSERTMAP",
+            "name": "INSERTMAP",
+            "parameters": [
+                {
+                    "description": "The name of the Source File.",
+                    "name": "sourceFileName",
+                    "type": "any"
+                },               
+                {
+                    "description": "The name of the table to be created.",
+                    "name": "tableName",
+                    "type": "any"
+                },                            
+                {
+                    "name": "columnNames",
+                    "description": "The range of cells to get the name from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                },           
+                {
+                    "name": "paths",
+                    "description": "The range of cells to get the path from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                },                                                                       
+                {
+                    "name": "dataTypes",
+                    "description": "The range of cells to get the data types from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                },                            
+                {
+                    "name": "precision",
+                    "description": "The range of cells to get the precision from.",
+                    "type": "any",
+                    "dimensionality": "matrix"
+                }
+                      
+            ],
+            "result": {
+                "type": "string",
+                "description": "SQL insert statment for column Mapping",
+                "dimensionality": "scalar"
+              }
+        },
+        {
             "id": "ADD",
             "name": "ADD",
             "parameters": [

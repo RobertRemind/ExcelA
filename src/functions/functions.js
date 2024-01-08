@@ -78,6 +78,42 @@ function generateJsonMap(tableName, columnNames, paths, dataTypes, precision) {
 
 
 /**
+ * Creates an SQL INSERT statement for each mapping entry.
+ * @customfunction
+ * @description Generates an SQL INSERT statement for Spotify mapping.
+ * @param {string} sourceFileName The name of the source file.
+ * @param {any} tableName Name of the SQL table for every element.
+ * @param {any} columnNames Range of cells for the "sqlColumn" attribute.
+ * @param {any} paths Range of cells for the "path" attribute.
+ * @param {any} dataTypes Range of cells for the "type" attribute.
+ * @param {any} precision Range of cells for the "precision" attribute.
+ * @returns {string} The SQL INSERT statements as a string.
+ */
+function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dataTypes, precision) {
+  // Begin the SQL INSERT statement for a temp table
+  let insertStatements = [];
+  let maxLength = Math.max(columnNames.length, paths.length, dataTypes.length, precision.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    let sqlColumn = (columnNames[i] && columnNames[i][0]) || null;
+    let path = (paths[i] && paths[i][0]) || null;
+    let type = (dataTypes[i] && dataTypes[i][0]) || null;
+    let precisionValue = (precision[i] && precision[i][0]) || null;
+
+    // Construct the INSERT statement
+    let insertStatement = `INSERT INTO #TempTable (sourceFileName, tableName, sqlColumn, path, type, precision) VALUES `;
+    insertStatement += `('${sourceFileName}', '${tableName}', ${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
+    insertStatement += `${path ? `'${path}'` : "NULL"}, ${type ? `'${type}'` : "NULL"}, `;
+    insertStatement += `${precisionValue ? `'${precisionValue}'` : "NULL"});`;
+
+    insertStatements.push(insertStatement);
+  }
+
+  return insertStatements.join('\n');
+}
+
+
+/**
  * @customfunction
  * @description Adds two numbers together. 
  * @param {number} first First number to be added.
@@ -116,6 +152,7 @@ function GetValue(key) {
 
 CustomFunctions.associate("MAKESQL", makeSQL);
 CustomFunctions.associate("JSONMAP", generateJsonMap);
+CustomFunctions.associate("INSERTMAP", generateSQLInsertMap);
 CustomFunctions.associate("ADD", add);
 CustomFunctions.associate("STOREVALUE",StoreValue);
 CustomFunctions.associate("GETVALUE",GetValue);
