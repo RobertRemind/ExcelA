@@ -33,11 +33,11 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
 /**
  * Creates a JSON string for SQL mappings.
  * @customfunction GENERATE_JSON
- * @param {string} table Name of the SQL table for every element.
- * @param {string[][]} columnNames Range of cells for the "sqlColumn" attribute.
- * @param {string[][]} paths Range of cells for the "path" attribute.
- * @param {string[][]} dataTypes Range of cells for the "type" attribute.
- * @param {string[][]} precision Range of cells for the "precision" attribute.
+ * @param {any} table Name of the SQL table for every element.
+ * @param {any} columnNames Range of cells for the "sqlColumn" attribute.
+ * @param {any} paths Range of cells for the "path" attribute.
+ * @param {any} dataTypes Range of cells for the "type" attribute.
+ * @param {any} precision Range of cells for the "precision" attribute.
  * @returns {string} The JSON string representing the SQL mappings.
  */
 function generateJsonMap(table, columnNames, paths, dataTypes, precision) {
