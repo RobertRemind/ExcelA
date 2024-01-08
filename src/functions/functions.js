@@ -18,16 +18,64 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
         let dataType = dataTypes[i][0];
         let precisionValue = precision[i][0];
 
-        let columnDef = `${columnName} ${dataType}`;
+        let columnDef = `\t${columnName} ${dataType}`;
         if (precisionValue) {
             columnDef += `(${precisionValue})`;
         }
         columns.push(columnDef);
     }
 
-    sqlStatement += columns.join(',\n\t') + '\n);';
+    sqlStatement += columns.join(',\n') + '\n);';
     return sqlStatement;
 }
+
+
+/**
+ * Creates a JSON string for SQL mappings.
+ * @customfunction GENERATE_JSON
+ * @param {string} table Name of the SQL table for every element.
+ * @param {string[][]} columnNames Range of cells for the "sqlColumn" attribute.
+ * @param {string[][]} paths Range of cells for the "path" attribute.
+ * @param {string[][]} dataTypes Range of cells for the "type" attribute.
+ * @param {string[][]} precision Range of cells for the "precision" attribute.
+ * @returns {string} The JSON string representing the SQL mappings.
+ */
+function generateJsonMap(table, columnNames, paths, dataTypes, precision) {
+  const sqlMappings = {
+    SQLMappings: [
+      {
+        table: table,
+        columnsMap: []
+      }
+    ]
+  };
+
+  // Find the length of the longest array
+  const maxLength = Math.max(columnNames.length, paths.length, dataTypes.length, precision.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    const columnMap = {
+      sqlColumn: columnNames[i] && columnNames[i][0], // Check for undefined
+      path: paths[i] && paths[i][0], // Check for undefined
+      type: dataTypes[i] && dataTypes[i][0], // Check for undefined
+      precision: precision[i] && precision[i][0], // Check for undefined
+      nullable: false // Assuming nullable is always false as per the example
+    };
+
+    // If an attribute is undefined or empty, delete it from the columnMap object
+    Object.keys(columnMap).forEach(key => {
+      if (columnMap[key] === undefined || columnMap[key] === '') {
+        delete columnMap[key];
+      }
+    });
+
+    sqlMappings.SQLMappings[0].columnsMap.push(columnMap);
+  }
+
+  return JSON.stringify(sqlMappings, null, 2); // Pretty print the JSON
+}
+
+
 
 /**
  * @customfunction
@@ -67,6 +115,7 @@ function GetValue(key) {
 
 
 CustomFunctions.associate("MAKESQL", makeSQL);
+CustomFunctions.associate("JSONMAP", generateJsonMap);
 CustomFunctions.associate("ADD", add);
 CustomFunctions.associate("STOREVALUE",StoreValue);
 CustomFunctions.associate("GETVALUE",GetValue);
