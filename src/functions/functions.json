@@ -36,47 +36,6 @@
               }
         },
         {
-            "id": "JSONMAP",
-            "name": "JSONMAP",
-            "parameters": [
-                {
-                    "description": "The name of the table to be created.",
-                    "name": "tableName",
-                    "type": "any"
-                },                            
-                {
-                    "name": "columnNames",
-                    "description": "The range of cells to get the name from.",
-                    "type": "any",
-                    "dimensionality": "matrix"
-                },           
-                {
-                    "name": "paths",
-                    "description": "The range of cells to get the path from.",
-                    "type": "any",
-                    "dimensionalit y": "matrix"
-                },                                                                       
-                {
-                    "name": "dataTypes",
-                    "description": "The range of cells to get the data types from.",
-                    "type": "any",
-                    "dimensionality": "matrix"
-                },                            
-                {
-                    "name": "precision",
-                    "description": "The range of cells to get the precision from.",
-                    "type": "any",
-                    "dimensionality": "matrix"
-                }
-                      
-            ],
-            "result": {
-                "type": "string",
-                "description": "Mapping JSON as a string",
-                "dimensionality": "scalar"
-              }
-        },
-        {
             "id": "ADD",
             "name": "ADD",
             "parameters": [
