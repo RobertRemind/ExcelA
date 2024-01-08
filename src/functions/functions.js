@@ -30,6 +30,52 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
 }
 
 
+/**
+ * Creates a JSON string for SQL mappings.
+ * @customfunction
+ * @description Generates an JSON object for Spotify mapping
+ * @param {any} tableName Name of the SQL table for every element.
+ * @param {any} columnNames Range of cells for the "sqlColumn" attribute.
+ * @param {any} paths Range of cells for the "path" attribute.
+ * @param {any} dataTypes Range of cells for the "type" attribute.
+ * @param {any} precision Range of cells for the "precision" attribute.
+ */
+function generateJsonMap(tableName, columnNames, paths, dataTypes, precision) {
+  const sqlMappings = {
+    SQLMappings: [
+      {
+        table: tableName,
+        columnsMap: []
+      }
+    ]
+  };
+
+  // Find the length of the longest array
+  const maxLength = Math.max(columnNames.length, paths.length, dataTypes.length, precision.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    const columnMap = {
+      sqlColumn: columnNames[i] && columnNames[i][0], // Check for undefined
+      path: paths[i] && paths[i][0], // Check for undefined
+      type: dataTypes[i] && dataTypes[i][0], // Check for undefined
+      precision: precision[i] && precision[i][0], // Check for undefined
+      nullable: false // Assuming nullable is always false as per the example
+    };
+
+    // If an attribute is undefined or empty, delete it from the columnMap object
+    Object.keys(columnMap).forEach(key => {
+      if (columnMap[key] === undefined || columnMap[key] === '') {
+        delete columnMap[key];
+      }
+    });
+
+    sqlMappings.SQLMappings[0].columnsMap.push(columnMap);
+  }
+
+  return JSON.stringify(sqlMappings, null, 2); // Pretty print the JSON
+}
+
+
 
 /**
  * @customfunction
