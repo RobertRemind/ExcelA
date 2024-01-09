@@ -262,7 +262,32 @@ Office.onReady((info) => {
 
 
 		document.getElementById('btnDisplayMappingObject').addEventListener('click', async function() {
-			displayMappingObject();
+			
+			// Example JSON object
+			/*const jsonObject = {
+				"id": "gid://shopify/Order/6002828705854",
+				"name": "#1002",  
+				"subtotalPriceSet": {
+					"shopMoney": {
+						"amount": "2620.0",
+						"currencyCode": "AUD"
+					},
+					"presentmentMoney": {
+						"amount": "2620.0",
+						"currencyCode": "AUD"
+					}
+				}, 
+				"tags": [ "a", "b","c" ], 
+				"altTag": [ 
+					{"label": {"text": "A", "colour": "blue"}, "shape": "rounded"}, 
+					{"label": {"text": "B", "colour": "red"}, "shape": "square"}
+				]
+			
+			}
+			*/
+			const txtArea = document.getElementById('txtMappingObject');
+
+			displayMappingObject(txtArea.value);
 		});
 		
 
@@ -2512,32 +2537,10 @@ const suppliers = [
 ########################################################################################### 
 */
 
-async function  displayMappingObject () {
+async function  displayMappingObject (jsonObject) {
 	
 	Excel.run(async (context) => {
 		const sheet = context.workbook.worksheets.getActiveWorksheet();
-
-		// Example JSON object
-		const jsonObject = {
-			"id": "gid://shopify/Order/6002828705854",
-			"name": "#1002",  
-			"subtotalPriceSet": {
-				"shopMoney": {
-					"amount": "2620.0",
-					"currencyCode": "AUD"
-				},
-				"presentmentMoney": {
-					"amount": "2620.0",
-					"currencyCode": "AUD"
-				}
-			}, 
-			"tags": [ "a", "b","c" ], 
-			"altTag": [ 
-				{"label": {"text": "A", "colour": "blue"}, "shape": "rounded"}, 
-				{"label": {"text": "B", "colour": "red"}, "shape": "square"}
-			]
-		
-		}
 
 		// Generate the data to be written to Excel
 		const data = traverseObject(jsonObject);
