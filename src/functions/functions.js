@@ -122,8 +122,8 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
     let path = (paths[i] && paths[i][0]) || null;
     let type = (dataTypes[i] && dataTypes[i][0]) || null;
     let precisionValue = (precision[i] && precision[i][0]) || null;
-     
-    if (columnMap.sqlColumn != 0 && columnMap.sqlColumn != "0" && columnMap.sqlColumn != "") {
+    
+    if (sqlColumn != 0 && sqlColumn != "0" && sqlColumn != "") {
       
       // Construct the INSERT statement
       let insertStatement = `${first ? '' : ','}(@queryId, `;
@@ -136,7 +136,8 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
       insertStatement +=  "'Mapping' )";
         
       insertStatements.push(insertStatement);
-      first = false
+      first = false;
+      
     } else { 
       debugger;
     }
