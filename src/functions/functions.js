@@ -123,7 +123,7 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
     let type = (dataTypes[i] && dataTypes[i][0]) || null;
     let precisionValue = (precision[i] && precision[i][0]) || null;
     
-    if (sqlColumn != 0 && sqlColumn != "0" && sqlColumn != "") {
+    if (sqlColumn && sqlColumn != 0 && sqlColumn != "0" && sqlColumn != "") {
       
       // Construct the INSERT statement
       let insertStatement = `${first ? '' : ','}(@queryId, `;
@@ -137,7 +137,7 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
         
       insertStatements.push(insertStatement);
       first = false;
-      
+
     } else { 
       debugger;
     }
