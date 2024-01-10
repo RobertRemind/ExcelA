@@ -152,6 +152,3 @@ function GetValue(key) {
 CustomFunctions.associate("MAKESQL", makeSQL);
 CustomFunctions.associate("JSONMAP", generateJsonMap);
 CustomFunctions.associate("INSERTMAP", generateSQLInsertMap);
-CustomFunctions.associate("ADD", add);
-CustomFunctions.associate("STOREVALUE",StoreValue);
-CustomFunctions.associate("GETVALUE",GetValue);
