@@ -14,6 +14,8 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
     let columns = [];
 
     for (let i = 0; i < columnNames.length; i++) {
+        
+      
         let columnName = columnNames[i][0];
         let dataType = dataTypes[i][0];
         let precisionValue = precision[i][0];
@@ -22,7 +24,12 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
         if (precisionValue) {
             columnDef += `(${precisionValue})`;
         }
+
+        
+      if (columnName != 0 && columnName != "0" && columnName != "") {
         columns.push(columnDef);
+      }
+        
     }
 
     sqlStatement += columns.join(',\n') + '\n);';
@@ -69,7 +76,7 @@ function generateJsonMap(tableName, columnNames, paths, dataTypes, precision) {
       }
     });
 
-    if (!columnMap.sqlColumn == 0 && columnMap.sqlColumn == "0" && columnMap.sqlColumn == "") {
+    if (columnMap.sqlColumn != 0 && columnMap.sqlColumn != "0" && columnMap.sqlColumn != "") {
       sqlMappings.SQLMappings[0].columnsMap.push(columnMap);
     }
     
@@ -108,7 +115,7 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
     let precisionValue = (precision[i] && precision[i][0]) || null;
      
     // Construct the INSERT statement
-    let insertStatement = `${first ? ',' : ''} (@queryId, `;
+    let insertStatement = `${first ? '' : ','} (@queryId, `;
     insertStatement +=  `${path ? `'${path}'` : "NULL"},`;
     insertStatement +=  `'${tableName}',`;
     insertStatement +=  `${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
