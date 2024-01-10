@@ -287,7 +287,7 @@ Office.onReady((info) => {
 			*/
 			const txtArea = document.getElementById('txtMappingObject');
 
-			displayMappingObject(txtArea.value);
+			  displayMappingObject(JSON.parse(txtArea.value));
 		});
 		
 
