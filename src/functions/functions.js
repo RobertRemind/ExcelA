@@ -69,7 +69,10 @@ function generateJsonMap(tableName, columnNames, paths, dataTypes, precision) {
       }
     });
 
-    sqlMappings.SQLMappings[0].columnsMap.push(columnMap);
+    if (!columnMap.sqlColumn == 0 && columnMap.sqlColumn == "0" && columnMap.sqlColumn == "") {
+      sqlMappings.SQLMappings[0].columnsMap.push(columnMap);
+    }
+    
   }
 
   return JSON.stringify(sqlMappings, null, 2); // Pretty print the JSON
@@ -93,19 +96,29 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
   let insertStatements = [];
   let maxLength = Math.max(columnNames.length, paths.length, dataTypes.length, precision.length);
 
+
+  
+  insertStatements.push(`INSERT INTO [connect].[SourceQueryMapping]([sourceQueryId],[pathInSource],[targetTable],[targetColumn],[typeDataType],[precision],[nullable],[createdBy]) VALUES `);
+  let first = true;
+
   for (let i = 0; i < maxLength; i++) {
     let sqlColumn = (columnNames[i] && columnNames[i][0]) || null;
     let path = (paths[i] && paths[i][0]) || null;
     let type = (dataTypes[i] && dataTypes[i][0]) || null;
     let precisionValue = (precision[i] && precision[i][0]) || null;
-
+     
     // Construct the INSERT statement
-    let insertStatement = `INSERT INTO #TempTable (sourceFileName, tableName, sqlColumn, path, type, precision) VALUES `;
-    insertStatement += `('${sourceFileName}', '${tableName}', ${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
-    insertStatement += `${path ? `'${path}'` : "NULL"}, ${type ? `'${type}'` : "NULL"}, `;
-    insertStatement += `${precisionValue ? `'${precisionValue}'` : "NULL"});`;
-
+    let insertStatement = `${first ? ',' : ''} (@queryId, `;
+    insertStatement +=  `${path ? `'${path}'` : "NULL"},`;
+    insertStatement +=  `'${tableName}',`;
+    insertStatement +=  `${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
+    insertStatement +=  ` ${type ? `'${type}'` : "NULL"}, `;
+    insertStatement +=  `${precisionValue ? `'${precisionValue}'` : "NULL"},`;
+    insertStatement +=  '0,';
+    insertStatement +=  "'Mapping' )";
+      
     insertStatements.push(insertStatement);
+    first = false
   }
 
   return insertStatements.join('\n');
