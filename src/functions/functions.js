@@ -19,9 +19,10 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
     let columns = [];
 
     for (let i = 0; i < columnNames.length; i++) {
-        
       
-        let columnName = columnNames[i][0];
+      if (columnNames[i][0] != 0 && columnNames[i][0] != "0" && columnNames[i][0] != "") {
+      
+        let columnName = `[${columnNames[i][0]}]`;
         let dataType = dataTypes[i][0];
         let precisionValue = precision[i][0];
 
@@ -29,9 +30,7 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
         if (precisionValue) {
             columnDef += `(${precisionValue})`;
         }
-
         
-      if (columnName != 0 && columnName != "0" && columnName != "") {
         columns.push(columnDef);
       }
         
@@ -124,18 +123,23 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
     let type = (dataTypes[i] && dataTypes[i][0]) || null;
     let precisionValue = (precision[i] && precision[i][0]) || null;
      
-    // Construct the INSERT statement
-    let insertStatement = `${first ? '' : ','}(@queryId, `;
-    insertStatement +=  `${path ? `'${path}'` : "NULL"},`;
-    insertStatement +=  `'${tableName}',`;
-    insertStatement +=  `${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
-    insertStatement +=  ` ${type ? `'${type}'` : "NULL"}, `;
-    insertStatement +=  `${precisionValue ? `'${precisionValue}'` : "NULL"},`;
-    insertStatement +=  '0,';
-    insertStatement +=  "'Mapping' )";
+    if (columnMap.sqlColumn != 0 && columnMap.sqlColumn != "0" && columnMap.sqlColumn != "") {
       
-    insertStatements.push(insertStatement);
-    first = false
+      // Construct the INSERT statement
+      let insertStatement = `${first ? '' : ','}(@queryId, `;
+      insertStatement +=  `${path ? `'${path}'` : "NULL"},`;
+      insertStatement +=  `'${tableName}',`;
+      insertStatement +=  `${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
+      insertStatement +=  ` ${type ? `'${type}'` : "NULL"}, `;
+      insertStatement +=  `${precisionValue ? `'${precisionValue}'` : "NULL"},`;
+      insertStatement +=  '0,';
+      insertStatement +=  "'Mapping' )";
+        
+      insertStatements.push(insertStatement);
+      first = false
+    } else { 
+      debugger;
+    }
   }
 
   return insertStatements.join('\n');
