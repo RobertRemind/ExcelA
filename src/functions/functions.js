@@ -125,7 +125,7 @@ function generateSQLInsertMap(sourceFileName, tableName, columnNames, paths, dat
     let precisionValue = (precision[i] && precision[i][0]) || null;
      
     // Construct the INSERT statement
-    let insertStatement = `${first ? '' : ','} (@queryId, `;
+    let insertStatement = `${first ? '' : ','}(@queryId, `;
     insertStatement +=  `${path ? `'${path}'` : "NULL"},`;
     insertStatement +=  `'${tableName}',`;
     insertStatement +=  `${sqlColumn ? `'${sqlColumn}'` : "NULL"}, `;
