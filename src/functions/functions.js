@@ -11,7 +11,8 @@
 function makeSQL (tableName, columnNames, dataTypes, precision){
   debugger;
   
-  let sqlStatement = `IF object_id('${tableName}') is null BEGIN \n`
+  let sqlStatement = 'DECLARE @queryId int;\n\n'
+  sqlStatement += `IF object_id('${tableName}') is null BEGIN \n`
   sqlStatement += `CREATE TABLE ${tableName} (\n`;
 
   
@@ -37,7 +38,11 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
     }
 
     sqlStatement += columns.join(',\n') + '\n);';
-    sqlStatement += '\n\nEND'
+
+    sqlStatement += '\n\nSELECT @queryId = SCOPE_IDENTITY();\n\n';
+
+    sqlStatement += 'END\n\n\nGO\n\n';
+
     return sqlStatement;
 }
 
