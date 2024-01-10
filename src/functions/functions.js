@@ -10,7 +10,11 @@
  */
 function makeSQL (tableName, columnNames, dataTypes, precision){
   debugger;
-  let sqlStatement = `CREATE TABLE ${tableName} (\n`;
+  
+  let sqlStatement = `IF object_id('${tableName}') is null BEGIN \n`
+  sqlStatement += `CREATE TABLE ${tableName} (\n`;
+
+  
     let columns = [];
 
     for (let i = 0; i < columnNames.length; i++) {
@@ -33,6 +37,7 @@ function makeSQL (tableName, columnNames, dataTypes, precision){
     }
 
     sqlStatement += columns.join(',\n') + '\n);';
+    sqlStatement += '\n\nEND'
     return sqlStatement;
 }
 
