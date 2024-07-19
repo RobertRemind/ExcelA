@@ -60,12 +60,12 @@
                   <bt:Image size="16" resid="Icon.16x16"/>
                   <bt:Image size="32" resid="Icon.32x32"/>
                   <bt:Image size="80" resid="Icon.80x80"/>
-                </Icon>                
-                <Control xsi:type="Button" id="HomeButton">
-                  <Label resid="HomeButton.Label"/>
+                </Icon>
+                <Control xsi:type="Button" id="TaskpaneButton">
+                  <Label resid="TaskpaneButton.Label"/>
                   <Supertip>
-                    <Title resid="HomeButton.Label"/>
-                    <Description resid="HomeButton.Tooltip"/>
+                    <Title resid="TaskpaneButton.Label"/>
+                    <Description resid="TaskpaneButton.Tooltip"/>
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="Icon.16x16"/>
@@ -73,29 +73,8 @@
                     <bt:Image size="80" resid="Icon.80x80"/>
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Connect</TaskpaneId>
-                    <SourceLocation resid="HomeButton.Url"/>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="TableButton">
-                  <Label resid="TableButton.Label"/>
-                  <Supertip>
-                    <Title resid="TableButton.Label"/>
-                    <Description resid="TableButton.Tooltip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16"/>
-                    <bt:Image size="32" resid="Icon.32x32"/>
-                    <bt:Image size="80" resid="Icon.80x80"/>
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Connect</TaskpaneId>
-                    <SourceLocation resid="TableButton.Url"/>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="FnButton">
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>onTableButtonClick</FunctionName>
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
                   </Action>
                 </Control>
               </Group>
@@ -117,9 +96,7 @@
         <bt:Url id="Functions.Page.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/functions.html"/>        
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>        
         <bt:Url id="Commands.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/commands.html"/>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000"/>
-        <bt:Url id="HomeButton.Url" DefaultValue="https://localhost:3000"/>
-        <bt:Url id="TableButton.Url" DefaultValue="https://localhost:3000/Table"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Functions.Namespace" DefaultValue="REMIND"/>
@@ -127,13 +104,10 @@
         <bt:String id="CustomTab.Label" DefaultValue="Connect"/>
         <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
-        <bt:String id="HomeButton.Label" DefaultValue="Connect Home"/>
-        <bt:String id="TableButton.Label" DefaultValue="Tables"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="V0.0.1vue"/>
-        <bt:String id="HomeButton.Tooltip" DefaultValue="Home"/>
-        <bt:String id="TableButton.Tooltip" DefaultValue="Vue.js version"/>        
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Vue.js version"/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

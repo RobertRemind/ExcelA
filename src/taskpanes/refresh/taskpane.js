@@ -216,7 +216,7 @@ Office.onReady((info) => {
 
         // Bind Refresh of source data
         document.getElementById('startFunctionsBtn').addEventListener('click', function() {
-			RefreshStatus.reset();
+			      RefreshStatus.reset();
             RefreshStatus.completedFunctionsCount = 0;
             RefreshStatus.errorOccurred = false;
 
@@ -1257,6 +1257,7 @@ async function createTrackedTable(libraryTableName, newWorksheet) {
 	const i = TrackedTables.tables.push(clone);
 	let indexOfNewElement = i - 1;
 
+  //!!!!!! Dont await here track these two awaits as promises.
 	await getTrackedTableData(TrackedTables.tables[indexOfNewElement]);
 
 	// Make the new Excel table.
@@ -1443,6 +1444,7 @@ async function handleBindTrackedTableEvents(context, trackedTable) {
 		
 	}
 }
+
 
 
 /**

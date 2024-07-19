@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
-  <Id>ba1cbc21-5e3a-43ed-a1b5-aaf586547a78</Id>
+  <Id>ba1cbc21-5e3a-43ed-a1b5-aaf586547a38</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Remind</ProviderName>
+  <ProviderName>Contoso</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Connect"/>
+  <DisplayName DefaultValue="CONNECT"/>
   <Description DefaultValue="A template to get started."/>
   <IconUrl DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/assets/icon-64.png"/>
@@ -15,7 +15,7 @@
   <Hosts>
     <Host Name="Workbook"/>
   </Hosts>
-  <Requirements>
+   <Requirements>
     <Sets DefaultMinVersion="1.1">
       <Set Name="SharedRuntime" MinVersion="1.1"/>
       <Set Name="ExcelApi" MinVersion="1.1"/>
@@ -28,8 +28,8 @@
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Hosts>
       <Host xsi:type="Workbook">
-        <Runtimes>
-          <Runtime resid="Taskpane.Url" lifetime="long"/>
+      <Runtimes>
+        <Runtime resid="Taskpane.Url" lifetime="long"/>
         </Runtimes>
         <AllFormFactors>
           <ExtensionPoint xsi:type="CustomFunctions">
@@ -53,19 +53,19 @@
           </GetStarted>
           <FunctionFile resid="Taskpane.Url"/>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <CustomTab id="CustomTab">
+            <OfficeTab id="TabHome">
               <Group id="CommandsGroup">
                 <Label resid="CommandsGroup.Label"/>
                 <Icon>
                   <bt:Image size="16" resid="Icon.16x16"/>
                   <bt:Image size="32" resid="Icon.32x32"/>
                   <bt:Image size="80" resid="Icon.80x80"/>
-                </Icon>                
-                <Control xsi:type="Button" id="HomeButton">
-                  <Label resid="HomeButton.Label"/>
+                </Icon>
+                <Control xsi:type="Button" id="TaskpaneButton">
+                  <Label resid="TaskpaneButton.Label"/>
                   <Supertip>
-                    <Title resid="HomeButton.Label"/>
-                    <Description resid="HomeButton.Tooltip"/>
+                    <Title resid="TaskpaneButton.Label"/>
+                    <Description resid="TaskpaneButton.Tooltip"/>
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="Icon.16x16"/>
@@ -73,34 +73,12 @@
                     <bt:Image size="80" resid="Icon.80x80"/>
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Connect</TaskpaneId>
-                    <SourceLocation resid="HomeButton.Url"/>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="TableButton">
-                  <Label resid="TableButton.Label"/>
-                  <Supertip>
-                    <Title resid="TableButton.Label"/>
-                    <Description resid="TableButton.Tooltip"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16"/>
-                    <bt:Image size="32" resid="Icon.32x32"/>
-                    <bt:Image size="80" resid="Icon.80x80"/>
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>Connect</TaskpaneId>
-                    <SourceLocation resid="TableButton.Url"/>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="FnButton">
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>onTableButtonClick</FunctionName>
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
                   </Action>
                 </Control>
               </Group>
-              <Label resid="CustomTab.Label"/>
-            </CustomTab>
+            </OfficeTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
@@ -117,23 +95,17 @@
         <bt:Url id="Functions.Page.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/functions.html"/>        
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>        
         <bt:Url id="Commands.Url" DefaultValue="https://kind-hill-08927eb00.4.azurestaticapps.net/functions/commands.html"/>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000"/>
-        <bt:Url id="HomeButton.Url" DefaultValue="https://localhost:3000"/>
-        <bt:Url id="TableButton.Url" DefaultValue="https://localhost:3000/Table"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Functions.Namespace" DefaultValue="REMIND"/>
         <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!"/>
-        <bt:String id="CustomTab.Label" DefaultValue="Connect"/>
         <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
-        <bt:String id="HomeButton.Label" DefaultValue="Connect Home"/>
-        <bt:String id="TableButton.Label" DefaultValue="Tables"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="V0.0.1vue"/>
-        <bt:String id="HomeButton.Tooltip" DefaultValue="Home"/>
-        <bt:String id="TableButton.Tooltip" DefaultValue="Vue.js version"/>        
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Vue.js version"/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

@@ -183,6 +183,22 @@ function GetValue(key) {
 
 
 
+/**
+ * Function to handle Table button click.
+ * Opens the task pane if not already open and navigates to the Table page.
+ */
+function onTableButtonClick() {
+  Office.context.ui.displayDialogAsync('https://localhost:3000', { width: 50, height: 50 }, function (asyncResult) {
+    if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
+      asyncResult.value.messageChild(JSON.stringify({ action: 'navigate', page: '/Table' }));
+    } else {
+      console.error("Failed to open task pane: ", asyncResult.error.message);
+    }
+  });
+}
+
+
+
 
 CustomFunctions.associate("MAKESQL", makeSQL);
 CustomFunctions.associate("JSONMAP", generateJsonMap);

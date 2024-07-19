@@ -2,8 +2,7 @@
   "name": "Excel Addin",
   "description": "Testing Excel Addin creation",
   "version": "1.0.0",
-  
-  "scripts": { 
+  "scripts": {
     "start": "sirv ./src public --cors --single --no-clear --port 8000",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:azure": ""
@@ -12,12 +11,12 @@
     "appArtifactLocation": "dist"
   },
   "dependencies": {
-    "@microsoft/office-js": "^1.1.89"
+    "@microsoft/office-js": "^1.1.89",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.10.2",
     "eslint-plugin-office-addins": "^2.1.8",
     "office-addin-lint": "^2.2.8"
   }
-  
 }
